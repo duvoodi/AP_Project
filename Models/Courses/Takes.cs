@@ -4,8 +4,8 @@ namespace AP_Project.Models.Courses
 {
     public class Takes
     {
-        public int StudentId { get; set; }
-        public int SectionId { get; set; }
+        public Guid StudentUserId { get; set; }
+        public Guid SectionId { get; set; }
         public string Grade { get; set; }
 
         public Student Student { get; set; }

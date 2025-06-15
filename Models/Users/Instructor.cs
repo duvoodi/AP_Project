@@ -6,7 +6,7 @@ namespace AP_Project.Models.Users
     {
         public int InstructorId { get; set; } 
         public decimal Salary { get; set; }
-        public DateTime HireDate { get; set; }
+        public int HireYear { get; set; }
 
         public ICollection<Teaches> Teaches { get; set; }
     }

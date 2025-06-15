@@ -2,10 +2,10 @@
 {
     public class Prerequisite
     {
-        public int CourseId { get; set; }          
-        public int PrerequisiteCourseId { get; set; }
+        public Guid CourseId { get; set; }          
+        public Guid PrerequisiteCourseCodeId { get; set; }
 
         public Course Course { get; set; }
-        public Course PrerequisiteCourse { get; set; }
+        public CourseCode PrerequisiteCourseCode { get; set; }
     }
 }
