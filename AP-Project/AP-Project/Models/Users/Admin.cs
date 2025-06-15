@@ -2,6 +2,6 @@
 {
     public class Admin : User
     {
-        public int AdminId;
+        public string AdminId;
     }
 }

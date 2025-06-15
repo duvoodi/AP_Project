@@ -135,7 +135,7 @@ namespace AP_Project.Data
                 {
                     timeSlots.Add(new TimeSlot
                     {
-                        Id = dayIndex * 10 + (i + 1),
+                        Id = dayIndex * 10 + (i + 1).ToString(),
                         Day = day,
                         StartTime = timeRanges[i].Start,
                         EndTime = timeRanges[i].End

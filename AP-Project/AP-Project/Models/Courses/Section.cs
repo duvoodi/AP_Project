@@ -4,12 +4,12 @@ namespace AP_Project.Models.Courses
 {
     public class Section
     {
-        public int Id { get; set; }
-        public int CourseId { get; set; }
+        public string Id { get; set; }
+        public string CourseId { get; set; }
         public string Semester { get; set; }
         public int Year { get; set; }
-        public int ClassroomId { get; set; }
-        public int TimeSlotId { get; set; }
+        public string ClassroomId { get; set; }
+        public string TimeSlotId { get; set; }
 
         public Course Course { get; set; }
         public Classroom Classroom { get; set; }

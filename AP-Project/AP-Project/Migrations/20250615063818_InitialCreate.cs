@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AP_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class createtimeslottable : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,8 +17,7 @@ namespace AP_Project.Migrations
                 name: "Classrooms",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Building = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RoomNumber = table.Column<int>(type: "int", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false)
@@ -32,8 +31,7 @@ namespace AP_Project.Migrations
                 name: "Courses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Unit = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -49,8 +47,7 @@ namespace AP_Project.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -62,8 +59,7 @@ namespace AP_Project.Migrations
                 name: "TimeSlots",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Day = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     EndTime = table.Column<TimeSpan>(type: "time", nullable: false)
@@ -77,18 +73,17 @@ namespace AP_Project.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HashedPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
-                    InstructorId = table.Column<int>(type: "int", nullable: true),
+                    InstructorId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Salary = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     HireDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    StudentId = table.Column<int>(type: "int", nullable: true),
+                    StudentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EnrollmentDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
@@ -100,8 +95,8 @@ namespace AP_Project.Migrations
                 name: "Prerequisites",
                 columns: table => new
                 {
-                    CourseId = table.Column<int>(type: "int", nullable: false),
-                    PrerequisiteCourseId = table.Column<int>(type: "int", nullable: false)
+                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PrerequisiteCourseId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -124,13 +119,12 @@ namespace AP_Project.Migrations
                 name: "Sections",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Semester = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Year = table.Column<int>(type: "int", nullable: false),
-                    ClassroomId = table.Column<int>(type: "int", nullable: false),
-                    TimeSlotId = table.Column<int>(type: "int", nullable: false)
+                    ClassroomId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TimeSlotId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -159,8 +153,8 @@ namespace AP_Project.Migrations
                 name: "UserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -183,8 +177,8 @@ namespace AP_Project.Migrations
                 name: "Takes",
                 columns: table => new
                 {
-                    StudentId = table.Column<int>(type: "int", nullable: false),
-                    SectionId = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SectionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Grade = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -208,8 +202,8 @@ namespace AP_Project.Migrations
                 name: "Teaches",
                 columns: table => new
                 {
-                    InstructorId = table.Column<int>(type: "int", nullable: false),
-                    SectionId = table.Column<int>(type: "int", nullable: false)
+                    InstructorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SectionId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -233,26 +227,26 @@ namespace AP_Project.Migrations
                 columns: new[] { "Id", "Day", "EndTime", "StartTime" },
                 values: new object[,]
                 {
-                    { 11, "Saturday", new TimeSpan(0, 10, 30, 0, 0), new TimeSpan(0, 9, 0, 0, 0) },
-                    { 12, "Saturday", new TimeSpan(0, 12, 0, 0, 0), new TimeSpan(0, 10, 30, 0, 0) },
-                    { 13, "Saturday", new TimeSpan(0, 16, 0, 0, 0), new TimeSpan(0, 14, 30, 0, 0) },
-                    { 14, "Saturday", new TimeSpan(0, 17, 30, 0, 0), new TimeSpan(0, 16, 0, 0, 0) },
-                    { 21, "Sunday", new TimeSpan(0, 10, 30, 0, 0), new TimeSpan(0, 9, 0, 0, 0) },
-                    { 22, "Sunday", new TimeSpan(0, 12, 0, 0, 0), new TimeSpan(0, 10, 30, 0, 0) },
-                    { 23, "Sunday", new TimeSpan(0, 16, 0, 0, 0), new TimeSpan(0, 14, 30, 0, 0) },
-                    { 24, "Sunday", new TimeSpan(0, 17, 30, 0, 0), new TimeSpan(0, 16, 0, 0, 0) },
-                    { 31, "Monday", new TimeSpan(0, 10, 30, 0, 0), new TimeSpan(0, 9, 0, 0, 0) },
-                    { 32, "Monday", new TimeSpan(0, 12, 0, 0, 0), new TimeSpan(0, 10, 30, 0, 0) },
-                    { 33, "Monday", new TimeSpan(0, 16, 0, 0, 0), new TimeSpan(0, 14, 30, 0, 0) },
-                    { 34, "Monday", new TimeSpan(0, 17, 30, 0, 0), new TimeSpan(0, 16, 0, 0, 0) },
-                    { 41, "Tuesday", new TimeSpan(0, 10, 30, 0, 0), new TimeSpan(0, 9, 0, 0, 0) },
-                    { 42, "Tuesday", new TimeSpan(0, 12, 0, 0, 0), new TimeSpan(0, 10, 30, 0, 0) },
-                    { 43, "Tuesday", new TimeSpan(0, 16, 0, 0, 0), new TimeSpan(0, 14, 30, 0, 0) },
-                    { 44, "Tuesday", new TimeSpan(0, 17, 30, 0, 0), new TimeSpan(0, 16, 0, 0, 0) },
-                    { 51, "Wednesday", new TimeSpan(0, 10, 30, 0, 0), new TimeSpan(0, 9, 0, 0, 0) },
-                    { 52, "Wednesday", new TimeSpan(0, 12, 0, 0, 0), new TimeSpan(0, 10, 30, 0, 0) },
-                    { 53, "Wednesday", new TimeSpan(0, 16, 0, 0, 0), new TimeSpan(0, 14, 30, 0, 0) },
-                    { 54, "Wednesday", new TimeSpan(0, 17, 30, 0, 0), new TimeSpan(0, 16, 0, 0, 0) }
+                    { "101", "Saturday", new TimeSpan(0, 10, 30, 0, 0), new TimeSpan(0, 9, 0, 0, 0) },
+                    { "102", "Saturday", new TimeSpan(0, 12, 0, 0, 0), new TimeSpan(0, 10, 30, 0, 0) },
+                    { "103", "Saturday", new TimeSpan(0, 16, 0, 0, 0), new TimeSpan(0, 14, 30, 0, 0) },
+                    { "104", "Saturday", new TimeSpan(0, 17, 30, 0, 0), new TimeSpan(0, 16, 0, 0, 0) },
+                    { "201", "Sunday", new TimeSpan(0, 10, 30, 0, 0), new TimeSpan(0, 9, 0, 0, 0) },
+                    { "202", "Sunday", new TimeSpan(0, 12, 0, 0, 0), new TimeSpan(0, 10, 30, 0, 0) },
+                    { "203", "Sunday", new TimeSpan(0, 16, 0, 0, 0), new TimeSpan(0, 14, 30, 0, 0) },
+                    { "204", "Sunday", new TimeSpan(0, 17, 30, 0, 0), new TimeSpan(0, 16, 0, 0, 0) },
+                    { "301", "Monday", new TimeSpan(0, 10, 30, 0, 0), new TimeSpan(0, 9, 0, 0, 0) },
+                    { "302", "Monday", new TimeSpan(0, 12, 0, 0, 0), new TimeSpan(0, 10, 30, 0, 0) },
+                    { "303", "Monday", new TimeSpan(0, 16, 0, 0, 0), new TimeSpan(0, 14, 30, 0, 0) },
+                    { "304", "Monday", new TimeSpan(0, 17, 30, 0, 0), new TimeSpan(0, 16, 0, 0, 0) },
+                    { "401", "Tuesday", new TimeSpan(0, 10, 30, 0, 0), new TimeSpan(0, 9, 0, 0, 0) },
+                    { "402", "Tuesday", new TimeSpan(0, 12, 0, 0, 0), new TimeSpan(0, 10, 30, 0, 0) },
+                    { "403", "Tuesday", new TimeSpan(0, 16, 0, 0, 0), new TimeSpan(0, 14, 30, 0, 0) },
+                    { "404", "Tuesday", new TimeSpan(0, 17, 30, 0, 0), new TimeSpan(0, 16, 0, 0, 0) },
+                    { "501", "Wednesday", new TimeSpan(0, 10, 30, 0, 0), new TimeSpan(0, 9, 0, 0, 0) },
+                    { "502", "Wednesday", new TimeSpan(0, 12, 0, 0, 0), new TimeSpan(0, 10, 30, 0, 0) },
+                    { "503", "Wednesday", new TimeSpan(0, 16, 0, 0, 0), new TimeSpan(0, 14, 30, 0, 0) },
+                    { "504", "Wednesday", new TimeSpan(0, 17, 30, 0, 0), new TimeSpan(0, 16, 0, 0, 0) }
                 });
 
             migrationBuilder.CreateIndex(

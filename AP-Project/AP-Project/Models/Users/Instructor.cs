@@ -4,7 +4,7 @@ namespace AP_Project.Models.Users
 {
     public class Instructor : User
     {
-        public int InstructorId { get; set; } 
+        public string InstructorId { get; set; } 
         public decimal Salary { get; set; }
         public DateTime HireDate { get; set; }
 

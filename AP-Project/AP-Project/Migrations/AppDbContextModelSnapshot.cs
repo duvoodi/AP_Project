@@ -24,11 +24,8 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Classrooms.Classroom", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Building")
                         .IsRequired()
@@ -47,11 +44,8 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Classrooms.TimeSlot", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Day")
                         .IsRequired()
@@ -70,140 +64,140 @@ namespace AP_Project.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 11,
+                            Id = "101",
                             Day = "Saturday",
                             EndTime = new TimeSpan(0, 10, 30, 0, 0),
                             StartTime = new TimeSpan(0, 9, 0, 0, 0)
                         },
                         new
                         {
-                            Id = 12,
+                            Id = "102",
                             Day = "Saturday",
                             EndTime = new TimeSpan(0, 12, 0, 0, 0),
                             StartTime = new TimeSpan(0, 10, 30, 0, 0)
                         },
                         new
                         {
-                            Id = 13,
+                            Id = "103",
                             Day = "Saturday",
                             EndTime = new TimeSpan(0, 16, 0, 0, 0),
                             StartTime = new TimeSpan(0, 14, 30, 0, 0)
                         },
                         new
                         {
-                            Id = 14,
+                            Id = "104",
                             Day = "Saturday",
                             EndTime = new TimeSpan(0, 17, 30, 0, 0),
                             StartTime = new TimeSpan(0, 16, 0, 0, 0)
                         },
                         new
                         {
-                            Id = 21,
+                            Id = "201",
                             Day = "Sunday",
                             EndTime = new TimeSpan(0, 10, 30, 0, 0),
                             StartTime = new TimeSpan(0, 9, 0, 0, 0)
                         },
                         new
                         {
-                            Id = 22,
+                            Id = "202",
                             Day = "Sunday",
                             EndTime = new TimeSpan(0, 12, 0, 0, 0),
                             StartTime = new TimeSpan(0, 10, 30, 0, 0)
                         },
                         new
                         {
-                            Id = 23,
+                            Id = "203",
                             Day = "Sunday",
                             EndTime = new TimeSpan(0, 16, 0, 0, 0),
                             StartTime = new TimeSpan(0, 14, 30, 0, 0)
                         },
                         new
                         {
-                            Id = 24,
+                            Id = "204",
                             Day = "Sunday",
                             EndTime = new TimeSpan(0, 17, 30, 0, 0),
                             StartTime = new TimeSpan(0, 16, 0, 0, 0)
                         },
                         new
                         {
-                            Id = 31,
+                            Id = "301",
                             Day = "Monday",
                             EndTime = new TimeSpan(0, 10, 30, 0, 0),
                             StartTime = new TimeSpan(0, 9, 0, 0, 0)
                         },
                         new
                         {
-                            Id = 32,
+                            Id = "302",
                             Day = "Monday",
                             EndTime = new TimeSpan(0, 12, 0, 0, 0),
                             StartTime = new TimeSpan(0, 10, 30, 0, 0)
                         },
                         new
                         {
-                            Id = 33,
+                            Id = "303",
                             Day = "Monday",
                             EndTime = new TimeSpan(0, 16, 0, 0, 0),
                             StartTime = new TimeSpan(0, 14, 30, 0, 0)
                         },
                         new
                         {
-                            Id = 34,
+                            Id = "304",
                             Day = "Monday",
                             EndTime = new TimeSpan(0, 17, 30, 0, 0),
                             StartTime = new TimeSpan(0, 16, 0, 0, 0)
                         },
                         new
                         {
-                            Id = 41,
+                            Id = "401",
                             Day = "Tuesday",
                             EndTime = new TimeSpan(0, 10, 30, 0, 0),
                             StartTime = new TimeSpan(0, 9, 0, 0, 0)
                         },
                         new
                         {
-                            Id = 42,
+                            Id = "402",
                             Day = "Tuesday",
                             EndTime = new TimeSpan(0, 12, 0, 0, 0),
                             StartTime = new TimeSpan(0, 10, 30, 0, 0)
                         },
                         new
                         {
-                            Id = 43,
+                            Id = "403",
                             Day = "Tuesday",
                             EndTime = new TimeSpan(0, 16, 0, 0, 0),
                             StartTime = new TimeSpan(0, 14, 30, 0, 0)
                         },
                         new
                         {
-                            Id = 44,
+                            Id = "404",
                             Day = "Tuesday",
                             EndTime = new TimeSpan(0, 17, 30, 0, 0),
                             StartTime = new TimeSpan(0, 16, 0, 0, 0)
                         },
                         new
                         {
-                            Id = 51,
+                            Id = "501",
                             Day = "Wednesday",
                             EndTime = new TimeSpan(0, 10, 30, 0, 0),
                             StartTime = new TimeSpan(0, 9, 0, 0, 0)
                         },
                         new
                         {
-                            Id = 52,
+                            Id = "502",
                             Day = "Wednesday",
                             EndTime = new TimeSpan(0, 12, 0, 0, 0),
                             StartTime = new TimeSpan(0, 10, 30, 0, 0)
                         },
                         new
                         {
-                            Id = 53,
+                            Id = "503",
                             Day = "Wednesday",
                             EndTime = new TimeSpan(0, 16, 0, 0, 0),
                             StartTime = new TimeSpan(0, 14, 30, 0, 0)
                         },
                         new
                         {
-                            Id = 54,
+                            Id = "504",
                             Day = "Wednesday",
                             EndTime = new TimeSpan(0, 17, 30, 0, 0),
                             StartTime = new TimeSpan(0, 16, 0, 0, 0)
@@ -212,11 +206,8 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Courses.Course", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -244,11 +235,11 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Courses.Prerequisite", b =>
                 {
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
+                    b.Property<string>("CourseId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("PrerequisiteCourseId")
-                        .HasColumnType("int");
+                    b.Property<string>("PrerequisiteCourseId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("CourseId", "PrerequisiteCourseId");
 
@@ -259,24 +250,24 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Courses.Section", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("ClassroomId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ClassroomId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
+                    b.Property<string>("CourseId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Semester")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TimeSlotId")
-                        .HasColumnType("int");
+                    b.Property<string>("TimeSlotId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
@@ -294,11 +285,11 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Courses.Takes", b =>
                 {
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<string>("StudentId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("SectionId")
-                        .HasColumnType("int");
+                    b.Property<string>("SectionId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Grade")
                         .IsRequired()
@@ -313,11 +304,11 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Courses.Teaches", b =>
                 {
-                    b.Property<int>("InstructorId")
-                        .HasColumnType("int");
+                    b.Property<string>("InstructorId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("SectionId")
-                        .HasColumnType("int");
+                    b.Property<string>("SectionId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("InstructorId", "SectionId");
 
@@ -328,11 +319,8 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Users.Role", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -345,11 +333,8 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Users.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -386,11 +371,11 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Users.UserRole", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -413,8 +398,9 @@ namespace AP_Project.Migrations
                     b.Property<DateTime>("HireDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("InstructorId")
-                        .HasColumnType("int");
+                    b.Property<string>("InstructorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Salary")
                         .HasColumnType("decimal(18,2)");
@@ -429,8 +415,9 @@ namespace AP_Project.Migrations
                     b.Property<DateTime>("EnrollmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Student");
                 });

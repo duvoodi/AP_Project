@@ -4,7 +4,7 @@ namespace AP_Project.Models.Classrooms
 {
     public class TimeSlot
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Day { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }

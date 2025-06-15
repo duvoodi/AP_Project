@@ -4,8 +4,8 @@ namespace AP_Project.Models.Courses
 {
     public class Teaches
     {
-        public int InstructorId { get; set; }
-        public int SectionId { get; set; }
+        public string InstructorId { get; set; }
+        public string SectionId { get; set; }
 
         public Instructor Instructor { get; set; }
         public Section Section { get; set; }
