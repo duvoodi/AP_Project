@@ -1,7 +1,17 @@
-﻿@{
-    Layout = "_LayoutHeader";
-}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AP_Project</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    @if (ViewData["HeaderPartial"] != null)
+    {
+        @await Html.PartialAsync(ViewData["HeaderPartial"].ToString())
+    }
 
-<div class="main-content">
     @RenderBody()
-</div>
+</body>
+</html>

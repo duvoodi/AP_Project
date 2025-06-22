@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using AP_Project.Data;
 using AP_Project.Models.Users;
 
@@ -12,7 +12,16 @@ namespace AP_Project.Controllers
             => _db = db;
 
         [HttpGet]
-        public IActionResult Index() => View();
+        public IActionResult Index()
+        {
+            if (TempData["LoginError"] != null)
+            {
+                ModelState.AddModelError("", TempData["LoginError"].ToString());
+            }
+
+            ViewData["HeaderPartial"] = "_LoginHeaderPartial";
+            return View();
+        }
 
         [HttpPost]
         public IActionResult Index(int userId, string password)
@@ -40,10 +49,9 @@ namespace AP_Project.Controllers
             if (student != null)
                 return RedirectToAction("Index", "StudentDashboard");
 
-            // اگه به هیچکدوم نخورد، لاگین ناموفق
-            ModelState.AddModelError("", "Invalid username or password...");
-            return View();
-        }
+            // اگر لاگین ناموفق بود
+            TempData["LoginError"] = "نام کاربری یا رمز عبور اشتباه است.";
+            return RedirectToAction("Index");
+            }
     }
 }
-
