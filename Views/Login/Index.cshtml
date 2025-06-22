@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = "_LayoutLogin";
+}
+
+<form method="post" asp-controller="Login" asp-action="Index">
+    <label for="userId">Username:</label>
+    <input type="number" id="userId" name="userId" required />
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required />
+
+    <button type="submit">Login</button>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <p style="color:red;">Invalid username or password...</p>
+}
+
+<footer>
+    <p>پروژه AP | کوشا مجلسی | امیر محمد داودی</p>
+    <p><a href="https://github.com/duvoodi/AP_Project/" target="_blank">لینک ریپازیتوری گیت هاب پروژه</a></p>
+</footer>

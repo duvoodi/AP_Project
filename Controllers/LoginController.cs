@@ -1,0 +1,49 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using AP_Project.Data;
+using AP_Project.Models.Users;
+
+namespace AP_Project.Controllers
+{
+    public class LoginController : Controller
+    {
+        private readonly AppDbContext _db;
+
+        public LoginController(AppDbContext db)
+            => _db = db;
+
+        [HttpGet]
+        public IActionResult Index() => View();
+
+        [HttpPost]
+        public IActionResult Index(int userId, string password)
+        {
+            var hashedInputPassword = ComputeHash.Sha1(password);
+
+            // بررسی در جدول Admin
+            var admin = _db.Set<Admin>()
+                .FirstOrDefault(a => a.AdminId == userId && a.HashedPassword == hashedInputPassword);
+
+            if (admin != null)
+                return RedirectToAction("Index", "AdminDashboard");
+
+            // بررسی در جدول Instructor
+            var instructor = _db.Set<Instructor>()
+                .FirstOrDefault(i => i.InstructorId == userId && i.HashedPassword == hashedInputPassword);
+
+            if (instructor != null)
+                return RedirectToAction("Index", "InstructorDashboard");
+
+            // بررسی در جدول Student
+            var student = _db.Set<Student>()
+                .FirstOrDefault(s => s.StudentId == userId && s.HashedPassword == hashedInputPassword);
+
+            if (student != null)
+                return RedirectToAction("Index", "StudentDashboard");
+
+            // اگه به هیچکدوم نخورد، لاگین ناموفق
+            ModelState.AddModelError("", "Invalid username or password...");
+            return View();
+        }
+    }
+}
+
