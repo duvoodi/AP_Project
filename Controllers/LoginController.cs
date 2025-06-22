@@ -21,6 +21,13 @@ namespace AP_Project.Controllers
 
             return View();
         }
+        
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
+        }
 
         [HttpPost]
         public IActionResult Index(int userId, string password)
