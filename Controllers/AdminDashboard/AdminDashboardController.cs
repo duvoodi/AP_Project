@@ -13,12 +13,11 @@ namespace AP_Project.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            int? adminId = HttpContext.Session.GetInt32("AdminId");
+            var adminId = HttpContext.Session.GetInt32("AdminId");
             if (adminId == null)
                 return RedirectToAction("Index", "Login");
 
-            var admin = _db.Set<Admin>()
-                .FirstOrDefault(a => a.AdminId == adminId.Value);
+            var admin = _db.Set<Admin>().FirstOrDefault(a => a.AdminId == adminId.Value);
             if (admin == null)
                 return RedirectToAction("Index", "Login");
 
