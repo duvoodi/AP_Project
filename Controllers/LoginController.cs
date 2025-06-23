@@ -21,7 +21,7 @@ namespace AP_Project.Controllers
 
             return View();
         }
-        
+
         [HttpGet]
         public IActionResult Logout()
         {

@@ -2,7 +2,6 @@ using AP_Project.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Session;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -17,7 +16,6 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
