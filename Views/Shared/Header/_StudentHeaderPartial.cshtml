@@ -1,0 +1,15 @@
+@model AP_Project.Models.Users.Student
+<header class="student-header">
+  <div class="header-title">
+    <h1>داشبورد دانشجو</h1>
+  </div>
+  <div class="header-actions">
+    <span class="student-name">@Model.FirstName @Model.LastName</span>
+    <div class="nav-links">
+      <a asp-controller="StudentCoursesList" asp-action="Index" asp-route-studentId="@Model.StudentId" class="@(ViewData["ActiveTab"]?.ToString()=="CoursesList"?"active":"")">لیست دروس</a>
+      <a asp-controller="Transcripts" asp-action="Index" asp-route-studentId="@Model.StudentId" class="@(ViewData["ActiveTab"]?.ToString()=="Transcripts"?"active":"")">مشاهده ریز نمرات</a>
+      <a asp-controller="FullInformation" asp-action="Index" asp-route-studentId="@Model.StudentId" class="@(ViewData["ActiveTab"]?.ToString()=="FullInformation"?"active":"")">اطلاعات جامع دانشجو</a>
+      <a asp-controller="Login" asp-action="Logout">خروج</a>
+    </div>
+  </div>
+</header>
