@@ -19,8 +19,14 @@ namespace AP_Project.Controllers
                 ModelState.AddModelError("", TempData["LoginError"].ToString());
             }
 
-            ViewData["HeaderPartial"] = "_LoginHeaderPartial";
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -33,21 +39,30 @@ namespace AP_Project.Controllers
                 .FirstOrDefault(a => a.AdminId == userId && a.HashedPassword == hashedInputPassword);
 
             if (admin != null)
+            {
+                HttpContext.Session.SetInt32("AdminId", admin.AdminId);
                 return RedirectToAction("Index", "AdminDashboard");
+            }
 
             // بررسی در جدول Instructor
             var instructor = _db.Set<Instructor>()
                 .FirstOrDefault(i => i.InstructorId == userId && i.HashedPassword == hashedInputPassword);
 
             if (instructor != null)
+            {
+                HttpContext.Session.SetInt32("InstructorId", instructor.InstructorId);
                 return RedirectToAction("Index", "InstructorDashboard");
+            }
 
             // بررسی در جدول Student
             var student = _db.Set<Student>()
                 .FirstOrDefault(s => s.StudentId == userId && s.HashedPassword == hashedInputPassword);
 
             if (student != null)
+            {
+                HttpContext.Session.SetInt32("StudentId", student.StudentId);
                 return RedirectToAction("Index", "StudentDashboard");
+            }
 
             // اگر لاگین ناموفق بود
             TempData["LoginError"] = "نام کاربری یا رمز عبور اشتباه است.";

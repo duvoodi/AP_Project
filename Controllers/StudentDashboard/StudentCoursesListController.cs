@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace AP_Project.Controllers
 {
-    public class StudentDashboardController : Controller
+    public class StudentCoursesListController : Controller
     {
         private readonly AppDbContext _db;
-        public StudentDashboardController(AppDbContext db) => _db = db;
+        public StudentCoursesListController(AppDbContext db) => _db = db;
 
         [HttpGet]
         public IActionResult Index()
@@ -21,7 +21,8 @@ namespace AP_Project.Controllers
             if (student == null)
                 return RedirectToAction("Index", "Login");
 
-            return View("Index", student);
+            ViewData["ActiveTab"] = "CoursesList";
+            return View("~/Views/StudentDashboard/CoursesList.cshtml", student);
         }
     }
 }

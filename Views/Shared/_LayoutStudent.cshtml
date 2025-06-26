@@ -1,0 +1,16 @@
+@model AP_Project.Models.Users.Student
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/student.css" asp-append-version="true" />
+</head>
+<body>
+    @await Html.PartialAsync("~/Views/Shared/Header/_StudentHeaderPartial.cshtml", Model)
+    <main class="student-main">
+        @RenderBody()
+    </main>
+</body>
+</html>

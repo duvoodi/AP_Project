@@ -1,0 +1,18 @@
+@model AP_Project.Models.Users.Admin
+@{
+    ViewData["Title"] = "داشبورد ادمین";
+    Layout = "_LayoutAdmin";
+    ViewData["ActiveTab"] = null;
+    var hasFooter = true;
+}
+
+<main class="admin-main @(hasFooter ? "has-footer" : "has-not-footer")">
+        <!-- محتوای پیش‌فرض -->
+</main>
+
+@if (hasFooter)
+{
+    <footer class="admin-footer">
+        <p>لطفا یکی از سربرگ‌ها را انتخاب کنید</p>
+    </footer>
+}

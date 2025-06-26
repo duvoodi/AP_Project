@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace AP_Project.Controllers
 {
-    public class AdminDashboardController : Controller
+    public class CourseManagementController : Controller
     {
         private readonly AppDbContext _db;
-        public AdminDashboardController(AppDbContext db) => _db = db;
+        public CourseManagementController(AppDbContext db) => _db = db;
 
         [HttpGet]
         public IActionResult Index()
@@ -21,7 +21,8 @@ namespace AP_Project.Controllers
             if (admin == null)
                 return RedirectToAction("Index", "Login");
 
-            return View(admin);
+            ViewData["ActiveTab"] = "Course";
+            return View("~/Views/AdminDashboard/Course.cshtml", admin);
         }
     }
 }

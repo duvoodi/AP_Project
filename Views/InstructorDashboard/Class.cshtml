@@ -1,0 +1,19 @@
+@model AP_Project.Models.Users.Instructor
+@{
+    ViewData["Title"] = "داشبورد استاد";
+    Layout = "_LayoutInstructor";
+    ViewData["ActiveTab"] = "Class";
+    var hasFooter = false;
+}
+
+<main class="instructor-main @(hasFooter ? "has-footer" : "has-not-footer")">
+    <h2 class="page-title">مدیریت کلاس‌ها</h2>
+    <!-- محتوای مدیریت کلاس‌ها -->
+</main>
+
+@if (hasFooter)
+{
+    <footer class="instructor-footer">
+        <p>متن فوتر</p>
+    </footer>
+}

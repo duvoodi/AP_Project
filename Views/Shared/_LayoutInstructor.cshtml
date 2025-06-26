@@ -1,0 +1,16 @@
+@model AP_Project.Models.Users.Instructor
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/instructor.css" asp-append-version="true" />
+</head>
+<body>
+    @await Html.PartialAsync("~/Views/Shared/Header/_InstructorHeaderPartial.cshtml", Model)
+    <main class="instructor-main">
+        @RenderBody()
+    </main>
+</body>
+</html>
