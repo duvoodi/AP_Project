@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_LayoutLogin";
+
+                ViewData["HeaderPartial"] = "_LoginHeaderPartial";
+}
+
+<link rel="stylesheet" href="~/css/login.css" />
+
+<div class="login-container">
+    <h2>صفحه ورود</h2>
+    <form method="post" asp-controller="Login" asp-action="Index">
+        <label for="userId">نام کاربری</label>
+        <input type="number" id="userId" name="userId" required />
+
+        <label for="password">رمز عبور</label>
+        <input type="password" id="password" name="password" required />
+
+        <button type="submit" title="برای ورود، نام کاربری و رمز عبور خود را وارد کرده و کلیک کنید.">
+            ورود
+        </button>
+
+    </form>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p class="error-message">@error.ErrorMessage</p>
+        }
+    }
+
+    <footer>
+        <p>پروژه AP | کوشا مجلسی | امیر محمد داودی</p>
+        <p><a href="https://github.com/duvoodi/AP_Project/" target="_blank">لینک ریپازیتوری گیت هاب پروژه</a></p>
+    </footer>
+</div>
+
+<script>
+    const userId = document.getElementById("userId");
+    const password = document.getElementById("password");
+
+    userId.addEventListener("invalid", function () {
+        if (!userId.value) {
+            userId.setCustomValidity("لطفاً نام کاربری را وارد کنید.");
+        }
+    });
+
+    userId.addEventListener("input", function () {
+        userId.setCustomValidity("");
+    });
+
+    password.addEventListener("invalid", function () {
+        if (!password.value) {
+            password.setCustomValidity("لطفاً رمز عبور را وارد کنید.");
+        }
+    });
+
+    password.addEventListener("input", function () {
+        password.setCustomValidity("");
+    });
+</script>
