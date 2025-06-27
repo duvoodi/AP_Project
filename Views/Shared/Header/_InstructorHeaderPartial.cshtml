@@ -13,7 +13,7 @@
         var activeTab = ViewData["ActiveTab"]?.ToString();
       }
 
-      <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-instructorId="@hashedId" class="@(ViewData["ActiveTab"]?.ToString()=="Class"?"active":"")">مدیریت کلاس‌ها</a>
+      <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString()=="Class"?"active":"")">مدیریت کلاس‌ها</a>
       <a asp-controller="Login" asp-action="Logout">خروج</a>
     </div>
   </div>

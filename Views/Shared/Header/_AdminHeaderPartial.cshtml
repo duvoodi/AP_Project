@@ -13,10 +13,10 @@
         var activeTab = ViewData["ActiveTab"]?.ToString();
       }
 
-      <a asp-controller="InstructorManagement" asp-action="Index" asp-route-adminId="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Instructor" ? "active" : "")">مدیریت اساتید</a>
-      <a asp-controller="StudentManagement" asp-action="Index" asp-route-adminId="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Student" ? "active" : "")">مدیریت دانشجویان</a>
-      <a asp-controller="CourseManagement" asp-action="Index" asp-route-adminId="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Course" ? "active" : "")">مدیریت دروس</a>
-      <a asp-controller="ClassManagement" asp-action="Index" asp-route-adminId="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Class" ? "active" : "")">مدیریت کلاس‌ها</a>
+      <a asp-controller="InstructorManagement" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Instructor" ? "active" : "")">مدیریت اساتید</a>
+      <a asp-controller="StudentManagement" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Student" ? "active" : "")">مدیریت دانشجویان</a>
+      <a asp-controller="CourseManagement" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Course" ? "active" : "")">مدیریت دروس</a>
+      <a asp-controller="ClassManagement" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Class" ? "active" : "")">مدیریت کلاس‌ها</a>
       <a asp-controller="Login" asp-action="Logout">خروج</a>
     </div>
   </div>
