@@ -1,4 +1,6 @@
 @model AP_Project.Models.Users.Admin
+@using AP_Project.Data
+
 <header class="admin-header">
   <div class="header-title">
     <h1>داشبورد ادمین</h1>
@@ -6,10 +8,15 @@
   <div class="header-actions">
     <span class="admin-name">@Model.FirstName @Model.LastName</span>
     <div class="nav-links">
-      <a asp-controller="InstructorManagement" asp-action="Index" asp-route-adminId="@Model.AdminId" class="@(ViewData["ActiveTab"]?.ToString()=="Instructor"?"active":"")">مدیریت اساتید</a>
-      <a asp-controller="StudentManagement" asp-action="Index" asp-route-adminId="@Model.AdminId" class="@(ViewData["ActiveTab"]?.ToString()=="Student"?"active":"")">مدیریت دانشجویان</a>
-      <a asp-controller="CourseManagement" asp-action="Index" asp-route-adminId="@Model.AdminId" class="@(ViewData["ActiveTab"]?.ToString()=="Course"?"active":"")">مدیریت دروس</a>
-      <a asp-controller="ClassManagement" asp-action="Index" asp-route-adminId="@Model.AdminId" class="@(ViewData["ActiveTab"]?.ToString()=="Class"?"active":"")">مدیریت کلاس‌ها</a>
+      @{
+        var hashedId = ComputeHash.Sha1(Model.AdminId.ToString());
+        var activeTab = ViewData["ActiveTab"]?.ToString();
+      }
+
+      <a asp-controller="InstructorManagement" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Instructor" ? "active" : "")">مدیریت اساتید</a>
+      <a asp-controller="StudentManagement" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Student" ? "active" : "")">مدیریت دانشجویان</a>
+      <a asp-controller="CourseManagement" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Course" ? "active" : "")">مدیریت دروس</a>
+      <a asp-controller="ClassManagement" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString() == "Class" ? "active" : "")">مدیریت کلاس‌ها</a>
       <a asp-controller="Login" asp-action="Logout">خروج</a>
     </div>
   </div>

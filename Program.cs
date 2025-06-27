@@ -1,4 +1,5 @@
 using AP_Project.Data;
+using AP_Project.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Session;
 
@@ -33,6 +34,8 @@ app.UseRouting();
 app.UseSession();
 
 app.UseAuthorization();
+
+app.UseMiddleware<NoCacheMiddleware>();
 
 app.MapControllerRoute(
     name: "default",
