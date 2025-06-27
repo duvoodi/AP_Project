@@ -8,12 +8,22 @@ namespace AP_Project.Controllers
     {
         private readonly AppDbContext _db;
 
-        public LoginController(AppDbContext db)
-            => _db = db;
+        public LoginController(AppDbContext db) => _db = db;
 
         [HttpGet]
         public IActionResult Index()
         {
+            // اگر قبلاً لاگین کرده و Session فعال است، به داشبورد منتقل شود
+            if (HttpContext.Session.GetInt32("AdminId") != null)
+                return RedirectToAction("Index", "AdminDashboard");
+
+            if (HttpContext.Session.GetInt32("InstructorId") != null)
+                return RedirectToAction("Index", "InstructorDashboard");
+
+            if (HttpContext.Session.GetInt32("StudentId") != null)
+                return RedirectToAction("Index", "StudentDashboard");
+
+            // اگر خطای لاگین وجود دارد، نمایش داده شود
             if (TempData["LoginError"] != null)
             {
                 ModelState.AddModelError("", TempData["LoginError"].ToString());
@@ -21,6 +31,23 @@ namespace AP_Project.Controllers
 
             return View();
         }
+
+        [HttpGet]
+        public IActionResult CheckSession()
+        //  اکشن ای جی ای ایکس برای برگرداندن سشن فعلی
+        {
+            if (HttpContext.Session.GetInt32("AdminId") != null)
+                return Json(new { role = "admin", id = HttpContext.Session.GetInt32("AdminId") });
+
+            if (HttpContext.Session.GetInt32("InstructorId") != null)
+                return Json(new { role = "instructor", id = HttpContext.Session.GetInt32("InstructorId") });
+
+            if (HttpContext.Session.GetInt32("StudentId") != null)
+                return Json(new { role = "student", id = HttpContext.Session.GetInt32("StudentId") });
+
+            return Json(new { role = "none" });
+        }
+
 
         [HttpGet]
         public IActionResult Logout()
@@ -40,8 +67,10 @@ namespace AP_Project.Controllers
 
             if (admin != null)
             {
+                HttpContext.Session.Clear(); // سشن ها قبلی اگر اشتباهی باز هست ببندد
                 HttpContext.Session.SetInt32("AdminId", admin.AdminId);
-                return RedirectToAction("Index", "AdminDashboard");
+                return View("~/Views/Login/redirect.cshtml");
+                // میره صفحه ریدایرکت و از اونجا میره داشبورد  تا با بک زدن از صفحه داشبورد به صفحه لاگین کش شده نره            }
             }
 
             // بررسی در جدول Instructor
@@ -50,8 +79,10 @@ namespace AP_Project.Controllers
 
             if (instructor != null)
             {
+                HttpContext.Session.Clear(); // سشن ها قبلی اگر اشتباهی باز هست ببندد
                 HttpContext.Session.SetInt32("InstructorId", instructor.InstructorId);
-                return RedirectToAction("Index", "InstructorDashboard");
+                return View("~/Views/Login/redirect.cshtml");
+                // میره صفحه ریدایرکت و از اونجا میره داشبورد  تا با بک زدن از صفحه داشبورد به صفحه لاگین کش شده نره            }
             }
 
             // بررسی در جدول Student
@@ -60,13 +91,16 @@ namespace AP_Project.Controllers
 
             if (student != null)
             {
+                HttpContext.Session.Clear(); // سشن ها قبلی اگر اشتباهی باز هست ببندد
                 HttpContext.Session.SetInt32("StudentId", student.StudentId);
-                return RedirectToAction("Index", "StudentDashboard");
+                return View("~/Views/Login/redirect.cshtml");
+                // میره صفحه ریدایرکت و از اونجا میره داشبورد  تا با بک زدن از صفحه داشبورد به صفحه لاگین کش شده نره
             }
 
             // اگر لاگین ناموفق بود
             TempData["LoginError"] = "نام کاربری یا رمز عبور اشتباه است.";
             return RedirectToAction("Index");
-            }
+            
+        }
     }
 }

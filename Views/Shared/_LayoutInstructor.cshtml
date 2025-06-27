@@ -14,3 +14,56 @@
     </main>
 </body>
 </html>
+
+<script>
+    const validAdminPages = [
+        '/admindashboard/index',
+        '/instructormanagement',
+        '/studentmanagement',
+        '/coursemanagement',
+        '/classmanagement'
+    ];
+
+    const validInstructorPages = [
+        '/instructordashboard/index',
+        '/instructorclassmanagement'
+    ];
+
+    const validStudentPages = [
+        '/studentdashboard/index',
+        '/studentcourseslist',
+        '/transcripts',
+        '/fullinformation'
+    ];
+
+    function normalizePath(path) {
+        return path.toLowerCase().split('?')[0].replace(/\/+$/, '');
+    }
+
+    setInterval(() => {
+        fetch('/Login/CheckSession')
+            .then(res => res.json())
+            .then(data => {
+                const path = normalizePath(window.location.pathname);
+                const isAdminPage = validAdminPages.includes(path);
+                const isInstructorPage = validInstructorPages.includes(path);
+                const isStudentPage = validStudentPages.includes(path);
+
+                if (data.role === 'none') {
+                    window.location.href = '/Login/Index';
+                } else if (data.role === 'admin' && !isAdminPage) {
+                    window.location.href = `/AdminDashboard/Index?adminId=${data.id}`;
+                } else if (data.role === 'instructor' && !isInstructorPage) {
+                    window.location.href = `/InstructorDashboard/Index?instructorId=${data.id}`;
+                } else if (data.role === 'student' && !isStudentPage) {
+                    window.location.href = `/StudentDashboard/Index?studentId=${data.id}`;
+                }
+                // در غیر این صورت، نقش و صفحه مطابق هستند کاری نکن
+            });
+        }, 200); // هر 200 میلی ثانیه
+    /*این مدام چک میکند که سشن فعال با سشن صفحه فعلی یکی باشد
+    اگر سشن فعال متفاوت از سشن این صفحه هست به داشبورد سشن فعال برود
+    اگر سشنی هم فعال نیست بلافاصله به صفحه لاگین برود
+    (این چک بیشتر زمانی بکار میاید که صفحه قدیمی از طریق بک زدن و از کش مرور گر باز شود)
+    (همچنین اگر سشن صفحه منقضی شود بلافاصله خودش به صفحه لاگین میرود و اطلاعات شخص فاش نمیشود)*/
+</script>
