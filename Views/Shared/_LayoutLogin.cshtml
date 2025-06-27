@@ -15,7 +15,7 @@
 
 <script>
     setInterval(() => {
-        fetch('/Login/CheckSession')
+        fetch('/Login/CheckSession?hashed=true', { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if (data.role === 'admin') {
@@ -26,6 +26,6 @@
                     window.location.href = `/StudentDashboard/Index?studentId=${data.id}`;
                 }
             });
-    }, 100); // هر 100 میلی ثانیه
+    }, 1000); // هر 1 ثانیه تا فشار به سرور نیاد
     // تا اگر صفحه‌ی لاگین از کش لود شد یا صفحه ریدایرکت باز شد بلافاصله به داشبورد سشن صحیح بره
 </script>

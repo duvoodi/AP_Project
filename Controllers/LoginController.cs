@@ -33,21 +33,30 @@ namespace AP_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult CheckSession()
-        //  اکشن ای جی ای ایکس برای برگرداندن سشن فعلی
+        public IActionResult CheckSession(bool hashed)
+        //  اکشن ای جی ای ایکس برای برگرداندن رول و استرینگ آی دی یا هش سشن فعلی
         {
-            if (HttpContext.Session.GetInt32("AdminId") != null)
-                return Json(new { role = "admin", id = HttpContext.Session.GetInt32("AdminId") });
-
-            if (HttpContext.Session.GetInt32("InstructorId") != null)
-                return Json(new { role = "instructor", id = HttpContext.Session.GetInt32("InstructorId") });
-
-            if (HttpContext.Session.GetInt32("StudentId") != null)
-                return Json(new { role = "student", id = HttpContext.Session.GetInt32("StudentId") });
-
+            string hash = "";
+            if (HttpContext.Session.GetInt32("AdminId") is int adminId)
+            {
+                if (hashed)
+                    hash = ComputeHash.Sha1(adminId.ToString());
+                return Json(new { role = "admin", id = hashed ? hash : adminId.ToString() });
+            }
+            else if (HttpContext.Session.GetInt32("InstructorId") is int instructorId)
+            {
+                if (hashed)
+                    hash = ComputeHash.Sha1(instructorId.ToString());
+                return Json(new { role = "instructor", id = hashed ? hash : instructorId.ToString() });
+            }
+            else if (HttpContext.Session.GetInt32("StudentId") is int studentId)
+            {
+                if (hashed)
+                    hash = ComputeHash.Sha1(studentId.ToString());
+                return Json(new { role = "student", id = hashed ? hash : studentId.ToString() });
+            }
             return Json(new { role = "none" });
         }
-
 
         [HttpGet]
         public IActionResult Logout()

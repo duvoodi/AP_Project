@@ -1,4 +1,6 @@
 @model AP_Project.Models.Users.Instructor
+@using AP_Project.Data
+
 <header class="instructor-header">
   <div class="header-title">
     <h1>داشبورد استاد</h1>
@@ -6,7 +8,12 @@
   <div class="header-actions">
     <span class="instructor-name">@Model.FirstName @Model.LastName</span>
     <div class="nav-links">
-      <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-instructorId="@Model.InstructorId" class="@(ViewData["ActiveTab"]?.ToString()=="Class"?"active":"")">مدیریت کلاس‌ها</a>
+      @{
+        var hashedId = ComputeHash.Sha1(Model.InstructorId.ToString());
+        var activeTab = ViewData["ActiveTab"]?.ToString();
+      }
+
+      <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-instructorId="@hashedId" class="@(ViewData["ActiveTab"]?.ToString()=="Class"?"active":"")">مدیریت کلاس‌ها</a>
       <a asp-controller="Login" asp-action="Logout">خروج</a>
     </div>
   </div>
