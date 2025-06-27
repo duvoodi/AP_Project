@@ -14,14 +14,11 @@ namespace AP_Project.Controllers
         public IActionResult Index()
         {
             // اگر قبلاً لاگین کرده و Session فعال است، به داشبورد منتقل شود
-            if (HttpContext.Session.GetInt32("AdminId") != null)
-                return RedirectToAction("Index", "AdminDashboard");
+            if (HttpContext.Session.GetInt32("AdminId") != null
+            || HttpContext.Session.GetInt32("InstructorId") != null
+            || HttpContext.Session.GetInt32("StudentId") != null)
 
-            if (HttpContext.Session.GetInt32("InstructorId") != null)
-                return RedirectToAction("Index", "InstructorDashboard");
-
-            if (HttpContext.Session.GetInt32("StudentId") != null)
-                return RedirectToAction("Index", "StudentDashboard");
+                return View("~/Views/Login/redirect.cshtml");
 
             // اگر خطای لاگین وجود دارد، نمایش داده شود
             if (TempData["LoginError"] != null)

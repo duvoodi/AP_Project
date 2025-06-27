@@ -8,3 +8,23 @@
 <div class="login-container">
     <h2>درحال انتقال...</h2>
 </div>
+
+<script>
+    fetch('/Login/CheckSession?hashed=true')
+        .then(res => res.json())
+        .then(data => {
+            if (data.role === 'none') {
+                window.location.href = `/Login/Index`;
+            } else if (data.role === 'admin') {
+                window.location.href = `/AdminDashboard/Index?adminId=${data.id}`;
+            } else if (data.role === 'instructor') {
+                window.location.href = `/InstructorDashboard/Index?instructorId=${data.id}`;
+            } else if (data.role === 'student') {
+                window.location.href = `/StudentDashboard/Index?studentId=${data.id}`;
+            }
+        });
+    // با اجرا بی درنگ این اسکریپت از برگشت به صفحه لاگین و داشبورد ها قبلی که کش شدند با دکمه بک جلوگیری می‌شود
+    // اگر هم صفحه لاگین با آدرس  فراخوانی شود اول کنترلرش چک می‌کند و سشن فعال داشته باشیم صفحه ریدایرکت را باز میکند
+    // اگر هم صفحات داشبورد با آدرس فراخوانی شوند اول کنترلر همشون سشن رو چک میکند نه آدرس رو، سشن مربوط بود و اوکی بود صفحه رو لود میکنند
+    // وگرنه به لاگین میفرستند تا به صفحه درست ببره
+</script>

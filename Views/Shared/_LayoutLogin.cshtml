@@ -12,20 +12,3 @@
     @RenderBody()
 </body>
 </html>
-
-<script>
-    setInterval(() => {
-        fetch('/Login/CheckSession?hashed=true', { cache: 'no-store' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.role === 'admin') {
-                    window.location.href = `/AdminDashboard/Index?adminId=${data.id}`;
-                } else if (data.role === 'instructor') {
-                    window.location.href = `/InstructorDashboard/Index?instructorId=${data.id}`;
-                } else if (data.role === 'student') {
-                    window.location.href = `/StudentDashboard/Index?studentId=${data.id}`;
-                }
-            });
-    }, 1000); // هر 1 ثانیه تا فشار به سرور نیاد
-    // تا اگر صفحه‌ی لاگین از کش لود شد یا صفحه ریدایرکت باز شد بلافاصله به داشبورد سشن صحیح بره
-</script>
