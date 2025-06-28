@@ -3,6 +3,7 @@
     Layout = "_LayoutLogin";
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link rel="stylesheet" href="~/css/login.css" />
 
 <div class="login-container">
@@ -12,13 +13,18 @@
         <input type="number" id="userId" name="userId" required />
 
         <label for="password">رمز عبور</label>
-        <input type="password" id="password" name="password" required />
-
+        <div class="password-wrapper">
+            <input type="password" id="password" name="password" required />
+            <input type="text" id="passwordText" required />
+            <button type="button" id="togglePassword" class="toggle-password" aria-label="نمایش/پنهان رمز">
+                <i class="fa fa-eye"></i>
+            </button>
+        </div>
         <button type="submit" title="برای ورود، نام کاربری و رمز عبور خود را وارد کرده و کلیک کنید.">
             ورود
         </button>
-
     </form>
+
     @if (!ViewData.ModelState.IsValid)
     {
         foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
@@ -33,27 +39,31 @@
     </footer>
 </div>
 
-<script>
-    const userId = document.getElementById("userId");
-    const password = document.getElementById("password");
+@section Scripts {
+    <script>
+        const password = document.getElementById("password");
+        const passwordText = document.getElementById("passwordText");
+        const togglePassword = document.getElementById("togglePassword");
 
-    userId.addEventListener("invalid", function () {
-        if (!userId.value) {
-            userId.setCustomValidity("لطفاً نام کاربری را وارد کنید.");
-        }
-    });
+        togglePassword.addEventListener("click", function () {
+            const isHidden = password.style.opacity !== "0";
+            if (isHidden) {
+                password.style.opacity = "0";
+                passwordText.style.opacity = "1";
+                passwordText.value = password.value;
+                passwordText.focus();
+                this.querySelector("i").classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                password.style.opacity = "1";
+                passwordText.style.opacity = "0";
+                password.value = passwordText.value;
+                password.focus();
+                this.querySelector("i").classList.replace("fa-eye-slash", "fa-eye");
+            }
+        });
 
-    userId.addEventListener("input", function () {
-        userId.setCustomValidity("");
-    });
-
-    password.addEventListener("invalid", function () {
-        if (!password.value) {
-            password.setCustomValidity("لطفاً رمز عبور را وارد کنید.");
-        }
-    });
-
-    password.addEventListener("input", function () {
-        password.setCustomValidity("");
-    });
-</script>
+        // Sync value on input
+        password.addEventListener("input", () => passwordText.value = password.value);
+        passwordText.addEventListener("input", () => password.value = passwordText.value);
+    </script>
+}

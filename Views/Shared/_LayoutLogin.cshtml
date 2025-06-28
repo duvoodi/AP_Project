@@ -10,5 +10,8 @@
     @await Html.PartialAsync("Header/_LoginHeaderPartial")
 
     @RenderBody()
+    
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>
