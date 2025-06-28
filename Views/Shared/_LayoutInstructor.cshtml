@@ -1,0 +1,51 @@
+@model AP_Project.Models.Users.Instructor
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/instructor.css" asp-append-version="true" />
+</head>
+<body>
+    @await Html.PartialAsync("~/Views/Shared/Header/_InstructorHeaderPartial.cshtml", Model)
+    <main class="instructor-main">
+        @RenderBody()
+    </main>
+</body>
+</html>
+
+<script>
+    setInterval(() => {
+        fetch('/Login/CheckSession?hashed=true', { cache: 'no-store' })
+            .then(res => res.json())
+            .then(data => {
+                const role = data.role;
+                const sessionHash = data.id;
+
+                if (role === 'none') {
+                    window.location.href = '/Login/Index';
+                    return;
+                }
+
+                const qs = window.location.search;
+                if (!qs) {
+                    window.location.href = '/Login/Index';
+                    return;
+                }
+
+                const [param, hashInUrl] = qs.substring(1).split('=');
+
+                if (hashInUrl !== sessionHash) {
+                    window.location.href = '/Login/Index';
+                    return;
+                }
+            })
+            .catch(() => {
+                window.location.href = '/Login/Index';
+            });
+    }, 5000); // هر 5 ثانیه تا فشار به سرور نیاد
+    // این هر چند ثانیه چک میکند که هش سشن صفحه با هش سشن فعال یکی باشد
+    // اگر متفاوت باشد سشن این صفحه منقضی شده و به صفحه لاگین میرود
+    // اونجا اگر سشن فعال داریم به داشبوردش میرود اگر نداریم صفحه لاگین لود میشود
+</script>
