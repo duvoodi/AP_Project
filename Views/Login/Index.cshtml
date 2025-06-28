@@ -39,31 +39,52 @@
     </footer>
 </div>
 
-@section Scripts {
-    <script>
-        const password = document.getElementById("password");
-        const passwordText = document.getElementById("passwordText");
-        const togglePassword = document.getElementById("togglePassword");
+<script>
+    const userId = document.getElementById("userId");
+    const password = document.getElementById("password");
+    const passwordText = document.getElementById("passwordText");
+    const togglePassword = document.getElementById("togglePassword");
 
-        togglePassword.addEventListener("click", function () {
-            const isHidden = password.style.opacity !== "0";
-            if (isHidden) {
-                password.style.opacity = "0";
-                passwordText.style.opacity = "1";
-                passwordText.value = password.value;
-                passwordText.focus();
-                this.querySelector("i").classList.replace("fa-eye", "fa-eye-slash");
-            } else {
-                password.style.opacity = "1";
-                passwordText.style.opacity = "0";
-                password.value = passwordText.value;
-                password.focus();
-                this.querySelector("i").classList.replace("fa-eye-slash", "fa-eye");
-            }
-        });
+    // اعتبارسنجی فیلدها
+    userId.addEventListener("invalid", function () {
+        if (!userId.value) {
+            userId.setCustomValidity("لطفاً نام کاربری را وارد کنید.");
+        }
+    });
 
-        // Sync value on input
-        password.addEventListener("input", () => passwordText.value = password.value);
-        passwordText.addEventListener("input", () => password.value = passwordText.value);
-    </script>
-}
+    userId.addEventListener("input", function () {
+        userId.setCustomValidity("");
+    });
+
+    password.addEventListener("invalid", function () {
+        if (!password.value) {
+            password.setCustomValidity("لطفاً رمز عبور را وارد کنید.");
+        }
+    });
+
+    password.addEventListener("input", function () {
+        password.setCustomValidity("");
+    });
+
+    // نمایش/مخفی کردن رمز عبور
+    togglePassword.addEventListener("click", function () {
+        const isHidden = password.style.opacity !== "0";
+        if (isHidden) {
+            password.style.opacity = "0";
+            passwordText.style.opacity = "1";
+            passwordText.value = password.value;
+            passwordText.focus();
+            this.querySelector("i").classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+            password.style.opacity = "1";
+            passwordText.style.opacity = "0";
+            password.value = passwordText.value;
+            password.focus();
+            this.querySelector("i").classList.replace("fa-eye-slash", "fa-eye");
+        }
+    });
+
+    // همگام‌سازی مقادیر
+    password.addEventListener("input", () => passwordText.value = password.value);
+    passwordText.addEventListener("input", () => password.value = passwordText.value);
+</script>
