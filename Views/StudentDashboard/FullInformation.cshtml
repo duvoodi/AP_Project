@@ -1,19 +1,19 @@
 @model AP_Project.Models.Users.Student
 @{
-    ViewData["Title"] = "داشبورد دانشجو";
-    Layout = "_LayoutStudent";
-    ViewData["ActiveTab"] = "FullInformation";
-    var hasFooter = false;
+  ViewData["Title"] = "داشبورد دانشجو";
+  Layout = "_LayoutStudent";
+  ViewData["ActiveTab"] = "FullInformation";
+  var hasFooter = false;
 }
 
 <main class="student-main @(hasFooter ? "has-footer" : "has-not-footer")">
-    <h2 class="page-title">اطلاعات جامع</h2>
-    <!-- محتوای اطلاعات جامع -->
+  <h2 class="page-title">اطلاعات جامع</h2>
+  <!-- محتوای اطلاعات جامع -->
 </main>
 
 @if (hasFooter)
 {
-    <footer class="student-footer">
-        <p>متن فوتر</p>
-    </footer>
+  <footer class="student-footer">
+    <p>متن فوتر</p>
+  </footer>
 }
