@@ -1,6 +1,6 @@
 /* ============================
-   FONT
-   ============================ */
+  FONT
+  ============================ */
 @font-face {
   font-family: 'Vazirmatn';
   src: url('/fonts/vazirmatn/Vazirmatn[wght].woff2') format('woff2-variations');
@@ -18,8 +18,8 @@ body {
 }
 
 /* ============================
-   HEADER (fixed top area)
-   ============================ */
+  HEADER (fixed top area)
+  ============================ */
 .student-header {
   margin: 0;
   position: fixed;
@@ -93,13 +93,13 @@ body {
 
 
 /* ============================
-   MAIN CONTENT
-   ============================ */
+  MAIN CONTENT
+  ============================ */
 .student-main {
   padding: 100px 30px 0px;
   background-color: #fff;
   box-sizing: border-box;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 100px);
 }
 
 .student-main.has-footer {
@@ -112,8 +112,8 @@ body {
 
 
 /* ============================
-   FOOTER
-   ============================ */
+  FOOTER
+  ============================ */
 .student-footer {
   position: fixed;
   bottom: 0;

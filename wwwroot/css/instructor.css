@@ -96,10 +96,10 @@ body {
    MAIN CONTENT
    ============================ */
 .instructor-main {
-  padding: 100px 30px 0px;
-  background-color: #fff;
-  box-sizing: border-box;
-  min-height: calc(100vh - 120px);
+    padding: 100px 30px 0px;
+    background-color: #fff;
+    box-sizing: border-box;
+    min-height: calc(100vh - 100px);
 }
 
 .instructor-main.has-footer {
