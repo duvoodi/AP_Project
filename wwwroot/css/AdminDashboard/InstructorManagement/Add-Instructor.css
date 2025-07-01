@@ -1,0 +1,171 @@
+/* فونت و جهت کل صفحه */
+body, html {
+  margin: 0; 
+  padding: 0;
+  min-height: 100vh;
+  font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+  direction: rtl !important;
+  text-align: right !important;
+  background: #fff;
+}
+
+/* کانتینر فرم تمام عرض */
+.form-container {
+  width: 100vw;
+  max-width: 100%;
+  padding: 20px 40px;
+  box-sizing: border-box;
+  background: #fff;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* تب سبز بالای فرم */
+.add-instructor-tab {
+  background-color: #84e291;
+  color: #265C26;
+  border-radius: 18px;
+  padding: 10px 12px;
+  font-size: 24px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(34, 167, 74, 0.15);
+  text-align: right !important;
+  width: fit-content;
+  min-width: 1095px;
+  margin-bottom: 30px;
+  margin-right: 0;
+  margin-left: auto;
+  direction: rtl !important;
+}
+
+/* ردیف‌های فرم */
+.form-row {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  margin-bottom: 18px;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* گروه هر فیلد */
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* لیبل‌ها */
+.form-group label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #156082;
+  margin-bottom: 6px;
+  margin-inline-end: auto;
+  font-family: inherit;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* فیلدهای ورودی */
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #b6d7f7;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: inherit;
+  background: #f7fbff;
+  color: #222;
+  outline: none;
+  box-sizing: border-box;
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+.form-control:focus {
+  border-color: #00b0f0;
+  background: #e6f7ff;
+}
+
+/* پیام خطا */
+.error-message {
+  color: #e74c3c;
+  font-size: 13px;
+  margin-top: 3px;
+  min-height: 18px;
+  text-align: right !important;
+  font-family: inherit;
+  direction: rtl !important;
+}
+
+/* دکمه‌های فرم */
+.btn-submit, .btn-cancel {
+  border: none;
+  border-radius: 22px;
+  padding: 12px 38px;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px rgba(0, 112, 192, 0.12);
+  outline: none;
+  margin-left: 12px;
+  margin-right: 0;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.btn-submit {
+  background-color: #84e291;
+  color: #265C26;
+}
+
+.btn-submit:hover,
+.btn-submit:focus {
+  background-color: #22a74a;
+  color: #fff;
+}
+
+.btn-cancel {
+  background-color: #ff8a80;
+  color: #fff;
+}
+
+.btn-cancel:hover,
+.btn-cancel:focus {
+  background-color: #e57373;
+  color: #fff;
+}
+
+/* چینش دکمه‌ها کنار هم */
+.form-actions {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* واکنش‌گرایی موبایل */
+@media (max-width: 900px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  .form-group {
+    margin-bottom: 18px;
+    align-items: flex-start;
+    text-align: right !important;
+  }
+  .form-group label {
+    text-align: right !important;
+  }
+}
