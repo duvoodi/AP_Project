@@ -1,4 +1,7 @@
-@model AP_Project.Models.Users.Admin
+@{
+    var admin = ViewBag.CurrentAdmin as AP_Project.Models.Users.Admin;
+}
+
 <!DOCTYPE html>
 <html lang="fa">
 <head>
@@ -7,11 +10,31 @@
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/AdminDashboard/admin.css" asp-append-version="true" />
 </head>
+
 <body>
-  @await Html.PartialAsync("~/Views/Shared/Header/_AdminHeaderPartial.cshtml", Model)
+  @if (admin != null)
+  {
+      @await Html.PartialAsync("~/Views/Shared/Header/_AdminHeaderPartial.cshtml", admin)
+  }
+  else
+  {
+      <!-- فقط نمایش ساده؛ نه اینکه ارور بده -->
+      <header class="admin-header">
+          <div class="header-title">
+              <h1>داشبورد ادمین</h1>
+          </div>
+          <div class="header-actions">
+              <span class="admin-name">ادمین نامشخص</span>
+          </div>
+      </header>
+  }
+
   <main class="admin-main">
     @RenderBody()
   </main>
+
+@RenderSection("Scripts", required: false)
+
 </body>
 </html>
 
