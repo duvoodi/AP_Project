@@ -21,6 +21,9 @@ namespace AP_Project.Controllers
             if (admin == null)
                 return RedirectToAction("Index", "Login");
 
+            ViewBag.CurrentAdmin = admin;
+            ViewData["ActiveTab"] = "Dashboard";
+
             return View(admin);
         }
     }
