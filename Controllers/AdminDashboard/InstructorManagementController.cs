@@ -102,33 +102,47 @@ namespace AP_Project.Controllers
             // برگشت در صورت وجود خطا
             if (!ModelState.IsValid)
             {
+                ViewData["Form"] = InstructorForm;
+                ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
+                
                 ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
                 return View("~/Views/AdminDashboard/InstructorManagement/AddInstructor.cshtml", admin);
             }
 
-            var instructor = new Instructor
+            try
             {
-                FirstName = InstructorForm.FirstName,
-                LastName = InstructorForm.LastName,
-                Email = InstructorForm.Email,
-                InstructorId = int.Parse(InstructorForm.InstructorId),
-                HireYear = int.Parse(InstructorForm.HireYear),
-                Salary = decimal.Parse(InstructorForm.Salary),
-                HashedPassword = ComputeHash.Sha1(InstructorForm.Password)
-            };
+                var instructor = new Instructor
+                {
+                    FirstName = InstructorForm.FirstName,
+                    LastName = InstructorForm.LastName,
+                    Email = InstructorForm.Email,
+                    InstructorId = int.Parse(InstructorForm.InstructorId),
+                    HireYear = int.Parse(InstructorForm.HireYear),
+                    Salary = decimal.Parse(InstructorForm.Salary),
+                    HashedPassword = ComputeHash.Sha1(InstructorForm.Password)
+                };
 
-            _db.Instructors.Add(instructor);
-            await _db.SaveChangesAsync();
+                _db.Instructors.Add(instructor);
+                await _db.SaveChangesAsync();
 
-            var userRole = new UserRole
+                var userRole = new UserRole
+                {
+                    UserId = instructor.Id,
+                    RoleId = 2
+                };
+                _db.UserRoles.Add(userRole);
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
+            }
+            catch (Exception ex)
             {
-                UserId = instructor.Id,
-                RoleId = 2
-            };
-            _db.UserRoles.Add(userRole);
-            await _db.SaveChangesAsync();
+                ModelState.AddModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد. لطفاً دوباره تلاش کنید.");
+                ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
+                ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
+                return View("~/Views/AdminDashboard/InstructorManagement/AddInstructor.cshtml", admin);
+            }
 
-            return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
         }
     }
 }

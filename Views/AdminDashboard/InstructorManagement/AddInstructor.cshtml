@@ -4,7 +4,13 @@
   ViewData["Title"] = "مدیریت اساتید";
   Layout = "_LayoutAdmin";
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  if (string.IsNullOrEmpty(currentHash)) // در ریترن ویو گت کوئری منتقل میشه ولی در ریترن ویو پست کوئری پاک میشه و هش رو دستی با ویو دیتا فرستادیم
+  {
+    currentHash = ViewData["Hash"]?.ToString() ?? "";
+  }
   var hasFooter = false;
+
+  var form = (AP_Project.FormViewModels.InstructorForm.InstructorFormViewModel)ViewData["Form"];
 }
 
 <!-- مجموعه فونت آوسوم -->
@@ -25,17 +31,17 @@
       <div class="form-row">
         <div class="form-group">
           <label>نام</label>
-          <input class="form-control valid-person-name" id="FirstName" name="FirstName" data-maxlength="32"/>
+          <input class="form-control valid-person-name" id="FirstName" name="FirstName" value="@form?.FirstName" data-maxlength="32"/>
           <span class="error-message">@Html.ValidationMessage("FirstName")</span>
         </div>
         <div class="form-group">
           <label>نام خانوادگی</label>
-          <input class="form-control valid-person-name" id="LastName" name="LastName" data-maxlength="32" />
+          <input class="form-control valid-person-name" id="LastName" name="LastName" value="@form?.LastName" data-maxlength="32" />
           <span class="error-message">@Html.ValidationMessage("LastName")</span>
         </div>
         <div class="form-group">
           <label>ایمیل</label>
-          <input class="form-control valid-email" id="Email" name="Email" data-maxlength="320" />
+          <input class="form-control valid-email" id="Email" name="Email" value="@form?.Email" data-maxlength="320" />
           <span class="error-message">@Html.ValidationMessage("Email")</span>
         </div>
       </div>
@@ -43,17 +49,17 @@
       <div class="form-row">
         <div class="form-group">
           <label>کد مدرسی</label>
-          <input class="form-control readonly" id="InstructorId" name="InstructorId" readonly placeholder="منتظر سال استخدام معتبر ..." />
+          <input class="form-control readonly" id="InstructorId" name="InstructorId" value="@form?.InstructorId" readonly placeholder="منتظر سال استخدام معتبر ..." />
           <span class="error-message">@Html.ValidationMessage("InstructorId")</span>
         </div>
         <div class="form-group">
           <label>میزان حقوق (تومان)</label>
-          <input class="form-control valid-numeric" id="Salary" name="Salary" data-maxlength="9" data-allow-slice="true" />
+          <input class="form-control valid-numeric" id="Salary" name="Salary" value="@form?.Salary" data-maxlength="9" data-allow-slice="true" />
           <span class="error-message">@Html.ValidationMessage("Salary")</span>
         </div>
         <div class="form-group">
           <label>سال استخدام</label>
-          <input class="form-control valid-numeric" id="HireYear" name="HireYear" data-maxlength="4" data-allow-slice="true" />
+          <input class="form-control valid-numeric" id="HireYear" name="HireYear" value="@form?.HireYear" data-maxlength="4" data-allow-slice="true" />
           <span class="error-message">@Html.ValidationMessage("HireYear")</span>
         </div>
       </div>
@@ -62,7 +68,7 @@
         <div class="form-group">
           <label>رمز عبور</label>
           <div class="password-wrapper">
-            <input type="password" class="form-control valid-password" id="Password" name="Password" data-maxlength="32" />
+            <input type="password" class="form-control valid-password" id="Password" name="Password" value="@form?.Password" data-maxlength="32" />
             <button type="button" class="toggle-password">
               <i class="fa fa-eye"></i>
             </button>
@@ -72,7 +78,7 @@
         <div class="form-group">
           <label>تکرار رمز عبور</label>
           <div class="password-wrapper">
-            <input type="password" class="form-control valid-password" id="ConfirmPassword" name="ConfirmPassword" data-maxlength="32" />
+            <input type="password" class="form-control valid-password" id="ConfirmPassword" name="ConfirmPassword" value="@form?.ConfirmPassword" data-maxlength="32" />
             <button type="button" class="toggle-password">
               <i class="fa fa-eye"></i>
             </button>
@@ -81,6 +87,12 @@
         </div>
       </div>
 
+      <div class="error-row">
+        <div class="error-group" >
+          <span class="error-message general-error" id="GeneralError" >@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+      
       <div class="form-actions">
         <a type="button" asp-controller="InstructorManagement" asp-action="Index" asp-route-h="@currentHash" class="btn-cancel">انصراف</a>
         <button type="submit" class="btn-submit">تایید</button>

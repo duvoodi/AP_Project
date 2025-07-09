@@ -3,8 +3,8 @@ function replaceError(elementId, message) {
   const element = document.getElementById(elementId);
   if (!element) return;
 
-  // فرم گروپی که اینپوت داخلش هست را کلاس والد میگیریم
-  const Group = element.closest('.form-group');;
+  // فرم گروپ یا ارور گروپ را کلاس والد میگیریم
+  const Group = element.closest('.form-group, .error-group');;
   if (!Group) return;
 
   const errorSpan = Group.querySelector('.error-message');
@@ -38,8 +38,8 @@ function appendError(elementId, message) {
   const element = document.getElementById(elementId);
   if (!element) return;
 
-  // فرم گروپی که اینپوت داخلش هست را کلاس والد میگیریم
-  const Group = element.closest('.form-group');;
+  // فرم گروپ یا ارور گروپ را کلاس والد میگیریم
+  const Group = element.closest('.form-group, .error-group');;
   if (!Group) return;
 
   const errorSpan = Group.querySelector('.error-message');
@@ -65,8 +65,9 @@ function appendError(elementId, message) {
 // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
 document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
   input.addEventListener('input', () => {
-    const Group = input.closest('.form-group');;
-    const errorSpan = Group?.querySelector('.error-message');
+    // فقط فورم گروپ ها فیلد ورودی دارند، ارور گروپ ها مخصوص کادر ارور اند
+    const formGroup = input.closest('.form-group');;
+    const errorSpan = formGroup?.querySelector('.error-message');
     if (errorSpan) {
       // اگر ارور مکس لنگت بود، حذفش نکنیم
       // ارور مکس لنگت نباید پاک شود این وظیفه خودش است
