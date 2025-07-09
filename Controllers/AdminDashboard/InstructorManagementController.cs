@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using AP_Project.Data;
 using AP_Project.Models.Users;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 
 namespace AP_Project.Controllers
 {
@@ -22,14 +20,13 @@ namespace AP_Project.Controllers
             if (admin == null)
                 return RedirectToAction("Index", "Login");
 
-            // Fetch instructors and related user data, ordered by LastName then FirstName
             var instructors = _db.Instructors
                 .OrderBy(i => i.LastName)
                 .ThenBy(i => i.FirstName)
                 .ToList();
 
             ViewBag.Instructors = instructors;
-            return View("~/Views/AdminDashboard/Instructor.cshtml", admin);
+            return View("~/Views/AdminDashboard/InstructorManagement/Index.cshtml", admin);
         }
     }
 }

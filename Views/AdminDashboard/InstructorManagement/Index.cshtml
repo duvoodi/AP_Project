@@ -1,40 +1,40 @@
 @model AP_Project.Models.Users.Admin
 @{
-  ViewData["Title"] = "داشبورد ادمین";
-  Layout = "_LayoutAdmin";
   ViewData["ActiveTab"] = "Instructor";
+  ViewData["Title"] = "مدیریت اساتید";
+  Layout = "_LayoutAdmin";
   var instructors = ViewBag.Instructors as List<AP_Project.Models.Users.Instructor>;
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
   var hasFooter = false;
 }
 
 <!-- استایل اختصاصی این صفحه -->
-<link rel="stylesheet" href="~/css/AdminDashboard/instructor-management.css" asp-append-version="true" />
-
+<link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-management.css" asp-append-version="true" />
 
 <main class="admin-main @(hasFooter ? "has-footer" : "has-not-footer")">
   <div class="toolbar">
-    <button class="btn-add-instructor">
+    <a asp-controller="InstructorManagement" asp-action="AddInstructorIndex" asp-route-h="@currentHash" class="btn-add-instructor">
       <span class="icon">&#43;</span>
       <span class="text">افزودن استاد</span>
-    </button>
+    </a>
   </div>
 
-  @if (instructors != null && instructors.Any())
-  {
     <table class="instructor-table">
       <thead>
         <tr>
           <th class="col-index">ردیف</th>
-          <th class="col-truncate">نام</th>
-          <th class="col-truncate">نام خانوادگی</th>
-          <th class="col-truncate">ایمیل</th>
-          <th class="col-fixed">سال استخدام</th>
-          <th class="col-fixed">حقوق (تومان)</th>
-          <th class="col-fixed">کد مدرسی</th>
+          <th class="col-fname">نام</th>
+          <th class="col-lname">نام خانوادگی</th>
+          <th class="col-email">ایمیل</th>
+          <th class="col-hyear">سال استخدام</th>
+          <th class="col-salary">حقوق (تومان)</th>
+          <th class="col-instid">کد مدرسی</th>
           <th class="col-userid">آی‌دی کاربری</th>
           <th class="col-actions"></th>
         </tr>
       </thead>
+    @if (instructors != null && instructors.Any())
+    {
       <tbody>
       @for (int i = 0; i < instructors.Count; i++)
       {
@@ -60,14 +60,11 @@
         </tr>
       }
       </tbody>
-    </table>
   }
-  else
-  {
-    <div class="empty-popup">
+    </table>
+    <div class="empty-popup @(instructors == null || !instructors.Any() ? "will-show" : "")">
       <p>موردی جهت نمایش وجود ندارد</p>
     </div>
-  }
 </main>
 
 @if (hasFooter)
@@ -77,38 +74,9 @@
   </footer>
 }
 
+<script src="~/js/Shared/popup.js"></script>
+<script src="~/js/Shared/tooltip.js"></script>
 <script>
-  // تول‌تیپ
-  const tooltip = document.createElement('div');
-  tooltip.className = 'custom-tooltip';
-  document.body.appendChild(tooltip);
-
-  document.querySelectorAll('[data-tooltip]').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      const text = el.getAttribute('data-tooltip');
-      const align = el.getAttribute('data-tooltip-align') || 'center';
-      tooltip.textContent = text;
-
-      tooltip.textContent = text;
-      tooltip.classList.remove('align-left','align-center','align-right','show');
-      tooltip.classList.add(`align-${align}`, 'show');
-
-      const r = el.getBoundingClientRect();
-      tooltip.style.top = (r.bottom + 6) + 'px';
-      if (align === 'left') {
-        tooltip.style.left = r.left + 'px';
-      } else if (align === 'right') {
-        tooltip.style.left = r.right + 'px';
-      } else { // center
-        tooltip.style.left = (r.left + r.width/2) + 'px';
-      }
-    });
-
-    el.addEventListener('mouseleave', () => {
-      tooltip.classList.remove('show');
-    });
-  });
-
   // دکمه‌های کپی
   document.querySelectorAll('.copy-id-button').forEach(btn => {
     btn.addEventListener('click', () => {
