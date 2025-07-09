@@ -1,3 +1,7 @@
+/* ============================
+   FONT
+   ============================ */
+
 @font-face {
   font-family: 'Vazirmatn';
   src: url('/fonts/vazirmatn/Vazirmatn[wght].woff2') format('woff2-variations');
@@ -5,6 +9,27 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* ============================
+   LAYOUT: HTML & BODY
+   ============================ */
+
+html, body {
+  font-family: 'Vazirmatn', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  direction: rtl;
+  background-color: #e5e5e5;
+}
+
+/* ============================
+   HEADER
+   ============================ */
 
 .login-header {
   margin: 0; 
@@ -22,6 +47,10 @@
   overflow: hidden;
 }
 
+/* ============================
+   HEADER TITLE
+   ============================ */
+
 .login-header .header-title {
   margin: 0;
   display: flex;
@@ -38,18 +67,9 @@
   line-height: 2;
 }
 
-body {
-  font-family: 'Vazirmatn', sans-serif;
-  background-color: #e5e5e5;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column; 
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  direction: rtl;
-}
+/* ============================
+   MAIN: LOGIN CONTAINER
+   ============================ */
 
 .login-container {
   margin-top: 80px;
@@ -62,7 +82,12 @@ body {
   text-align: right;
   direction: rtl;
   box-sizing: border-box;
+  min-height: 550px; 
 }
+
+/* ============================
+   LOGIN HEADINGS
+   ============================ */
 
 .login-container h2 {
   text-align: center;
@@ -74,6 +99,19 @@ body {
   color: #333;
 }
 
+/* ============================
+   FORM GROUPS
+   ============================ */
+
+.form-group {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+/* ============================
+   LABELS
+   ============================ */
+
 label {
   display: block;
   margin-bottom: 5px;
@@ -82,12 +120,14 @@ label {
   font-weight: 500;
 }
 
-input[type="number"],
-input[type="password"] {
+/* ============================
+   FORM CONTROLS
+   ============================ */
+
+input.form-control  {
   width: 100%;
   height: 50px;
   padding: 10px 12px;
-  margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-family: 'Vazirmatn', sans-serif !important;
@@ -97,18 +137,15 @@ input[type="password"] {
   transition: none;
 }
 
-/*نامبر فقط عدد میگیره اصلا حرف نمیگیره فقط فلش کم و زیاد داره */
-/* حذف فلش‌ها در Chrome، Safari، Edge */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.form-control:focus {
+  outline: none;
+  border: 1.5px solid #00b0f0;
+  background: #e6f7ff;
 }
-/* حذف فلش‌ها در Firefox */
-input[type="number"] {
-  appearance: textfield;
-  -moz-appearance: textfield;
-}
+
+/* ============================
+   PASSWORD FIELD WRAPPER
+   ============================ */
 
 .password-wrapper {
   position: relative;
@@ -116,50 +153,60 @@ input[type="number"] {
   height: 50px; /* همان ارتفاع ورودی */
 }
 
-.password-wrapper input {
-  position: absolute;
+.password-wrapper input.form-control {
+  position: static;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 10px 12px;
-  box-sizing: border-box;
-  font-family: 'Vazirmatn', sans-serif !important;
-  font-size: 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  direction: rtl;
-  transition: opacity 0.2s ease;
+  padding-left: 50px; /* جا برای آیکون */
 }
 
-#password {
-  opacity: 1;
-  z-index: 2;
-}
-
-#passwordText {
-  opacity: 0;
-  z-index: 1;
-}
-
-.toggle-password {
+.password-wrapper .toggle-password {
   position: absolute;
-  top: 50%;
+  top: 52%;
   left: 10px;
+  width: 32px;              
+  height: 32px;             
+  text-align: center;       
+  line-height: 32px;        
   transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.2em;
-  color: #888;
-  padding: 0;
+  font-size: 18px;
+  color: #056997; 
   z-index: 3;
+  padding: 0;
+  transition: color .2s;
 }
 
-.toggle-password:hover {
-  color: #000;
+.password-wrapper .toggle-password:hover {
+    color: #0099e0;
 }
 
+
+input.valid-password {
+  transition: letter-spacing 0.3s ease, color 0.3s ease;
+  letter-spacing: 0.15em;
+  color: #222;
+}
+
+input.valid-password[type="password"] {
+  letter-spacing: 0.3em;
+  color: #222;
+}
+
+/* حذف آیکون‌های پیش‌فرض مرورگر */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ============================
+   SUBMIT BUTTON
+   ============================ */
 
 button[type="submit"] {
   height: 50px; /* ارتفاع مشابه کادر های ورودی */
@@ -183,13 +230,30 @@ button[type="submit"]:hover {
   background-color: #0056b3;
 }
 
+/* ============================
+   ERROR MESSAGES
+   ============================ */
+
 .error-message {
-  color: red;
-  margin-top: 10px;
-  text-align: center;
-  font-size: 17px;
-  font-weight: 500;
+  position: absolute;
+  bottom: -25px;       /* مقدار فاصله از پایین فیلد */
+  left: 0;             /* سمت چپ کادر */
+  color: #e74c3c;
+  font-size: 13px;
+  margin-top: 4px;
+  padding-right: 2px;
+  min-height: 18px;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
 }
+
+.error-message.visible {
+  opacity: 1;
+}
+
+/* ============================
+   FOOTER
+   ============================ */
 
 footer {
   margin-top: 40px;
@@ -207,13 +271,6 @@ footer a {
   text-decoration: none;
 }
 
-/* جلوگیری از نمایش دکمه پیش‌فرض رمز عبور در مرورگرها */
-input[type="password"]::-ms-reveal,
-input[type="password"]::-ms-clear,
-input[type="password"]::-webkit-credentials-auto-fill-button {
-  display: none !important;
-  visibility: hidden;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
+footer a:hover {
+  color: #0056b3;
 }
