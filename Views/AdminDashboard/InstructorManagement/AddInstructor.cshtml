@@ -1,0 +1,197 @@
+@model AP_Project.Models.Users.Admin
+@{
+  ViewData["ActiveTab"] = "Instructor";
+  ViewData["Title"] = "مدیریت اساتید";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var hasFooter = false;
+}
+
+<!-- مجموعه فونت آوسوم -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/add-instructor.css" asp-append-version="true"/>
+
+<main class="admin-main @(hasFooter ? "has-footer" : "has-not-footer")">
+  <div class="tabbar">
+    <div class="add-instructor-tab">
+      افزودن استاد
+    </div>
+  </div>
+  <div class="form-container">
+    <form asp-controller="InstructorManagement" asp-action="AddInstructor" method="post" id="add-instructor-form">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>نام</label>
+          <input class="form-control valid-person-name" id="FirstName" name="FirstName" data-maxlength="32"/>
+          <span class="error-message"></span>
+        </div>
+        <div class="form-group">
+          <label>نام خانوادگی</label>
+          <input class="form-control valid-person-name" id="LastName" name="LastName" data-maxlength="32" />
+          <span class="error-message"></span>
+        </div>
+        <div class="form-group">
+          <label>ایمیل</label>
+          <input class="form-control valid-email" id="Email" name="Email" data-maxlength="320" />
+          <span class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>کد مدرسی</label>
+          <input class="form-control readonly" id="InstructorId" name="InstructorId" readonly placeholder="منتظر سال استخدام معتبر ..." />
+          <span class="error-message"></span>
+        </div>
+        <div class="form-group">
+          <label>میزان حقوق (تومان)</label>
+          <input class="form-control valid-numeric" id="Salary" name="Salary" data-maxlength="9" data-allow-slice="true" />
+          <span class="error-message"></span>
+        </div>
+        <div class="form-group">
+          <label>سال استخدام</label>
+          <input class="form-control valid-numeric" id="HireYear" name="HireYear" data-maxlength="4" data-allow-slice="true" />
+          <span class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>رمز عبور</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-control valid-password" id="Password" name="Password" data-maxlength="32" />
+            <button type="button" class="toggle-password">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+          <span class="error-message"></span>
+        </div>
+        <div class="form-group">
+          <label>تکرار رمز عبور</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-control valid-password" id="ConfirmPassword" name="ConfirmPassword" data-maxlength="32" />
+            <button type="button" class="toggle-password">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+          <span class="error-message"></span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a type="button" asp-controller="InstructorManagement" asp-action="Index" asp-route-h="@currentHash" class="btn-cancel">انصراف</a>
+        <button type="submit" class="btn-submit">تایید</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+  <script>
+    // دریافت متغیر ها ارسال شده از کنترلر
+    const currentPersianYear = parseInt('@ViewData["currentPersianYear"]');
+  </script>
+  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <script src="~/js/FormUtils/Shared/max-length-handler.js"></script>
+  <script src="~/js/Shared/debounce.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-person-name-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-numeric-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-email-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-password-inputs.js"></script>
+  <!-- تابع ولیدیت فیلد اختصاصی فیلد های این صفحه -->
+  <!-- آخر همه اضافه شده چون از توابع اسکریپت های بالا استفاده میکند -->
+  <script src="~/js/FormUtils/InstructorForm/validateField.js"></script>
+  <script>
+    // ولیدیت فیلد ها هنگام خروج از فیلد با نمایش ارور ترو
+    // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+    document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+      input.addEventListener('blur', function () {
+        validateField(this.id, true) // نتیجه تابع رو در دکمه سابمیت بررسی میکنیم اینجا تابع صرفا برای نمایش ارور فراخوانی میشود
+      });
+    });
+
+    // مقدار دهی و ولیدیت فیلد ها ریدانلی
+    // چک فیلد های رید آنلی چون توسط کاربر نوشته نشده و ایونت بلور ایجاد نمیکند
+
+    // دریافت کد مدرسی به صورت زنده هنگام ورود سال استخدام
+    let lastFetchedHireYear = null; // نگهداری آخرین سالی که براش فچ انجام شده
+    document.getElementById('HireYear')?.addEventListener('input', function () {
+      const instructorIdInput = document.getElementById('InstructorId');
+      if (!validateField('HireYear', false)) { // اول بررسی معتبر بودن سال استخدام به صورت زنده بدون نمایش ارور
+        replaceError('InstructorId', ''); // سال اشتباهه درخواست به سرور نمیده و ارور دریافت هم نباید داشته باشد
+        instructorIdInput.value = ''; // برای سال اشتباه نباید کدی نمایش بده
+        return;
+      }
+
+      const parsedYear = parseInt(this.value, 10);
+
+      // اگر کد مدرسی داریم و ولید هست دیگه کد مدرسی جدید نگیریم
+      if (instructorIdInput.value && !validateField('InstructorId', true)) { // اعتبار سنجی کد نمایش ارور
+        return;
+      }
+
+      // اگر سال تغییر نکرده، دوباره فچ نکن
+      if (parsedYear === lastFetchedHireYear) {
+        return;
+      }
+
+      // همه چیز درست بود، کد مدرسی را دریافت می‌کنیم
+      debounceFetchInstructorCode(parsedYear);
+    }); 
+    // تابع دیبونس برای فچ کد مدرسی
+    const debounceFetchInstructorCode = debounce(function (year) {
+      const instructorIdInput = document.getElementById('InstructorId');
+
+      fetch(`/InstructorManagement/GenerateInstructorCode?year=${year}`)
+        .then(r => {
+          if (r.redirected) {
+            window.location.href = r.url; // اگر ریدایرکت شده بخاطر منقضی شدن سشن برو به صفحه مقصد
+            return;
+          }
+          if (!r.ok) { // درخواست موفق نبوده، ارور نشون بده
+            replaceError('InstructorId', 'خطا در دریافت کد مدرسی');
+            instructorIdInput.value = ''; // فچ نتونسته بکنه کدی هم نباید نشان بده
+          }
+          // دات اوکی درخواست ریدایرکت رو درخواست ناموفق میدونه برای همین باید بعد ریدایرکت باشه
+          return r.json();
+        })
+        .then(code => {
+          instructorIdInput.value = code; // کد گرفته شده را فیلد قرار میدهیم
+          validateField('InstructorId', true); // اعتبار سنجی کد گرفته شده با نمایش ارور
+          lastFetchedHireYear = year; // سال جدید ثبت شود فقط اگر فچ موفق بود
+        })
+        .catch(function () { // درخواست فچ ممکن نبود
+          replaceError('InstructorId', 'خطا در دریافت کد مدرسی');
+          instructorIdInput.value = ''; // هچ نتونسته بکنه کدی هم نباید نشان بده
+        });
+    }, 300); // دیبونس سیصد میلی ثانیه
+    // یعنی سیصد ثانیه بعد اینکه کاربر چیزی تایپ نکرد فچ انجام
+
+    // چک ها بعد زدن کلید تایید
+    document.getElementById('add-instructor-form').addEventListener('submit', function (e) {
+      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
+
+      let hasError = false;
+
+      // 1. پاک کردن خطاهای قبلی
+      this.querySelectorAll('.error-message').forEach(span => span.textContent = '');
+
+      // 2. ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
+      // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+      this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+        if (!validateField(input.id, true)) {
+          hasError = true;
+        }
+      });
+
+      // 3. اگر خطایی نبود فرم ارسال شود
+      if (!hasError) {
+        this.submit();
+      }
+    });
+  </script>
+}
