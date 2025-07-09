@@ -35,23 +35,15 @@ body, table, button, td, th {
     display: inline-flex;
     align-items: center;
     cursor: pointer;
-    text-decoration: none !important;
-    box-shadow: none !important;
-    position: relative;
-    transition: background 0.18s;
 }
 
 .btn-add-instructor .icon {
     color: #22a74a;
     font-size: 30px;
     font-weight: 600;
-    text-decoration: none !important;
-    border-bottom: none !important;
     margin-top: -8px;
     margin-bottom: -8px;
-    margin-left: 0px;
-    margin-right: 6px;
-    display: inline-block;
+    margin-left: 8px;
 }
 
 .btn-add-instructor .text {
