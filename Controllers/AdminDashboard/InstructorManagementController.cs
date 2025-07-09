@@ -29,7 +29,6 @@ namespace AP_Project.Controllers
                 .ToList();
 
             ViewBag.Instructors = instructors;
-            ViewData["ActiveTab"] = "Instructor";
             return View("~/Views/AdminDashboard/Instructor.cshtml", admin);
         }
     }

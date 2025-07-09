@@ -21,7 +21,6 @@ namespace AP_Project.Controllers
             if (admin == null)
                 return RedirectToAction("Index", "Login");
 
-            ViewData["ActiveTab"] = "Student";
             return View("~/Views/AdminDashboard/Student.cshtml", admin);
         }
     }
