@@ -20,22 +20,23 @@
   </div>
   <div class="form-container">
     <form asp-controller="InstructorManagement" asp-action="AddInstructor" method="post" id="add-instructor-form">
+      @Html.AntiForgeryToken()
 
       <div class="form-row">
         <div class="form-group">
           <label>نام</label>
           <input class="form-control valid-person-name" id="FirstName" name="FirstName" data-maxlength="32"/>
-          <span class="error-message"></span>
+          <span class="error-message">@Html.ValidationMessage("FirstName")</span>
         </div>
         <div class="form-group">
           <label>نام خانوادگی</label>
           <input class="form-control valid-person-name" id="LastName" name="LastName" data-maxlength="32" />
-          <span class="error-message"></span>
+          <span class="error-message">@Html.ValidationMessage("LastName")</span>
         </div>
         <div class="form-group">
           <label>ایمیل</label>
           <input class="form-control valid-email" id="Email" name="Email" data-maxlength="320" />
-          <span class="error-message"></span>
+          <span class="error-message">@Html.ValidationMessage("Email")</span>
         </div>
       </div>
 
@@ -43,17 +44,17 @@
         <div class="form-group">
           <label>کد مدرسی</label>
           <input class="form-control readonly" id="InstructorId" name="InstructorId" readonly placeholder="منتظر سال استخدام معتبر ..." />
-          <span class="error-message"></span>
+          <span class="error-message">@Html.ValidationMessage("InstructorId")</span>
         </div>
         <div class="form-group">
           <label>میزان حقوق (تومان)</label>
           <input class="form-control valid-numeric" id="Salary" name="Salary" data-maxlength="9" data-allow-slice="true" />
-          <span class="error-message"></span>
+          <span class="error-message">@Html.ValidationMessage("Salary")</span>
         </div>
         <div class="form-group">
           <label>سال استخدام</label>
           <input class="form-control valid-numeric" id="HireYear" name="HireYear" data-maxlength="4" data-allow-slice="true" />
-          <span class="error-message"></span>
+          <span class="error-message">@Html.ValidationMessage("HireYear")</span>
         </div>
       </div>
 
@@ -66,7 +67,7 @@
               <i class="fa fa-eye"></i>
             </button>
           </div>
-          <span class="error-message"></span>
+          <span class="error-message">@Html.ValidationMessage("Password")</span>
         </div>
         <div class="form-group">
           <label>تکرار رمز عبور</label>
@@ -76,7 +77,7 @@
               <i class="fa fa-eye"></i>
             </button>
           </div>
-          <span class="error-message"></span>
+          <span class="error-message">@Html.ValidationMessage("ConfirmPassword")</span>
         </div>
       </div>
 
@@ -134,7 +135,18 @@
         return;
       }
 
-      // اگر سال تغییر نکرده، دوباره فچ نکن
+      // اگر ارور تکراری بودن کد مدرسی نمایش داده شده باشد، دوباره فچ کن
+      const input = document.getElementById('InstructorId');
+      if (!input) return;
+      const formGroup = input.closest('.form-group');
+      const errorSpan = formGroup?.querySelector('.error-message');
+      const errorSpanText = errorSpan ? errorSpan.textContent.trim() : '';
+      if (errorSpanText.includes('کد مدرسی تکراری')) {
+        debounceFetchInstructorCode(parsedYear);
+        return;
+      }
+
+      // بغیر از زمانی که کد تکراری بوده اگر سال تغییر نکرده، دوباره فچ نکن
       if (parsedYear === lastFetchedHireYear) {
         return;
       }
