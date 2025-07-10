@@ -5,23 +5,19 @@ using Microsoft.AspNetCore.Http;
 
 namespace AP_Project.Controllers
 {
-    public class StudentManagementController : Controller
+    public class StudentManagementController : BaseAdminController
     {
-        private readonly AppDbContext _db;
-        public StudentManagementController(AppDbContext db) => _db = db;
+        public StudentManagementController(AppDbContext db) : base(db)
+        {
+        }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var adminId = HttpContext.Session.GetInt32("AdminId");
-            if (adminId == null)
-                return RedirectToAction("Index", "Login");
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
 
-            var admin = _db.Set<Admin>().FirstOrDefault(a => a.AdminId == adminId.Value);
-            if (admin == null)
-                return RedirectToAction("Index", "Login");
-
-            ViewData["ActiveTab"] = "Student";
             return View("~/Views/AdminDashboard/Student.cshtml", admin);
         }
     }

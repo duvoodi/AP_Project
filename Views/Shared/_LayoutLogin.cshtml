@@ -4,12 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"]</title>
-  <link rel="stylesheet" href="~/css/login.css" />
+  <link rel="stylesheet" href="~/css/Layout/_layout-login.css" asp-append-version="true" />
 </head>
 <body>
-  @await Html.PartialAsync("Header/_LoginHeaderPartial")
+  @await Html.PartialAsync("~/Views/Shared/Header/_LoginHeaderPartial.cshtml")
 
-  @RenderBody()
-  
+  <main class="main">
+    @RenderBody()
+    @RenderSection("Scripts", required: false)
+  </main>
 </body>
 </html>
+
+<script>
+  // بعد از لود موارد بالا یعنی بعد از لود تمام موارد صفحه لاگین کانتینر را نمایان میکنیم
+  // در سی اس اس لاگین برای ویزیبل شدن لاگین کانتینر انیمیشن زدیم ولی در صفحه انتقال نزدیم تا درجا پیام انتقال را نشان دهد و برود
+  window.addEventListener('load', () => {
+    const main = document.querySelector('.login-container');
+    if (main) {
+      main.classList.add('visible');
+    }
+  });
+</script>
