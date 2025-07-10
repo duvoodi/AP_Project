@@ -1,0 +1,294 @@
+/* ============================
+   FONT
+   ============================ */
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonts/vazirmatn/Vazirmatn[wght].woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================
+   LAYOUT: BASE PAGE
+   ============================ */
+
+table, button, td, th {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* ============================
+   ADD INSTRUCTOR BUTTON
+   ============================ */
+
+.toolbar {
+  margin: 15px 0;
+  position: sticky;
+  top: 100px;
+  background: white;
+  z-index: 3;
+}
+
+.btn-add-instructor {
+  background-color: #84e291;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  position: relative;
+  transition: background .2s;
+}
+
+.btn-add-instructor .icon {
+  color: #22a74a;
+  font-size: 30px;
+  font-weight: 600;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  margin-top: -8px;
+  margin-bottom: -8px;
+  margin-left: 8px;
+  display: inline-block;
+}
+
+.btn-add-instructor .text {
+  color: #265C26;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btn-add-instructor:hover,
+.btn-add-instructor:focus {
+  background-color: #22a74a;
+}
+.btn-add-instructor:hover .icon,
+.btn-add-instructor:focus .icon,
+.btn-add-instructor:hover .text,
+.btn-add-instructor:focus .text {
+  color: #ffffff;
+}
+
+
+/* ============================
+   TABLE STYLES
+   ============================ */
+
+.instructor-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ccdfef;
+  font-size: 16px;
+}
+
+.instructor-table thead tr {
+  background-color: #00b0f0;
+  font-size: 18px;
+}
+
+.instructor-table tbody tr {
+  background-color: #ccdfef;
+  color: #000000;
+}
+
+.instructor-table th,
+.instructor-table td {
+  border: 1px solid white;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.instructor-table th:last-child,
+.instructor-table td:last-child {
+  border-right: none;
+}
+
+.instructor-table thead th {
+  color: white;
+  font-weight: 600;
+  position: sticky;
+  top: 100px;
+  z-index: 2;
+}
+
+/* ============================
+   COLUMN WIDTHS
+   ============================ */
+
+.col-index {
+  width: 40px;
+}
+
+.col-hyear {
+  width: 0%;
+}
+
+.col-salary,
+.col-instid {
+  width: 10%;
+}
+
+.col-fname,
+.col-lname,
+.col-email {
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.col-email {
+  width: 20%;
+}
+
+.col-userid {
+  width: 0%;
+}
+
+.col-actions {
+  width: 0%;
+}
+
+/* ============================
+   COPY BUTTON
+   ============================ */
+
+.copy-id-button {
+  background: none;
+  border: none;
+  color: #0645AD;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+}
+
+.copy-id-button::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #0070c0;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  display: none;
+  white-space: nowrap;
+}
+
+.copy-id-button.show-tooltip::after {
+  display: block;
+  animation: fadeOut 3s forwards;
+}
+
+@keyframes fadeOut {
+  0% {opacity: 1;}
+  80% {opacity: 1;}
+  100% {opacity: 0;}
+}
+
+/* ============================
+   ACTION COLUMN
+   ============================ */
+
+.col-actions {
+  margin: 0px;
+}
+
+.actions-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 5px;
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0px;
+}
+
+.icon-edit::before {
+  content: "✏️";
+}
+
+.icon-delete::before {
+  content: "🗑️";
+}
+
+/* ============================
+   CUSTOM TOOLTIP
+   ============================ */
+
+.custom-tooltip {
+  position: fixed;
+  background-color: #156082;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  z-index: 9998; /* هدر 9999 */
+  pointer-events: none;
+  font-size: 14px;
+  max-width: 200px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.custom-tooltip.show {
+visibility: visible;
+opacity: 1;
+}
+
+.custom-tooltip.align-left {
+  text-align: left;
+  transform: none;
+}
+.custom-tooltip.align-center {
+  text-align: center;
+  transform: translateX(-50%);
+}
+.custom-tooltip.align-right {
+  text-align: right;
+  transform: translateX(-100%);
+}
+
+/* ============================
+   EMPTY STATE POPUP
+   ============================ */
+
+.empty-popup {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  background-color: #4169e1;
+  color: white;
+  width: 400px;
+  padding: 10px 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-size: 18px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+}
+.empty-popup.visible {
+  visibility: visible;
+  opacity: 1;
+}

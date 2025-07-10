@@ -1,0 +1,304 @@
+/* ============================
+   FONT
+   ============================ */
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonts/vazirmatn/Vazirmatn[wght].woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================
+   LAYOUT: BASE PAGE
+   ============================ */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  direction: rtl;
+  text-align: right;
+  background: #fff;
+}
+body, html, input, textarea, select, button {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+
+/* ============================
+   FORM CONTAINER
+   ============================ */
+
+.form-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 30px 20px;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+/* ============================
+   FORM: TOP TAB
+   ============================ */
+
+.tabbar {
+    margin: 20px 0 0;
+}
+.add-instructor-tab {
+  
+  display: flex;
+  align-items: center;      
+  justify-content: flex-start; 
+  width: calc(100% - 40px);  
+  height: 54px;              
+  padding: 0 20px;
+  background-color: #84e291;
+  color: #265C26;
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: none;
+  border: none;
+  border-radius: 27px; /* نصف ارتفاع برای کپسول */
+  margin: 0 auto 0px; 
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* ============================
+   FORM ROWS
+   ============================ */
+
+.form-row {
+  height: 100px; /* ارتفاع ثابت برای ردیف */
+  overflow: visible;
+  align-items: flex-start; 
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5%; /* فاصله بین ستون‌ها */
+  margin-bottom: 30px; /* فاصله ثابت بین ردیف‌ها */
+  justify-content: center;
+}
+
+/* ============================
+   FORM GROUPS
+   ============================ */
+
+.form-group {
+  width: 30%;
+  height: 100%; /* پر کردن کل ارتفاع row */
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center !important;
+  gap: 0px; /* فاصله بین لیبل و فرم کنترل */
+}
+
+/* ============================
+   LABELS
+   ============================ */
+
+.form-group label {
+  height: 24px; /* ارتفاع ثابت */
+  line-height: 24px;
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #156082;
+  margin-bottom: 6px;
+}
+
+
+
+/* ============================
+   FORM CONTROLS
+   ============================ */
+
+.form-control {
+  width: 100%; /* پر کردن عرض فرم گروپ */
+  height: 48px; /* ارتفاع ثابت */
+  padding: 12px 16px; 
+  border: 1.5px solid #b6d7f7;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #f7fbff;
+  color: #222;
+  box-sizing: border-box;
+  transition: border .2s, background .2s;;
+}
+
+.form-control:focus {
+  outline: none;
+  border: 1.5px solid #00b0f0;
+  background: #e6f7ff;
+}
+
+/* ============================
+   READONLY FIELDS
+   ============================ */
+
+.form-control.readonly[readonly] {
+  background: #f3f3f3;
+  color: #888;
+  border-color: #ddd;
+  cursor: not-allowed;
+}
+
+/* ============================
+   PASSWORD FIELD WRAPPER
+   ============================ */
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input.form-control {
+  position: static;
+  top: 0;
+  left: 0;
+  padding-left: 50px; /* جا برای آیکون */
+}
+
+.password-wrapper .toggle-password {
+  position: absolute;
+  top: 56%;
+  left: 10px;
+  width: 32px;              
+  text-align: center;       
+  line-height: 32px;        
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #056997; 
+  z-index: 3;
+  padding: 0;
+  transition: color .2s;
+}
+
+.password-wrapper .toggle-password:hover {
+    color: #0099e0;
+}
+
+input.valid-password {
+  transition: letter-spacing 0.3s ease, color 0.3s ease;
+  letter-spacing: 0.15em;
+  color: #222;
+}
+
+input.valid-password[type="password"] {
+  letter-spacing: 0.3em;
+  color: #222;
+}
+
+/* حذف آیکون‌های پیش‌فرض مرورگر */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ============================
+   ERROR MESSAGES
+   ============================ */
+   
+.error-message {
+  color: #e74c3c;
+  font-size: 13px;
+  min-height: 18px;
+  margin-top: 4px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.error-message.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.error-row {
+  margin-bottom: 42px;
+}
+
+.error-message.general-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fceefd;  /* پس‌زمینه صورتی-بنفش روشن */
+  color: #722872;             /* متن ارغوانی تیره */
+  border: 1px solid #e9c7f0;  /* حاشیه بنفش روشن */
+  padding: 16px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  height: auto;
+  width: 80%; /* همیشه ۸۰٪ عرض صفحه */
+  box-sizing: border-box;
+  line-height: 1.6;
+  white-space: normal;
+  word-wrap: break-word;
+  margin: 0 auto; /* وسط‌چین */
+}
+
+
+/* ============================
+   SUBMIT BUTTON
+   ============================ */
+
+.form-actions {
+  display: flex;
+  justify-content: left; 
+  margin: 0 auto 0; 
+  gap: 20px;
+  z-index: 1000;
+  padding: 10px 15px;
+  border-radius: 10px;
+}
+.btn-submit,
+.btn-cancel {
+  width: 150px;      
+  height: 48px;      
+  padding: 0 0px;   
+  border-radius: 24px; /* کپسولی شدن با نصف ارتفاع */
+  font-size: 18px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-submit {
+  background-color: #84e291;
+  color: #265C26;
+}
+
+.btn-submit:hover,
+.btn-submit:focus {
+  background-color: #22a74a;
+  color: #ffffff;
+}
+
+.btn-cancel {
+  background-color: #ff8a80;
+  color: #a32626;
+}
+
+.btn-cancel:hover,
+.btn-cancel:focus {
+  background-color: #eb4c4c;
+  color: #ffffff;
+}

@@ -1,22 +1,34 @@
 @model AP_Project.Models.Users.Student
-@using AP_Project.Data
+@{
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  if (string.IsNullOrEmpty(currentHash)) // در ریترن ویو گت کوئری منتقل میشه ولی در ریترن ویو پست کوئری پاک میشه و هش رو دستی با ویو دیتا فرستادیم
+  {
+    currentHash = ViewData["Hash"]?.ToString() ?? "";
+  }
+  var activeTab = ViewData["ActiveTab"]?.ToString();
+}
 
 <header class="student-header">
   <div class="header-title">
     <h1>داشبورد دانشجو</h1>
   </div>
   <div class="header-actions">
-    <span class="student-name">@Model.FirstName @Model.LastName</span>
-    <div class="nav-links">
-      @{
-        var hashedId = ComputeHash.Sha1(Model.StudentId.ToString());
-        var activeTab = ViewData["ActiveTab"]?.ToString();
-      }
-
-      <a asp-controller="StudentCoursesList" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString()=="CoursesList"?"active":"")">لیست دروس</a>
-      <a asp-controller="Transcripts" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString()=="Transcripts"?"active":"")">مشاهده ریز نمرات</a>
-      <a asp-controller="FullInformation" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString()=="FullInformation"?"active":"")">اطلاعات جامع دانشجو</a>
-      <a asp-controller="Login" asp-action="Logout">خروج</a>
-    </div>
+    @if (Model != null)
+    {
+      <span class="student-name">@Model.FirstName @Model.LastName</span>
+      <div class="nav-links">
+        <a asp-controller="StudentCoursesList" asp-action="Index" asp-route-h="@currentHash" class="@(ViewData["ActiveTab"]?.ToString()=="CoursesList"?"active":"")">لیست دروس</a>
+        <a asp-controller="Transcripts" asp-action="Index" asp-route-h="@currentHash" class="@(ViewData["ActiveTab"]?.ToString()=="Transcripts"?"active":"")">مشاهده ریز نمرات</a>
+        <a asp-controller="FullInformation" asp-action="Index" asp-route-h="@currentHash" class="@(ViewData["ActiveTab"]?.ToString()=="FullInformation"?"active":"")">اطلاعات جامع دانشجو</a>
+        <a asp-controller="Login" asp-action="Logout">خروج</a>
+      </div>
+    }
+    else
+    {
+      <span class="student-name">دانشجوی نامشخص</span>
+      <div class="nav-links">
+        <a asp-controller="Login" asp-action="Logout">خروج</a>
+      </div>
+    }
   </div>
 </header>

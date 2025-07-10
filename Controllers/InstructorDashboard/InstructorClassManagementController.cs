@@ -21,7 +21,6 @@ namespace AP_Project.Controllers
             if (instructor == null)
                 return RedirectToAction("Index", "Login");
 
-            ViewData["ActiveTab"] = "Class";
             return View("~/Views/InstructorDashboard/Class.cshtml", instructor);
         }
     }

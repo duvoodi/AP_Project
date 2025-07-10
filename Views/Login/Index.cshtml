@@ -3,35 +3,36 @@
   Layout = "_LayoutLogin";
 }
 
+<!-- مجموعه فونت آوسوم -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/login.css" />
 
 <div class="login-container">
   <h2>صفحه ورود</h2>
-  <form method="post" asp-controller="Login" asp-action="Index">
-    <label for="userId">نام کاربری</label>
-    <input type="number" id="userId" name="userId" required />
-
-    <label for="password">رمز عبور</label>
-    <div class="password-wrapper">
-      <input type="password" id="password" name="password" required />
-      <input type="text" id="passwordText" required />
-      <button type="button" id="togglePassword" class="toggle-password" aria-label="نمایش/پنهان رمز">
-        <i class="fa fa-eye"></i>
-      </button>
+  <form asp-controller="Login" asp-action="Index" method="post" id="login-form">
+    <div class="form-group">
+      <label>نام کاربری</label>
+      <div>
+        <input class="form-control valid-username" id="Username" name="Username" data-maxlength="32" />
+      </div>
+      <span class="error-message">@Html.ValidationMessage("Username")</span>
     </div>
+    <div class="form-group">
+      <label>رمز عبور</label>
+      <div class="password-wrapper">
+        <input type="password" class="form-control valid-password" id="Password" name="Password" data-maxlength="32" />
+        <button type="button" class="toggle-password">
+          <i class="fa fa-eye"></i>
+        </button>
+      </div>
+      <span class="error-message">@Html.ValidationMessage("Password")</span>
+    </div>
+
     <button type="submit" title="برای ورود، نام کاربری و رمز عبور خود را وارد کرده و کلیک کنید.">
       ورود
     </button>
   </form>
-
-  @if (!ViewData.ModelState.IsValid)
-  {
-    foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-    {
-      <p class="error-message">@error.ErrorMessage</p>
-    }
-  }
 
   <footer>
     <p>پروژه AP | کوشا مجلسی | امیر محمد داودی</p>
@@ -39,52 +40,46 @@
   </footer>
 </div>
 
-<script>
-  const userId = document.getElementById("userId");
-  const password = document.getElementById("password");
-  const passwordText = document.getElementById("passwordText");
-  const togglePassword = document.getElementById("togglePassword");
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <script src="~/js/FormUtils/Shared/max-length-handler.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-username-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-password-inputs.js"></script>
+  <!-- تابع ولیدیت فیلد اختصاصی فیلد های این صفحه -->
+  <!-- آخر همه اضافه شده چون از توابع اسکریپت های بالا استفاده میکند -->
+  <script src="~/js/FormUtils/LoginForm/validateField.js"></script>
+  <script>
+    // ولیدیت فیلد ها هنگام خروج از فیلد با نمایش ارور ترو
+    // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+    document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+      input.addEventListener('blur', function () {
+        validateField(this.id, true) // نتیجه تابع رو در دکمه سابمیت بررسی میکنیم اینجا تابع صرفا برای نمایش ارور فراخوانی میشود
+      });
+    });
 
-  // اعتبارسنجی فیلدها
-  userId.addEventListener("invalid", function () {
-    if (!userId.value) {
-      userId.setCustomValidity("لطفاً نام کاربری را وارد کنید.");
-    }
-  });
+    // چک ها بعد زدن کلید تایید
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
 
-  userId.addEventListener("input", function () {
-    userId.setCustomValidity("");
-  });
+      let hasError = false;
 
-  password.addEventListener("invalid", function () {
-    if (!password.value) {
-      password.setCustomValidity("لطفاً رمز عبور را وارد کنید.");
-    }
-  });
+      // 1. پاک کردن خطاهای قبلی
+      this.querySelectorAll('.error-message').forEach(span => span.textContent = '');
 
-  password.addEventListener("input", function () {
-    password.setCustomValidity("");
-  });
+      // 2. ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
+      // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+      this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+        if (!validateField(input.id, true)) {
+          hasError = true;
+        }
+      });
 
-  // نمایش/مخفی کردن رمز عبور
-  togglePassword.addEventListener("click", function () {
-    const isHidden = password.style.opacity !== "0";
-    if (isHidden) {
-      password.style.opacity = "0";
-      passwordText.style.opacity = "1";
-      passwordText.value = password.value;
-      passwordText.focus();
-      this.querySelector("i").classList.replace("fa-eye", "fa-eye-slash");
-    } else {
-      password.style.opacity = "1";
-      passwordText.style.opacity = "0";
-      password.value = passwordText.value;
-      password.focus();
-      this.querySelector("i").classList.replace("fa-eye-slash", "fa-eye");
-    }
-  });
-
-  // همگام‌سازی مقادیر
-  password.addEventListener("input", () => passwordText.value = password.value);
-  passwordText.addEventListener("input", () => password.value = passwordText.value);
-</script>
+      // 3. اگر خطایی نبود فرم ارسال شود
+      if (!hasError) {
+        this.submit();
+      }
+    });
+  </script>
+}

@@ -11,6 +11,7 @@
   @await Html.PartialAsync("~/Views/Shared/Header/_AdminHeaderPartial.cshtml", Model)
   <main class="admin-main">
     @RenderBody()
+    @RenderSection("Scripts", required: false)
   </main>
 </body>
 </html>
@@ -28,15 +29,16 @@
           return;
         }
 
-        const qs = window.location.search;
-        if (!qs) {
-          window.location.href = '/Login/Index';
-          return;
-        }
+        const queryString = window.location.search;
 
-        const [param, hashInUrl] = qs.substring(1).split('=');
+        const params = new URLSearchParams(queryString);
+        const hashInUrl = params.get('h');
 
-        if (hashInUrl !== sessionHash) {
+        const currentHash = '@ViewData["Hash"]?.ToString()';
+
+        const hashToCompare =  (hashInUrl && hashInUrl !== 'null') ? hashInUrl : currentHash;
+
+        if (!hashToCompare  || hashToCompare  !== sessionHash) {
           window.location.href = '/Login/Index';
           return;
         }

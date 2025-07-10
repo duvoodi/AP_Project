@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using AP_Project.Data;
 using AP_Project.Models.Users;
+using AP_Project.Helpers.FormUtils;
+using AP_Project.FormViewModels.LoginForm;
 
 namespace AP_Project.Controllers
 {
@@ -63,13 +65,24 @@ namespace AP_Project.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(int userId, string password)
+        public IActionResult Index(LoginFormViewModel LoginForm)
         {
-            var hashedInputPassword = ComputeHash.Sha1(password);
+
+            // تبدیل فیلد ها نال و گرفته نشده به رشته خالی
+            // برای جلوگیری از اکسپشن حین چک کردنشون
+            LoginForm.NullFieldsToEmpty();
+
+            // چک همه فیلدها با شو ارور ترو
+            foreach (var prop in typeof(LoginFormViewModel).GetProperties())
+            {
+                ModelState.ValidateField(LoginForm, prop.Name, true);
+            }
+
+            var hashedInputPassword = ComputeHash.Sha1(LoginForm.Password);
 
             // بررسی در جدول Admin
             var admin = _db.Set<Admin>()
-                .FirstOrDefault(a => a.AdminId == userId && a.HashedPassword == hashedInputPassword);
+                .FirstOrDefault(a => a.AdminId.ToString() == LoginForm.Username && a.HashedPassword == hashedInputPassword);
 
             if (admin != null)
             {
@@ -81,7 +94,7 @@ namespace AP_Project.Controllers
 
             // بررسی در جدول Instructor
             var instructor = _db.Set<Instructor>()
-                .FirstOrDefault(i => i.InstructorId == userId && i.HashedPassword == hashedInputPassword);
+                .FirstOrDefault(i => i.InstructorId.ToString() == LoginForm.Username && i.HashedPassword == hashedInputPassword);
 
             if (instructor != null)
             {
@@ -93,7 +106,7 @@ namespace AP_Project.Controllers
 
             // بررسی در جدول Student
             var student = _db.Set<Student>()
-                .FirstOrDefault(s => s.StudentId == userId && s.HashedPassword == hashedInputPassword);
+                .FirstOrDefault(s => s.StudentId.ToString() == LoginForm.Username && s.HashedPassword == hashedInputPassword);
 
             if (student != null)
             {
@@ -104,9 +117,8 @@ namespace AP_Project.Controllers
             }
 
             // اگر لاگین ناموفق بود
-            TempData["LoginError"] = "نام کاربری یا رمز عبور اشتباه است.";
             return RedirectToAction("Index");
-            
+
         }
     }
 }
