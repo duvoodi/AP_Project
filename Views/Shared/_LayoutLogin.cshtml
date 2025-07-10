@@ -4,12 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"]</title>
-  <link rel="stylesheet" href="~/css/login.css" />
+  <link rel="stylesheet" href="~/css/Layout/_layout-login.css" asp-append-version="true" />
 </head>
 <body>
-  @await Html.PartialAsync("Header/_LoginHeaderPartial")
+  @await Html.PartialAsync("~/Views/Shared/Header/_LoginHeaderPartial.cshtml")
 
-  @RenderBody()
-  @RenderSection("Scripts", required: false)
+  <main class="main">
+    @RenderBody()
+    @RenderSection("Scripts", required: false)
+  </main>
 </body>
 </html>

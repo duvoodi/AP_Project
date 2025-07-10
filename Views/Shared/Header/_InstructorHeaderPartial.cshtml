@@ -8,14 +8,14 @@
   var activeTab = ViewData["ActiveTab"]?.ToString();
 }
 
-<header class="instructor-header">
+<header class="dashboard-header instructor">
   <div class="header-title">
     <h1>داشبورد استاد</h1>
   </div>
   <div class="header-actions">
     @if (Model != null)
     {
-      <span class="instructor-name">@Model.FirstName @Model.LastName</span>
+      <span class="user-name instructor">@Model.FirstName @Model.LastName</span>
       <div class="nav-links">
         <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-h="@currentHash" class="@(ViewData["ActiveTab"]?.ToString()=="Class"?"active":"")">مدیریت کلاس‌ها</a>
         <a asp-controller="Login" asp-action="Logout">خروج</a>
@@ -23,7 +23,7 @@
     }
     else
     {
-      <span class="instructor-name">استاد نامشخص</span>
+      <span class="user-name instructor">استاد نامشخص</span>
       <div class="nav-links">
         <a asp-controller="Login" asp-action="Logout">خروج</a>
       </div>

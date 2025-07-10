@@ -1,53 +1,16 @@
 @model AP_Project.Models.Users.Admin
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/css/AdminDashboard/admin.css" asp-append-version="true" />
-</head>
-<body>
+@{
+  Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+@section Styles {
+  <link rel="stylesheet" href="~/css/Layout/_layout-dashboard.css"  asp-append-version="true" />
+  <link rel="stylesheet" href="~/css/Layout/_layout-admin.css" asp-append-version="true" />
+}
+
+@section Header {
   @await Html.PartialAsync("~/Views/Shared/Header/_AdminHeaderPartial.cshtml", Model)
-  <main class="admin-main">
-    @RenderBody()
-    @RenderSection("Scripts", required: false)
-  </main>
-</body>
-</html>
+}
 
-<script>
-  setInterval(() => {
-    fetch('/Login/CheckSession?hashed=true', { cache: 'no-store' })
-      .then(res => res.json())
-      .then(data => {
-        const role = data.role;
-        const sessionHash = data.id;
-
-        if (role === 'none') {
-          window.location.href = '/Login/Index';
-          return;
-        }
-
-        const queryString = window.location.search;
-
-        const params = new URLSearchParams(queryString);
-        const hashInUrl = params.get('h');
-
-        const currentHash = '@ViewData["Hash"]?.ToString()';
-
-        const hashToCompare =  (hashInUrl && hashInUrl !== 'null') ? hashInUrl : currentHash;
-
-        if (!hashToCompare  || hashToCompare  !== sessionHash) {
-          window.location.href = '/Login/Index';
-          return;
-        }
-      })
-      .catch(() => {
-        window.location.href = '/Login/Index';
-      });
-  }, 5000); // هر 5 ثانیه تا فشار به سرور نیاد
-  // این هر چند ثانیه چک میکند که هش سشن صفحه با هش سشن فعال یکی باشد
-  // اگر متفاوت باشد سشن این صفحه منقضی شده و به صفحه لاگین میرود
-  // اونجا اگر سشن فعال داریم به داشبوردش میرود اگر نداریم صفحه لاگین لود میشود
-</script>
+@RenderBody()
+@RenderSection("Scripts", required: false)

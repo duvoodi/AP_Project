@@ -1,0 +1,99 @@
+/* ============================
+   FONT
+   ============================ */
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonts/vazirmatn/Vazirmatn[wght].woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================
+   LAYOUT: HTML & BODY
+   ============================ */
+
+html, body {
+  font-family: 'Vazirmatn', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  direction: rtl;
+  background-color: #e5e5e5;
+}
+
+/* ============================
+   HEADER
+   ============================ */
+
+.login-header {
+  margin: 0; 
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100px;
+  background-color: #00B0F0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  border-bottom: 0px solid #ddd;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* ============================
+   HEADER TITLE
+   ============================ */
+
+.login-header .header-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  padding: 15px 20px 0px;
+}
+
+.login-header .header-title h1 {
+  margin: 0;
+  font-size: 35px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 2;
+}
+
+/* ============================
+   MAIN: LOGIN CONTAINER
+   ============================ */
+
+.login-container {
+  margin-top: 80px;
+  background-color: #fff;
+  padding: 50px 60px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 500px;
+  text-align: right;
+  direction: rtl;
+  box-sizing: border-box;
+}
+
+/* ============================
+   CONTAINER HEADINGS
+   ============================ */
+
+.login-container h2 {
+  text-align: center;
+  direction: rtl;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 900;
+  color: #333;
+}

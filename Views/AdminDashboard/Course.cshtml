@@ -6,14 +6,14 @@
   var hasFooter = false;
 }
 
-<main class="admin-main @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
   <h2 class="page-title">مدیریت دروس</h2>
   <!-- محتوای مدیریت دروس -->
 </main>
 
 @if (hasFooter)
 {
-  <footer class="admin-footer">
+  <footer class="dashboard-footer admin">
     <p>متن فوتر</p>
   </footer>
 }

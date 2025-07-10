@@ -11,7 +11,7 @@
 <!-- استایل اختصاصی این صفحه -->
 <link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-management.css" asp-append-version="true" />
 
-<main class="admin-main @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
   <div class="toolbar">
     <a asp-controller="InstructorManagement" asp-action="AddInstructorIndex" asp-route-h="@currentHash" class="btn-add-instructor">
       <span class="icon">&#43;</span>
@@ -69,7 +69,7 @@
 
 @if (hasFooter)
 {
-  <footer class="admin-footer">
+  <footer class="dashboard-footer admin">
     <p>متن فوتر</p>
   </footer>
 }
