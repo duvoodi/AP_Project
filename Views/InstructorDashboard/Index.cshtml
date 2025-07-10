@@ -5,13 +5,13 @@
   var hasFooter = true;
 }
 
-<main class="instructor-main @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main instructor @(hasFooter ? "has-footer" : "has-not-footer")">
     <!-- محتوای پیش‌فرض -->
 </main>
 
 @if (hasFooter)
 {
-  <footer class="instructor-footer">
+  <footer class="dashboard-footer instructor">
     <p>لطفا یکی از سربرگ‌ها را انتخاب کنید</p>
   </footer>
 }

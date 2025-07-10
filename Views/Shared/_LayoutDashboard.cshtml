@@ -1,0 +1,40 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <!-- شروع به کار اسکریپت چک متوالی سشن بلافاصله بعد لود هد -->
+  <script src="~/js/Shared/session.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"]</title>
+  @RenderSection("Styles", required: false)
+</head>
+<body>
+  @RenderSection("Header", required: true)
+  <main class="main">
+    @RenderBody()
+    @RenderSection("Scripts", required: false)
+  </main>
+</body>
+</html>
+
+<script>
+  // بعد از لود موارد بالا یعنی بعد از لود تمام موارد صفحه، داشبورد مین و فوتر را نمایان میکنیم
+  // در سی اس اس سراسری داشبورد برای ویزیبل شدن داشبورد مین و داشبورد فوتر انیمیشن زدیم
+  window.addEventListener('load', () => {
+    const elements = document.querySelectorAll('.dashboard-main, .dashboard-footer');
+    elements.forEach(el => {
+      el.classList.add('visible');
+    });
+    // بعد نمایش مین و فوتر پاپ آپ و مواردی که با تاخیر باید نمایان شوند و کلاس ویل شو دارن نمایش داده میشوند
+    setTimeout(() => {
+      const willShowPopups = document.querySelectorAll('.will-show');
+      willShowPopups.forEach(el => {
+        el.classList.add('visible');
+      });
+    }, 500); // با تأخیر 500 میلی ثانیه ای نمایان میشوند
+  });
+</script>

@@ -2,18 +2,6 @@
    FONT
    ============================ */
 
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn[wght].woff2') format('woff2-variations');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ============================
-   LAYOUT: BASE PAGE
-   ============================ */
-
 table, button, td, th {
   font-family: 'Vazirmatn', sans-serif !important;
 }
@@ -23,8 +11,9 @@ table, button, td, th {
    ============================ */
 
 .toolbar {
-  margin: 15px 0;
   position: sticky;
+  margin: 0;
+  padding: 15px 0;
   top: 100px;
   background: white;
   z-index: 3;
@@ -86,7 +75,6 @@ table, button, td, th {
 }
 
 .instructor-table thead tr {
-  background-color: #00b0f0;
   font-size: 18px;
 }
 
@@ -110,9 +98,13 @@ table, button, td, th {
 
 .instructor-table thead th {
   color: white;
+  background-color: #00b0f0;
   font-weight: 600;
   position: sticky;
-  top: 100px;
+  top: 180px; /* ارتفاع تول بار */
+  border-top: 5px solid white;
+  background-clip: padding-box;
+  border-top: none; /* تا کامل بچسبد به تول بار */
   z-index: 2;
 }
 
@@ -168,32 +160,6 @@ table, button, td, th {
   position: relative;
 }
 
-.copy-id-button::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #0070c0;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 13px;
-  display: none;
-  white-space: nowrap;
-}
-
-.copy-id-button.show-tooltip::after {
-  display: block;
-  animation: fadeOut 3s forwards;
-}
-
-@keyframes fadeOut {
-  0% {opacity: 1;}
-  80% {opacity: 1;}
-  100% {opacity: 0;}
-}
-
 /* ============================
    ACTION COLUMN
    ============================ */
@@ -224,71 +190,4 @@ table, button, td, th {
 
 .icon-delete::before {
   content: "🗑️";
-}
-
-/* ============================
-   CUSTOM TOOLTIP
-   ============================ */
-
-.custom-tooltip {
-  position: fixed;
-  background-color: #156082;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 4px;
-  white-space: pre-wrap;
-  word-break: break-word;
-  z-index: 9998; /* هدر 9999 */
-  pointer-events: none;
-  font-size: 14px;
-  max-width: 200px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.custom-tooltip.show {
-visibility: visible;
-opacity: 1;
-}
-
-.custom-tooltip.align-left {
-  text-align: left;
-  transform: none;
-}
-.custom-tooltip.align-center {
-  text-align: center;
-  transform: translateX(-50%);
-}
-.custom-tooltip.align-right {
-  text-align: right;
-  transform: translateX(-100%);
-}
-
-/* ============================
-   EMPTY STATE POPUP
-   ============================ */
-
-.empty-popup {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  background-color: #4169e1;
-  color: white;
-  width: 400px;
-  padding: 10px 25px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  font-size: 18px;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.25s ease-in-out;
-}
-.empty-popup.visible {
-  visibility: visible;
-  opacity: 1;
 }

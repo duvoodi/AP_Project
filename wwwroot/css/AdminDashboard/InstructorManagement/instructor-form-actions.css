@@ -2,30 +2,9 @@
    FONT
    ============================ */
 
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/vazirmatn/Vazirmatn[wght].woff2') format('woff2-variations');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ============================
-   LAYOUT: BASE PAGE
-   ============================ */
-
-body, html {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  direction: rtl;
-  text-align: right;
-  background: #fff;
-}
 body, html, input, textarea, select, button {
   font-family: 'Vazirmatn', sans-serif !important;
 }
-
 
 /* ============================
    FORM CONTAINER
@@ -43,10 +22,10 @@ body, html, input, textarea, select, button {
    FORM: TOP TAB
    ============================ */
 
-.tabbar {
-    margin: 20px 0 0;
+.titlebar {
+    margin: 20px 0 10px;
 }
-.add-instructor-tab {
+.action-title-tab {
   
   display: flex;
   align-items: center;      
@@ -54,8 +33,6 @@ body, html, input, textarea, select, button {
   width: calc(100% - 40px);  
   height: 54px;              
   padding: 0 20px;
-  background-color: #84e291;
-  color: #265C26;
   font-size: 22px;
   font-weight: 700;
   text-decoration: none;
@@ -66,6 +43,21 @@ body, html, input, textarea, select, button {
   direction: rtl !important;
   text-align: right !important;
 }
+
+.action-title-tab.add {
+  background-color: #84e291;
+  color: #265C26;
+}
+.action-title-tab.delete {
+  background-color: #ff8a80;
+  color: #a32626;
+}
+.action-title-tab.edit {
+  background-color: #f5dc71;
+  color: #725810;
+}
+
+
 
 /* ============================
    FORM ROWS
@@ -260,7 +252,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   margin: 0 auto 0; 
   gap: 20px;
   z-index: 1000;
-  padding: 10px 15px;
+  padding: 10px 0px;
   border-radius: 10px;
 }
 .btn-submit,

@@ -5,21 +5,18 @@ using Microsoft.AspNetCore.Http;
 
 namespace AP_Project.Controllers
 {
-    public class ClassManagementController : Controller
+    public class ClassManagementController : BaseAdminController
     {
-        private readonly AppDbContext _db;
-        public ClassManagementController(AppDbContext db) => _db = db;
+        public ClassManagementController(AppDbContext db) : base(db)
+        {
+        }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var adminId = HttpContext.Session.GetInt32("AdminId");
-            if (adminId == null)
-                return RedirectToAction("Index", "Login");
-
-            var admin = _db.Set<Admin>().FirstOrDefault(a => a.AdminId == adminId.Value);
-            if (admin == null)
-                return RedirectToAction("Index", "Login");
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
 
             return View("~/Views/AdminDashboard/Class.cshtml", admin);
         }
