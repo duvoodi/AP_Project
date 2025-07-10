@@ -15,3 +15,14 @@
   </main>
 </body>
 </html>
+
+<script>
+  // بعد از لود موارد بالا یعنی بعد از لود تمام موارد صفحه لاگین کانتینر را نمایان میکنیم
+  // در سی اس اس لاگین برای ویزیبل شدن لاگین کانتینر انیمیشن زدیم ولی در صفحه انتقال نزدیم تا درجا پیام انتقال را نشان دهد و برود
+  window.addEventListener('load', () => {
+    const main = document.querySelector('.login-container');
+    if (main) {
+      main.classList.add('visible');
+    }
+  });
+</script>
