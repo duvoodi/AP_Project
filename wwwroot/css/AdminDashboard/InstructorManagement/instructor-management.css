@@ -156,32 +156,6 @@ table, button, td, th {
   position: relative;
 }
 
-.copy-id-button::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #0070c0;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 13px;
-  display: none;
-  white-space: nowrap;
-}
-
-.copy-id-button.show-tooltip::after {
-  display: block;
-  animation: fadeOut 3s forwards;
-}
-
-@keyframes fadeOut {
-  0% {opacity: 1;}
-  80% {opacity: 1;}
-  100% {opacity: 0;}
-}
-
 /* ============================
    ACTION COLUMN
    ============================ */
