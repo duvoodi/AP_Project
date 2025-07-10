@@ -239,7 +239,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   margin: 0 auto 0; 
   gap: 20px;
   z-index: 1000;
-  padding: 10px 15px;
+  padding: 10px 0px;
   border-radius: 10px;
 }
 .btn-submit,

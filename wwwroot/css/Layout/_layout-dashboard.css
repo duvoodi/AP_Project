@@ -135,7 +135,7 @@ html, body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
 
 .custom-tooltip.show {
@@ -162,7 +162,7 @@ opacity: 1;
 
 .empty-popup {
   position: fixed;
-  bottom: 20px;
+  bottom: 40px; /* به اندازه ارتفاع فوتر */
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
