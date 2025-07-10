@@ -5,23 +5,20 @@ using Microsoft.AspNetCore.Http;
 
 namespace AP_Project.Controllers
 {
-    public class InstructorDashboardController : Controller
+    public class InstructorDashboardController : BaseInstructorController
     {
-        private readonly AppDbContext _db;
-        public InstructorDashboardController(AppDbContext db) => _db = db;
+        public InstructorDashboardController(AppDbContext db) : base(db)
+        {
+        }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var instructorId = HttpContext.Session.GetInt32("InstructorId");
-            if (instructorId == null)
-                return RedirectToAction("Index", "Login");
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var instructor = CurrentInstructor;
 
-            var instructor = _db.Set<Instructor>().FirstOrDefault(i => i.InstructorId == instructorId.Value);
-            if (instructor == null)
-                return RedirectToAction("Index", "Login");
-
-            return View(instructor);
+            return View("Index", instructor);
         }
     }
 }

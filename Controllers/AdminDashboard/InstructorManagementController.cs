@@ -8,21 +8,18 @@ using AP_Project.FormViewModels.InstructorForm;
 
 namespace AP_Project.Controllers
 {
-    public class InstructorManagementController : Controller
+    public class InstructorManagementController : BaseAdminController
     {
-        private readonly AppDbContext _db;
-        public InstructorManagementController(AppDbContext db) => _db = db;
+        public InstructorManagementController(AppDbContext db) : base(db)
+        {
+        }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var adminId = HttpContext.Session.GetInt32("AdminId");
-            if (adminId == null)
-                return RedirectToAction("Index", "Login");
-
-            var admin = _db.Set<Admin>().FirstOrDefault(a => a.AdminId == adminId.Value);
-            if (admin == null)
-                return RedirectToAction("Index", "Login");
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
 
             var instructors = _db.Instructors
                 .OrderBy(i => i.LastName)
@@ -36,13 +33,9 @@ namespace AP_Project.Controllers
         [HttpGet]
         public IActionResult AddInstructorIndex()
         {
-            var adminId = HttpContext.Session.GetInt32("AdminId");
-            if (adminId == null)
-                return RedirectToAction("Index", "Login");
-
-            var admin = _db.Set<Admin>().FirstOrDefault(a => a.AdminId == adminId.Value);
-            if (admin == null)
-                return RedirectToAction("Index", "Login");
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
 
             var pc = new PersianCalendar();
             int currentPersianYear = pc.GetYear(DateTime.Now);
@@ -53,13 +46,8 @@ namespace AP_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> GenerateInstructorCode(int year)
         {
-            var adminId = HttpContext.Session.GetInt32("AdminId");
-            if (adminId == null)
-                return RedirectToAction("Index", "Login");
-
-            var admin = await _db.Set<Admin>().FirstOrDefaultAsync(a => a.AdminId == adminId.Value);
-            if (admin == null)
-                return RedirectToAction("Index", "Login");
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
 
             var codeGenerator = new CodeGenerator(_db);
             var code = await codeGenerator.GenerateInstructorCodeAsync(year);
@@ -71,13 +59,9 @@ namespace AP_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddInstructor(InstructorFormViewModel InstructorForm)
         {
-            var adminId = HttpContext.Session.GetInt32("AdminId");
-            if (adminId == null)
-                return RedirectToAction("Index", "Login");
-
-            var admin = _db.Admins.FirstOrDefault(a => a.AdminId == adminId.Value);
-            if (admin == null)
-                return RedirectToAction("Index", "Login");
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
 
             // تبدیل فیلد ها نال و گرفته نشده به رشته خالی
             // برای جلوگیری از اکسپشن حین چک کردنشون

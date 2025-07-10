@@ -5,21 +5,18 @@ using Microsoft.AspNetCore.Http;
 
 namespace AP_Project.Controllers
 {
-    public class StudentCoursesListController : Controller
+    public class StudentCoursesListController : BaseStudentController
     {
-        private readonly AppDbContext _db;
-        public StudentCoursesListController(AppDbContext db) => _db = db;
+        public StudentCoursesListController(AppDbContext db) : base(db)
+        {
+        }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var studentId = HttpContext.Session.GetInt32("StudentId");
-            if (studentId == null)
-                return RedirectToAction("Index", "Login");
-
-            var student = _db.Set<Student>().FirstOrDefault(a => a.StudentId == studentId.Value);
-            if (student == null)
-                return RedirectToAction("Index", "Login");
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var student = CurrentStudent;
 
             return View("~/Views/StudentDashboard/CoursesList.cshtml", student);
         }
