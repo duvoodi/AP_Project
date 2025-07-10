@@ -11,8 +11,9 @@ table, button, td, th {
    ============================ */
 
 .toolbar {
-  margin: 15px 0;
   position: sticky;
+  margin: 0;
+  padding: 15px 0;
   top: 100px;
   background: white;
   z-index: 3;
@@ -74,7 +75,6 @@ table, button, td, th {
 }
 
 .instructor-table thead tr {
-  background-color: #00b0f0;
   font-size: 18px;
 }
 
@@ -98,9 +98,13 @@ table, button, td, th {
 
 .instructor-table thead th {
   color: white;
+  background-color: #00b0f0;
   font-weight: 600;
   position: sticky;
-  top: 100px;
+  top: 180px; /* ارتفاع تول بار */
+  border-top: 5px solid white;
+  background-clip: padding-box;
+  border-top: none; /* تا کامل بچسبد به تول بار */
   z-index: 2;
 }
 

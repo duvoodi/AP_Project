@@ -13,7 +13,10 @@
    LAYOUT: HTML & BODY
    ============================ */
 html, body {
+  min-width: 958px; /* 1920÷2 یکم کمتر از نصف فول‌اچ‌دی */
+  overflow-x: auto;
   font-family: 'Vazirmatn', sans-serif;
+  height: 100%;
   margin: 0;
   padding: 0;
   direction: rtl;
@@ -24,6 +27,7 @@ html, body {
    HEADER (Shared)
    ============================ */
 .dashboard-header {
+  position: sticky;
   margin: 0;
   top: 0; left: 0;
   width: 100%;
@@ -34,7 +38,7 @@ html, body {
   justify-content: space-between;
   box-sizing: border-box;
   border-bottom: 0px solid #ddd;
-  z-index: 9999;
+  z-index: 9999; /* هدر 9999 پاپ آپ 9998 فوتر 9997 */
 }
 
 /* ----------------------------
@@ -146,7 +150,7 @@ html, body {
   border-radius: 4px;
   white-space: pre-wrap;
   word-break: break-word;
-  z-index: 9998; /* هدر 9999 */
+  z-index: 9998; /* هدر 9999 پاپ آپ 9998 فوتر 9997 */
   pointer-events: none;
   font-size: 14px;
   max-width: 200px;
@@ -229,6 +233,7 @@ html, body {
   color: #094e8f;
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
   font-size: 17px;
+  z-index: 9997; /* هدر 9999 پاپ آپ 9998 فوتر 9997 */
 }
 
 /* ============================

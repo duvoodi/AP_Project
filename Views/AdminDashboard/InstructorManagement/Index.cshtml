@@ -39,12 +39,13 @@
       @for (int i = 0; i < instructors.Count; i++)
       {
         var inst = instructors[i];
+        var EmailWithBreaks = inst.Email.Replace(".", "\u200B"+".").Replace("@", "\u200B"+"@");
         var userId = inst.Id.ToString();
         <tr>
           <td class="col-index">@((i + 1))</td>
           <td class="col-fname">@inst.FirstName</td>
           <td class="col-lname">@inst.LastName</td>
-          <td class="col-email">@inst.Email</td>
+          <td class="col-email">@Html.Raw(EmailWithBreaks)</td>
           <td class="col-fixed">@inst.HireYear</td>
           <td class="col-fixed">@String.Format("{0:N0}", inst.Salary)</td>
           <td class="col-fixed">@inst.InstructorId</td>
