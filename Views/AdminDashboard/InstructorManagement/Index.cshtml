@@ -1,7 +1,7 @@
 @model AP_Project.Models.Users.Admin
 @{
   ViewData["ActiveTab"] = "Instructor";
-  ViewData["Title"] = "مدیریت اساتید";
+  ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
   var instructors = ViewBag.Instructors as List<AP_Project.Models.Users.Instructor>;
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();

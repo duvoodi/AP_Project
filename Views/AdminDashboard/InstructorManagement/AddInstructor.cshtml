@@ -1,7 +1,7 @@
 @model AP_Project.Models.Users.Admin
 @{
   ViewData["ActiveTab"] = "Instructor";
-  ViewData["Title"] = "مدیریت اساتید";
+  ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
   if (string.IsNullOrEmpty(currentHash)) // در ریترن ویو گت کوئری منتقل میشه ولی در ریترن ویو پست کوئری پاک میشه و هش رو دستی با ویو دیتا فرستادیم
