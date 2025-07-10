@@ -14,7 +14,7 @@
 }
 
 <!-- مجموعه فونت آوسوم -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
 <!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-form-actions.css" asp-append-version="true" />
 
@@ -103,8 +103,8 @@
 
 <partial name="_ValidationScriptsPartial" />
 @section Scripts {
+  <!-- دریافت متغیر های ارسال شده از کنترلر -->
   <script>
-    // دریافت متغیر ها ارسال شده از کنترلر
     const currentPersianYear = parseInt('@ViewData["currentPersianYear"]');
   </script>
   <!-- اسکریپت های کمکی مورد نیاز این فرم -->
