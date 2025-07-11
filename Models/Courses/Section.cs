@@ -15,6 +15,6 @@ namespace AP_Project.Models.Courses
         public Classroom? Classroom { get; set; }
         public TimeSlot TimeSlot { get; set; }
         public ICollection<Takes> Takes { get; set; }
-        public ICollection<Teaches> Teaches { get; set; }
+        public Teaches Teaches { get; set; }
     }
 }
