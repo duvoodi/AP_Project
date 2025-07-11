@@ -1,0 +1,201 @@
+@model AP_Project.Models.Users.Admin
+@{
+  ViewData["ActiveTab"] = "Instructor";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  if (string.IsNullOrEmpty(currentHash))
+  {
+    currentHash = ViewData["Hash"]?.ToString() ?? "";
+  }
+  var hasFooter = false;
+
+  var form = (AP_Project.FormViewModels.InstructorForm.InstructorFormViewModel)ViewData["Form"];
+}
+
+<!-- مجموعه فونت آوسوم -->
+<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-form-actions.css" asp-append-version="true" />
+
+<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+  <div class="titlebar">
+    <div class="action-title-tab edit">
+      ویرایش استاد
+    </div>
+  </div>
+  <div class="form-container">
+    <form asp-controller="InstructorManagement" asp-action="EditInstructor" method="post" id="edit-instructor-form">
+      @Html.AntiForgeryToken()
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>نام</label>
+          <input class="form-control valid-person-name" id="FirstName" name="FirstName" value="@form?.FirstName" data-maxlength="32"/>
+          <span class="error-message">@Html.ValidationMessage("FirstName")</span>
+        </div>
+        <div class="form-group">
+          <label>نام خانوادگی</label>
+          <input class="form-control valid-person-name" id="LastName" name="LastName" value="@form?.LastName" data-maxlength="32" />
+          <span class="error-message">@Html.ValidationMessage("LastName")</span>
+        </div>
+        <div class="form-group">
+          <label>ایمیل</label>
+          <input class="form-control valid-email" id="Email" name="Email" value="@form?.Email" data-maxlength="320" />
+          <span class="error-message">@Html.ValidationMessage("Email")</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>کد مدرسی</label>
+          <input class="form-control readonly" id="InstructorId" name="InstructorId" value="@form?.InstructorId" readonly placeholder="منتظر سال استخدام معتبر ..." />
+          <span class="error-message">@Html.ValidationMessage("InstructorId")</span>
+        </div>
+        <div class="form-group">
+          <label>میزان حقوق (تومان)</label>
+          <input class="form-control valid-numeric" id="Salary" name="Salary" value="@form?.Salary" data-maxlength="9" data-allow-slice="true" />
+          <span class="error-message">@Html.ValidationMessage("Salary")</span>
+        </div>
+        <div class="form-group">
+          <label>سال استخدام</label>
+          <input class="form-control valid-numeric" id="HireYear" name="HireYear" value="@form?.HireYear" data-maxlength="4" data-allow-slice="true" />
+          <span class="error-message">@Html.ValidationMessage("HireYear")</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>رمز عبور</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-control valid-password" id="Password" name="Password" value="@form?.Password" data-maxlength="32" />
+            <button type="button" class="toggle-password">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+          <span class="error-message">@Html.ValidationMessage("Password")</span>
+        </div>
+        <div class="form-group">
+          <label>تکرار رمز عبور</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-control valid-password" id="ConfirmPassword" name="ConfirmPassword" value="@form?.ConfirmPassword" data-maxlength="32" />
+            <button type="button" class="toggle-password">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+          <span class="error-message">@Html.ValidationMessage("ConfirmPassword")</span>
+        </div>
+      </div>
+
+      <div class="error-row">
+        <div class="error-group" >
+          <span class="error-message general-error" id="GeneralError" >@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <a type="button" asp-controller="InstructorManagement" asp-action="Index" asp-route-h="@currentHash" class="btn-cancel">انصراف</a>
+        <button type="submit" class="btn-submit">تایید</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+  <script>
+    const currentPersianYear = parseInt('@ViewData["currentPersianYear"]');
+  </script>
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <script src="~/js/FormUtils/Shared/max-length-handler.js"></script>
+  <script src="~/js/Shared/debounce.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-person-name-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-numeric-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-email-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-password-inputs.js"></script>
+  <script src="~/js/FormUtils/InstructorForm/validateField.js"></script>
+  <script>
+    // ولیدیت فیلدها هنگام خروج از فیلد با نمایش ارور ترو
+    document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+      input.addEventListener('blur', function () {
+        validateField(this.id, true)
+      });
+    });
+
+    // دریافت کد مدرسی به صورت زنده هنگام ورود سال استخدام (در ویرایش)
+    let lastFetchedHireYear = @form?.HireYear ?? "null";
+    document.getElementById('HireYear')?.addEventListener('input', function () {
+      const instructorIdInput = document.getElementById('InstructorId');
+      if (!validateField('HireYear', false)) {
+        replaceError('InstructorId', '');
+        instructorIdInput.value = '';
+        return;
+      }
+      const parsedYear = parseInt(this.value, 10);
+
+      // اگر کد مدرسی داریم و ولید هست دیگه کد مدرسی جدید نگیریم
+      if (instructorIdInput.value && !validateField('InstructorId', true)) {
+        return;
+      }
+
+      // اگر ارور تکراری بودن کد مدرسی نمایش داده شده باشد، دوباره فچ کن
+      const input = document.getElementById('InstructorId');
+      if (!input) return;
+      const formGroup = input.closest('.form-group');
+      const errorSpan = formGroup?.querySelector('.error-message');
+      const errorSpanText = errorSpan ? errorSpan.textContent.trim() : '';
+      if (errorSpanText.includes('کد مدرسی تکراری')) {
+        debounceFetchInstructorCode(parsedYear);
+        return;
+      }
+
+      // بغیر از زمانی که کد تکراری بوده اگر سال تغییر نکرده، دوباره فچ نکن
+      if (parsedYear === lastFetchedHireYear) {
+        return;
+      }
+
+      debounceFetchInstructorCode(parsedYear);
+    });
+
+    // تابع دیبونس برای فچ کد مدرسی
+    const debounceFetchInstructorCode = debounce(function (year) {
+      const instructorIdInput = document.getElementById('InstructorId');
+      fetch(`/InstructorManagement/GenerateInstructorCode?year=${year}`)
+        .then(r => {
+          if (r.redirected) {
+            window.location.href = r.url;
+            return;
+          }
+          if (!r.ok) {
+            replaceError('InstructorId', 'خطا در دریافت کد مدرسی');
+            instructorIdInput.value = '';
+          }
+          return r.json();
+        })
+        .then(code => {
+          instructorIdInput.value = code;
+          validateField('InstructorId', true);
+          lastFetchedHireYear = year;
+        })
+        .catch(function () {
+          replaceError('InstructorId', 'خطا در دریافت کد مدرسی');
+          instructorIdInput.value = '';
+        });
+    }, 300);
+
+    // چک ها بعد زدن کلید تایید
+    document.getElementById('edit-instructor-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      let hasError = false;
+      this.querySelectorAll('.error-message').forEach(span => span.textContent = '');
+      this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+        if (!validateField(input.id, true)) {
+          hasError = true;
+        }
+      });
+      if (!hasError) {
+        this.submit();
+      }
+    });
+  </script>
+}
