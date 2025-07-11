@@ -116,16 +116,15 @@ namespace AP_Project.Data
             // Teaches: کلید مرکب InstructorId + SectionId
             modelBuilder.Entity<Teaches>(entity => // چون سه تا تنظیمات داریم بلاک کد میزنیم
             {
-                entity.HasKey(t => new { t.InstructorUserId, t.SectionId });
+                entity.HasKey(t => t.SectionId); // تا هر تیچز فقط برای یک سکشن بتواند باشد
 
                 entity.HasOne(t => t.Instructor) // Instructor و Teaches
                     .WithMany(i => i.Teaches)
                     .HasForeignKey(t => t.InstructorUserId);
 
-                entity.HasOne(t => t.Section) //  Section و Teaches
-                    .WithMany(s => s.Teaches)
-                    .HasForeignKey(t => t.SectionId);
-
+                entity.HasOne(t => t.Section) // Section و Teaches
+                    .WithOne(s => s.Teaches)
+                    .HasForeignKey<Teaches>(t => t.SectionId);
             });
 
             // پیکربندی روابط کلاس‌های اصلی
