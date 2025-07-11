@@ -13,11 +13,11 @@ setInterval(() => {
         const queryString = window.location.search;
 
         const params = new URLSearchParams(queryString);
-        const hashInUrl = params.get('h');
+        const currentHash = params.get('h');
 
-        const currentHash = '@ViewData["Hash"]?.ToString()';
+        const Hash = '@ViewData["Hash"]?.ToString()';
 
-        const hashToCompare =  (hashInUrl && hashInUrl !== 'null') ? hashInUrl : currentHash;
+        const hashToCompare =  (currentHash && currentHash !== 'null') ? currentHash : Hash;
 
         if (!hashToCompare  || hashToCompare  !== sessionHash) {
         window.location.href = '/Login/Index';
