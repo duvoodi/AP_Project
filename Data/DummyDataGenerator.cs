@@ -9,7 +9,7 @@ DELETE FROM Prerequisites;
 DELETE FROM Sections;
 DELETE FROM Courses;
 DELETE FROM CourseCodes;
-DELETE FROM Classrooms
+DELETE FROM Classrooms;
 DELETE FROM Admins;
 DELETE FROM Students;
 DELETE FROM Instructors;
@@ -49,8 +49,8 @@ using Microsoft.EntityFrameworkCore;
 namespace AP_Project.Data
 {
 
-public static class SeedDataForFirstTime
-{
+    public static class SeedDataForFirstTime
+    {
         public static void Generate(
             AppDbContext context,
             int adminCount = 1,
@@ -89,8 +89,8 @@ public static class SeedDataForFirstTime
                 admins.Add(new Admin
                 {
                     AdminId = adminId,
-                    FirstName = $"Admin{i}",
-                    LastName = "Seed",
+                    FirstName = $"ادمین ساختگی",
+                    LastName = $"شماره {NumberToPersianWords.ConvertToWords(i)}",
                     Email = $"admin{i}@school.local",
                     HashedPassword = defaultHash,
                     CreatedAt = DateTime.UtcNow
@@ -114,8 +114,8 @@ public static class SeedDataForFirstTime
                 instructors.Add(new Instructor
                 {
                     InstructorId = instructorId,
-                    FirstName = $"Instructor{i}",
-                    LastName = "Seed",
+                    FirstName = $"استاد ساختگی",
+                    LastName = $"شماره {NumberToPersianWords.ConvertToWords(i)}",
                     Email = $"instr{i}@school.com",
                     HashedPassword = defaultHash,
                     CreatedAt = DateTime.UtcNow,
@@ -141,8 +141,8 @@ public static class SeedDataForFirstTime
                 students.Add(new Student
                 {
                     StudentId = studentId,
-                    FirstName = $"Student{i}",
-                    LastName = "Seed",
+                    FirstName = $"دانشجوی ساختگی",
+                    LastName = $"شماره {NumberToPersianWords.ConvertToWords(i)}",
                     Email = $"student{i}@school.com",
                     HashedPassword = defaultHash,
                     CreatedAt = DateTime.UtcNow,
@@ -166,7 +166,7 @@ public static class SeedDataForFirstTime
             // 5. Classrooms
             var classrooms = Enumerable.Range(1, classroomCount).Select(i => new Classroom
             {
-                Building = $"B{i}",
+                Building = $"کلاس {i}",
                 RoomNumber = rand.Next(100, 500),
                 Capacity = rand.Next(20, 100)
             }).ToList();
@@ -178,7 +178,7 @@ public static class SeedDataForFirstTime
             var codes = Enumerable.Range(1, courseCodeCount).Select(i => new CourseCode
             {
                 Code = 800 + i,
-                Title = $"Course{800 + i}"
+                Title = $"درس {800 + i}"
             }).ToList();
             context.CourseCodes.AddRange(codes);
             context.SaveChanges();
@@ -191,7 +191,7 @@ public static class SeedDataForFirstTime
             {
                 CodeId = cc.Id,
                 Unit = rand.Next(1, 4),
-                Description = $"Description for {cc.Title}",
+                Description = $"توضیحات {cc.Title}",
                 FinalExamDate = examstart.AddDays(rand.Next(range + 1))
             }).ToList();
             context.Courses.AddRange(courses);
@@ -320,5 +320,95 @@ public static class SeedDataForFirstTime
             context.Takes.AddRange(takes);
             context.SaveChanges();
         }
+    }
+}
+
+public static class NumberToPersianWords
+{
+    private static readonly string[] Units = 
+    { 
+        "", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت", "نه", 
+        "ده", "یازده", "دوازده", "سیزده", "چهارده", "پانزده", "شانزده", "هفده", "هجده", "نوزده" 
+    };
+
+    private static readonly string[] Tens = 
+    {
+        "", "", "بیست", "سی", "چهل", "پنجاه", "شصت", "هفتاد", "هشتاد", "نود"
+    };
+
+    private static readonly string[] Hundreds = 
+    {
+        "", "صد", "دویست", "سیصد", "چهارصد", "پانصد", "ششصد", "هفتصد", "هشتصد", "نهصد"
+    };
+
+    private static string ConvertThreeDigits(int number)
+    {
+        string result = "";
+
+        int hundred = number / 100;
+        int remainder = number % 100;
+
+        if (hundred > 0)
+        {
+            result += Hundreds[hundred];
+        }
+
+        if (remainder > 0)
+        {
+            if (hundred > 0)
+                result += " و ";
+
+            if (remainder < 20)
+            {
+                result += Units[remainder];
+            }
+            else
+            {
+                int ten = remainder / 10;
+                int unit = remainder % 10;
+
+                result += Tens[ten];
+
+                if (unit > 0)
+                    result += " و " + Units[unit];
+            }
+        }
+
+        return result;
+    }
+
+    public static string ConvertToWords(int number)
+    {
+        if (number == 0)
+            return "صفر";
+
+        if (number < 0)
+            return "منفی " + ConvertToWords(Math.Abs(number));
+
+        string[] sections = { "", "هزار", "میلیون", "میلیارد" };
+        int sectionCount = 0;
+        string words = "";
+
+        while (number > 0)
+        {
+            int sectionNumber = number % 1000;
+
+            if (sectionNumber != 0)
+            {
+                string sectionWords = ConvertThreeDigits(sectionNumber);
+                if (sectionCount > 0)
+                    sectionWords += " " + sections[sectionCount];
+
+                if (words != "")
+                    words = sectionWords + " و " + words;
+                else
+                    words = sectionWords;
+            }
+
+            number /= 1000;
+            sectionCount++;
+        }
+
+        return words;
     }
 }
