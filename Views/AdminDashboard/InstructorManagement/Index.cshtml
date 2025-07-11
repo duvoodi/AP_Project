@@ -12,9 +12,10 @@
   var hasFooter = false;
 }
 
-<!-- استایل اختصاصی این صفحه -->
-<link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-management.css"
-  asp-append-version="true" />
+<!-- مجموعه فونت آوسوم -->
+<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-management.css" asp-append-version="true" />
 
 <main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
   <div class="toolbar">
@@ -56,17 +57,17 @@
             <td class="col-fixed">@String.Format("{0:N0}", inst.Salary)</td>
             <td class="col-fixed">@inst.InstructorId</td>
             <td class="col-userid">
-              <button class="copy-id-button" data-id="@userId" data-tooltip="@userId"
+              <button class="text-link" data-id="@userId" data-tooltip="@userId"
                 data-tooltip-align="center">کپی</button>
             </td>
             <td class="col-actions">
               <div class="actions-wrapper">
                 <a asp-controller="InstructorManagement" asp-action="EditInstructor" asp-route-id="@inst.Id"
                   asp-route-h="@currentHash" class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
-                  <i class="icon-edit"></i>
+                  <i class="fas fa-edit""></i>
                 </a>
                 <button class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
-                  <i class="icon-delete"></i>
+                  <i class="fas fa-trash-alt"></i>
                 </button>
               </div>
             </td>

@@ -7,23 +7,12 @@ body, html, input, textarea, select, button {
 }
 
 /* ============================
-   FORM CONTAINER
-   ============================ */
-
-.form-container {
-  width: 100%;
-  margin: 0 auto;
-  padding: 30px 20px;
-  box-sizing: border-box;
-  background: #fff;
-}
-
-/* ============================
    FORM: TOP TAB
    ============================ */
 
 .titlebar {
-    margin: 20px 0 10px;
+  margin: 20px 0 10px;
+  padding: 0 30px;
 }
 .action-title-tab {
   
@@ -58,6 +47,18 @@ body, html, input, textarea, select, button {
 }
 
 
+/* ============================
+   FORM CONTAINER
+   ============================ */
+
+.form-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 30px 60px;
+  box-sizing: border-box;
+  background: #fff;
+}
+
 
 /* ============================
    FORM ROWS
@@ -81,7 +82,6 @@ body, html, input, textarea, select, button {
 .form-group {
   width: 30%;
   height: 100%; /* پر کردن کل ارتفاع row */
-
   display: flex;
   flex-direction: column;
   align-items: flex-start;
