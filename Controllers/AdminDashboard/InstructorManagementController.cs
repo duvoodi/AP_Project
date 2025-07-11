@@ -88,7 +88,7 @@ namespace AP_Project.Controllers
             {
                 ViewData["Form"] = InstructorForm;
                 ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
-                
+
                 ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
                 return View("~/Views/AdminDashboard/InstructorManagement/AddInstructor.cshtml", admin);
             }
@@ -126,7 +126,121 @@ namespace AP_Project.Controllers
                 ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
                 return View("~/Views/AdminDashboard/InstructorManagement/AddInstructor.cshtml", admin);
             }
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> EditInstructor(Guid id)
+        {
+            var admin = CurrentAdmin;
+            var instructor = await _db.Instructors.FindAsync(id);
+            if (instructor == null)
+            {
+                return NotFound();
+            }
+
+            var form = new InstructorFormViewModel
+            {
+                FirstName = instructor.FirstName,
+                LastName = instructor.LastName,
+                Email = instructor.Email,
+                InstructorId = instructor.InstructorId.ToString(),
+                HireYear = instructor.HireYear.ToString(),
+                Salary = instructor.Salary.ToString("0"),
+                // رمز عبور را خالی می‌گذاریم (برای امنیت)
+                Password = "",
+                ConfirmPassword = ""
+            };
+
+            ViewData["Form"] = form;
+            ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
+            ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
+
+            return View("~/Views/AdminDashboard/InstructorManagement/EditInstructor.cshtml", admin);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditInstructor(Guid id, InstructorFormViewModel InstructorForm)
+        {
+            var admin = CurrentAdmin;
+
+            InstructorForm.NullFieldsToEmpty();
+
+            // اعتبارسنجی همه فیلدها
+            foreach (var prop in typeof(InstructorFormViewModel).GetProperties())
+            {
+                ModelState.ValidateField(InstructorForm, prop.Name, true);
+            }
+
+            // پیدا کردن استاد
+            var instructor = await _db.Instructors.FindAsync(id);
+            if (instructor == null)
+                return NotFound();
+
+            // اگر سال استخدام تغییر کرده بود، کد مدرسی جدید تولید کن
+            bool hireYearChanged = InstructorForm.HireYear != instructor.HireYear.ToString();
+            int newHireYear = int.Parse(InstructorForm.HireYear);
+
+            if (hireYearChanged)
+            {
+                // تولید کد مدرسی جدید با سال جدید (مثل اکشن افزودن استاد)
+                var codeGenerator = new CodeGenerator(_db);
+                var newInstructorId = await codeGenerator.GenerateInstructorCodeAsync(newHireYear);
+                InstructorForm.InstructorId = newInstructorId.ToString();
+            }
+
+            // چک یکتایی کد مدرسی (در هر صورت)
+            if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt))
+            {
+                var exists = await _db.Instructors
+                    .AnyAsync(i => i.InstructorId == instructorIdInt && i.Id != id);
+                if (exists)
+                {
+                    ModelState.ReplaceModelError("InstructorId", "کد مدرسی تکراری است.");
+                }
+            }
+
+            // برگشت در صورت وجود خطا
+            if (!ModelState.IsValid)
+            {
+                ViewData["Form"] = InstructorForm;
+                ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
+                ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
+                return View("~/Views/AdminDashboard/InstructorManagement/EditInstructor.cshtml", admin);
+            }
+
+            try
+            {
+                instructor.FirstName = InstructorForm.FirstName;
+                instructor.LastName = InstructorForm.LastName;
+                instructor.Email = InstructorForm.Email;
+                instructor.HireYear = newHireYear;
+                instructor.Salary = decimal.Parse(InstructorForm.Salary);
+
+                // اگر سال استخدام تغییر کرده بود، کد مدرسی جدید ست کن
+                if (hireYearChanged)
+                {
+                    instructor.InstructorId = int.Parse(InstructorForm.InstructorId);
+                }
+
+                // اگر رمز عبور جدید وارد شده بود، هش کن و ذخیره کن
+                if (!string.IsNullOrWhiteSpace(InstructorForm.Password))
+                {
+                    instructor.HashedPassword = ComputeHash.Sha1(InstructorForm.Password);
+                }
+
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد. لطفاً دوباره تلاش کنید.");
+                ViewData["Form"] = InstructorForm;
+                ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
+                ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
+                return View("~/Views/AdminDashboard/InstructorManagement/EditInstructor.cshtml", admin);
+            }
         }
     }
 }
