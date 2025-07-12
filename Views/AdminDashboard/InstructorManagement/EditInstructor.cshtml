@@ -116,7 +116,7 @@
     // ولیدیت فیلدها هنگام خروج از فیلد با نمایش ارور ترو
     document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
       input.addEventListener('blur', function () {
-        validateField(this.id, true)
+        validateField(this.id, true, true) // ورودی آخر الو امپتی پسورد هست که در صفحه ادیت مجاز هست
       });
     });
 
@@ -172,7 +172,7 @@
         })
         .then(code => {
           instructorIdInput.value = code;
-          validateField('InstructorId', true);
+          validateField('InstructorId', true, true);
           lastFetchedHireYear = year;
         })
         .catch(function () {
@@ -187,7 +187,7 @@
       let hasError = false;
       this.querySelectorAll('.error-message').forEach(span => span.textContent = '');
       this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
-        if (!validateField(input.id, true)) {
+        if (!validateField(input.id, true, true)) {
           hasError = true;
         }
       });

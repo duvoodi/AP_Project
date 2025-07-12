@@ -1,9 +1,35 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AP_Project.Helpers.FormUtils
 {
-    public static class ModelStateErrorExtensions
+    public static class ModelStateExtensions
     {
+        // تابع تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
+        public static void NullFieldsToValidEmpty<TModel>(this ModelStateDictionary ModelState, TModel FormViewModel)
+        {
+            if (FormViewModel == null) return;
+
+            var properties = typeof(TModel).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var prop in properties)
+            {
+                if (prop.PropertyType == typeof(string) && prop.CanRead && prop.CanWrite)
+                {
+                    var value = (string)prop.GetValue(FormViewModel);
+                    if (value == null)
+                        {
+                            var state = ModelState[prop.Name];
+                            if (state != null)
+                            {
+                                state.Errors.Clear();
+                                state.ValidationState = ModelValidationState.Valid;
+                            }
+                            prop.SetValue(FormViewModel, "");
+                        }
+                }
+            }
+        }
+
         // تابع جایگزینی خطا
         public static void ReplaceModelError(this ModelStateDictionary modelState, string propertyName, string message)
         {

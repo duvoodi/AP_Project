@@ -40,7 +40,7 @@ namespace AP_Project.FormViewModels.InstructorForm
     public static class InstructorFormViewModelExtensions
     {
         // تابع اعتبارسنجی یک فیلد بر اساس پراپرتی مدل
-        public static bool ValidateField(this ModelStateDictionary modelState, InstructorFormViewModel model, string propertyName, bool showError = true)
+        public static bool ValidateField(this ModelStateDictionary modelState, InstructorFormViewModel model, string propertyName, bool showError = true, bool AllowOptionalFieldsInEdit = false)
         {
             
             var propInfo = typeof(InstructorFormViewModel).GetProperty(propertyName);
@@ -58,6 +58,19 @@ namespace AP_Project.FormViewModels.InstructorForm
             {
                 if (showError)
                     modelState.ReplaceModelError(propname, message);
+            }
+
+            // 0. چک نکردن فیلد های اختیاری خالی
+            List<string> optional = new();
+            if (AllowOptionalFieldsInEdit)
+            {
+                optional.Add(nameof(model.Password));  
+                optional.Add(nameof(model.ConfirmPassword));  
+            }
+            if (optional.Contains(propertyName) && string.IsNullOrWhiteSpace(value))
+            {
+                ReplaceError_IfAllowed(propertyName, "");
+                return true;
             }
 
             // 1. چک خالی بودن فیلدهای اجباری

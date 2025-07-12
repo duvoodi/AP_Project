@@ -63,9 +63,9 @@ namespace AP_Project.Controllers
             // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
             var admin = CurrentAdmin;
 
-            // تبدیل فیلد ها نال و گرفته نشده به رشته خالی
-            // برای جلوگیری از اکسپشن حین چک کردنشون
-            InstructorForm.NullFieldsToEmpty();
+            // تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
+            // تا در ادامه دستی چکشون کنیم
+            ModelState.NullFieldsToValidEmpty(InstructorForm);
 
             // چک همه فیلدها با شو ارور ترو
             foreach (var prop in typeof(InstructorFormViewModel).GetProperties())
@@ -162,14 +162,18 @@ namespace AP_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditInstructor(Guid id, InstructorFormViewModel InstructorForm)
         {
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
             var admin = CurrentAdmin;
 
-            InstructorForm.NullFieldsToEmpty();
+            // تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
+            // تا در ادامه دستی چکشون کنیم
+            ModelState.NullFieldsToValidEmpty(InstructorForm);
 
-            // اعتبارسنجی همه فیلدها
+            // چک همه فیلدها با شو ارور ترو
             foreach (var prop in typeof(InstructorFormViewModel).GetProperties())
             {
-                ModelState.ValidateField(InstructorForm, prop.Name, true);
+                ModelState.ValidateField(InstructorForm, prop.Name, true, true);
             }
 
             // پیدا کردن استاد
