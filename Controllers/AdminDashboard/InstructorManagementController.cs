@@ -292,5 +292,76 @@ namespace AP_Project.Controllers
                 return View("~/Views/AdminDashboard/InstructorManagement/EditInstructor.cshtml", admin);
             }
         }
+
+        [HttpGet]
+        public async Task<JsonResult> CheckInstructorHasCourses(Guid id)
+        {
+            var hasCourses = await _db.Teaches.AnyAsync(t => t.InstructorUserId == id);
+            return Json(new { hasCourses });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteInstructor(Guid id)
+        {
+            var admin = CurrentAdmin;
+            var instructor = await _db.Instructors.FindAsync(id);
+            if (instructor == null)
+                return NotFound();
+
+            var form = new InstructorFormViewModel
+            {
+                FirstName = instructor.FirstName,
+                LastName = instructor.LastName,
+                Email = instructor.Email,
+                InstructorId = instructor.InstructorId.ToString(),
+                HireYear = instructor.HireYear.ToString(),
+                Salary = instructor.Salary.ToString("0")
+            };
+
+            ViewData["Form"] = form;
+            ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
+            ViewData["InstructorGuid"] = instructor.Id;
+            ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
+
+            return View("~/Views/AdminDashboard/InstructorManagement/DeleteInstructor.cshtml", admin);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteInstructor(Guid id, InstructorFormViewModel InstructorForm)
+        {
+            var admin = CurrentAdmin;
+            try
+            {
+                var instructor = await _db.Instructors.FindAsync(id);
+                if (instructor == null)
+                    return NotFound();
+
+                // حذف نقش کاربری استاد (در صورت وجود)
+                var userRole = await _db.UserRoles
+                    .FirstOrDefaultAsync(r => r.UserId == instructor.Id && r.RoleId == 2);
+                if (userRole != null)
+                {
+                    _db.UserRoles.Remove(userRole);
+                }
+
+                // حذف خودِ استاد
+                _db.Instructors.Remove(instructor);
+                await _db.SaveChangesAsync();
+
+                // همیشه بعد از حذف برگرد به لیست اساتید
+                return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
+            }
+            catch (Exception)
+            {
+                // در صورت خطا، فرم حذف را دوباره نمایش بده
+                ModelState.AddModelError("GeneralError", "خطایی هنگام حذف اطلاعات رخ داد. لطفاً دوباره تلاش کنید.");
+                ViewData["Form"] = InstructorForm;
+                ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
+                ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
+                ViewData["InstructorGuid"] = id;
+                return View("~/Views/AdminDashboard/InstructorManagement/DeleteInstructor.cshtml", admin);
+            }
+        }
     }
 }
