@@ -5,6 +5,7 @@ using System.Globalization;
 using AP_Project.Helpers.FormUtils;
 using Microsoft.EntityFrameworkCore;
 using AP_Project.FormViewModels.InstructorForm;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AP_Project.Controllers
 {
@@ -73,14 +74,37 @@ namespace AP_Project.Controllers
                 ModelState.ValidateField(InstructorForm, prop.Name, true);
             }
 
+            // چک تکراری نبودن داده های یکتا با سرور
+
+            // ریست جنرال ارور
+            ModelState.ReplaceModelError("GeneralError", "");
+
             // چک یکتایی کد مدرسی
             if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt))
             {
-                var exists = await _db.Instructors.AnyAsync(i => i.InstructorId == instructorIdInt);
-                if (exists)
+                var InstructorIdExists = await _db.Instructors.AnyAsync(i => i.InstructorId == instructorIdInt);
+                if (InstructorIdExists)
                 {
-                    ModelState.ReplaceModelError("InstructorId", "کد مدرسی تکراری بود و مجدداً تولید شد");
+                    ModelState.AppendModelError("GeneralError", "کد مدرسی تولید شده تکراری بود و مجدداً تولید شد");
+                    ViewData["IsInstructorIdDuplicate"] = true;
                 }
+            }
+
+            // چک یکتایی نام و نام خانوادگی
+            var nameExists = await _db.Instructors.AnyAsync(i => 
+                i.FirstName == InstructorForm.FirstName && 
+                i.LastName == InstructorForm.LastName);
+            if (nameExists)
+            {
+                ModelState.AppendModelError("GeneralError", "نام و نام خانوادگی وارد شده قبلاً ثبت شده است");
+            }
+
+            // چک یکتایی ایمیل
+            var emailExists = await _db.Instructors.AnyAsync(i => 
+                i.Email.ToLower() == InstructorForm.Email.ToLower());
+            if (emailExists)
+            {
+                ModelState.AppendModelError("GeneralError", "ایمیل وارد شده قبلاً ثبت شده است");
             }
 
             // برگشت در صورت وجود خطا
@@ -88,7 +112,6 @@ namespace AP_Project.Controllers
             {
                 ViewData["Form"] = InstructorForm;
                 ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
-
                 ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
                 return View("~/Views/AdminDashboard/InstructorManagement/AddInstructor.cshtml", admin);
             }
@@ -121,9 +144,10 @@ namespace AP_Project.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد. لطفاً دوباره تلاش کنید.");
-                ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
+                ModelState.AddModelError("GeneralError", "...خطایی هنگام ذخیره اطلاعات رخ داد؛ لطفاً دوباره تلاش کنید.");
+                ViewData["Form"] = InstructorForm;
                 ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
+                ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
                 return View("~/Views/AdminDashboard/InstructorManagement/AddInstructor.cshtml", admin);
             }
         }
@@ -176,34 +200,55 @@ namespace AP_Project.Controllers
                 ModelState.ValidateField(InstructorForm, prop.Name, true, true);
             }
 
+            // چک تکراری نبودن داده های یکتا با سرور (اگر تغییر کردند)
+
             // پیدا کردن استاد
             var instructor = await _db.Instructors.FindAsync(id);
             if (instructor == null)
                 return NotFound();
 
-            // اگر سال استخدام تغییر کرده بود، کد مدرسی جدید تولید کن
-            bool hireYearChanged = InstructorForm.HireYear != instructor.HireYear.ToString();
-            int newHireYear = int.Parse(InstructorForm.HireYear);
+            // ریست جنرال ارور 
+            ModelState.ReplaceModelError("GeneralError", "");
 
-            if (hireYearChanged)
+            // چک یکتایی کد مدرسی (اگر تغییر کرده)
+            if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt) &&
+                instructor.InstructorId != instructorIdInt)
             {
-                // تولید کد مدرسی جدید با سال جدید (مثل اکشن افزودن استاد)
-                var codeGenerator = new CodeGenerator(_db);
-                var newInstructorId = await codeGenerator.GenerateInstructorCodeAsync(newHireYear);
-                InstructorForm.InstructorId = newInstructorId.ToString();
-            }
-
-            // چک یکتایی کد مدرسی (در هر صورت)
-            if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt))
-            {
-                var exists = await _db.Instructors
-                    .AnyAsync(i => i.InstructorId == instructorIdInt && i.Id != id);
-                if (exists)
+                var InstructorIdExists = await _db.Instructors.AnyAsync(i => i.InstructorId == instructorIdInt);
+                if (InstructorIdExists)
                 {
-                    ModelState.ReplaceModelError("InstructorId", "کد مدرسی تکراری است.");
+                    ModelState.AppendModelError("GeneralError", "کد مدرسی تولید شده تکراری بود و مجدداً تولید شد");
+                    ViewData["IsInstructorIdDuplicate"] = true;
                 }
             }
 
+            // چک یکتایی نام و نام خانوادگی (اگر تغییر کرده)
+            if (instructor.FirstName != InstructorForm.FirstName ||
+                instructor.LastName != InstructorForm.LastName)
+            {
+                var nameExists = await _db.Instructors.AnyAsync(i =>
+                    i.FirstName == InstructorForm.FirstName &&
+                    i.LastName == InstructorForm.LastName &&
+                    i.Id != instructor.Id);
+                if (nameExists)
+                {
+                    ModelState.AppendModelError("GeneralError", "نام و نام خانوادگی وارد شده قبلاً ثبت شده است");
+                }
+            }
+
+
+            // چک یکتایی ایمیل (اگر تغییر کرده)
+            if (!string.Equals(instructor.Email, InstructorForm.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                var emailExists = await _db.Instructors.AnyAsync(i =>
+                    i.Email.ToLower() == InstructorForm.Email.ToLower() &&
+                    i.Id != instructor.Id);
+                if (emailExists)
+                {
+                    ModelState.AppendModelError("GeneralError", "ایمیل وارد شده قبلاً ثبت شده است");
+                }
+            }
+            
             // برگشت در صورت وجود خطا
             if (!ModelState.IsValid)
             {
@@ -218,14 +263,15 @@ namespace AP_Project.Controllers
                 instructor.FirstName = InstructorForm.FirstName;
                 instructor.LastName = InstructorForm.LastName;
                 instructor.Email = InstructorForm.Email;
-                instructor.HireYear = newHireYear;
-                instructor.Salary = decimal.Parse(InstructorForm.Salary);
 
                 // اگر سال استخدام تغییر کرده بود، کد مدرسی جدید ست کن
-                if (hireYearChanged)
+                if (InstructorForm.HireYear != instructor.HireYear.ToString())
                 {
                     instructor.InstructorId = int.Parse(InstructorForm.InstructorId);
                 }
+
+                instructor.HireYear = int.Parse(InstructorForm.HireYear);
+                instructor.Salary = decimal.Parse(InstructorForm.Salary);
 
                 // اگر رمز عبور جدید وارد شده بود، هش کن و ذخیره کن
                 if (!string.IsNullOrWhiteSpace(InstructorForm.Password))
@@ -239,7 +285,7 @@ namespace AP_Project.Controllers
             }
             catch (Exception)
             {
-                ModelState.AddModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد. لطفاً دوباره تلاش کنید.");
+                ModelState.AddModelError("GeneralError", "...خطایی هنگام ذخیره اطلاعات رخ داد؛ لطفاً دوباره تلاش کنید.");
                 ViewData["Form"] = InstructorForm;
                 ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
                 ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);

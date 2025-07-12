@@ -129,9 +129,10 @@
     // چک فیلد های رید آنلی چون توسط کاربر نوشته نشده و ایونت بلور ایجاد نمیکند
 
     // دریافت کد مدرسی به صورت زنده هنگام ورود سال استخدام
-    let lastFetchedHireYear = null; // نگهداری آخرین سالی که براش فچ انجام شده
+    let lastFetchedHireYear = @(form != null && !string.IsNullOrEmpty(form.InstructorId) ? form.HireYear : "null"); // نگهداری آخرین سالی که براش فچ انجام شده
     document.getElementById('HireYear')?.addEventListener('input', function () {
       const instructorIdInput = document.getElementById('InstructorId');
+      if(!instructorIdInput) return;
       if (!validateField('HireYear', false)) { // اول بررسی معتبر بودن سال استخدام به صورت زنده بدون نمایش ارور
         replaceError('InstructorId', ''); // سال اشتباهه درخواست به سرور نمیده و ارور دریافت هم نباید داشته باشد
         instructorIdInput.value = ''; // برای سال اشتباه نباید کدی نمایش بده
@@ -146,12 +147,8 @@
       }
 
       // اگر ارور تکراری بودن کد مدرسی نمایش داده شده باشد، دوباره فچ کن
-      const input = document.getElementById('InstructorId');
-      if (!input) return;
-      const formGroup = input.closest('.form-group');
-      const errorSpan = formGroup?.querySelector('.error-message');
-      const errorSpanText = errorSpan ? errorSpan.textContent.trim() : '';
-      if (errorSpanText.includes('کد مدرسی تکراری')) {
+      const isInstructorIdDuplicate = @(ViewData["IsInstructorIdDuplicate"] != null && (bool)ViewData["IsInstructorIdDuplicate"] ? "true" : "false");
+      if (isInstructorIdDuplicate === "true") {
         debounceFetchInstructorCode(parsedYear);
         return;
       }

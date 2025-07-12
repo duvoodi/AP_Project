@@ -120,11 +120,12 @@
       });
     });
 
-    // دریافت کد مدرسی به صورت زنده هنگام ورود سال استخدام (در ویرایش)
-    let lastFetchedHireYear = @form?.HireYear ?? "null";
+    // دریافت کد مدرسی به صورت زنده هنگام ورود سال استخدام
+    let lastFetchedHireYear = @(form != null && !string.IsNullOrEmpty(form.InstructorId) ? form.HireYear : "null"); // نگهداری آخرین سالی که براش فچ انجام شده
     document.getElementById('HireYear')?.addEventListener('input', function () {
       const instructorIdInput = document.getElementById('InstructorId');
-      if (!validateField('HireYear', false)) {
+      if(!instructorIdInput) return;
+      if (!validateField('HireYear', false, true)) {
         replaceError('InstructorId', '');
         instructorIdInput.value = '';
         return;
@@ -132,17 +133,13 @@
       const parsedYear = parseInt(this.value, 10);
 
       // اگر کد مدرسی داریم و ولید هست دیگه کد مدرسی جدید نگیریم
-      if (instructorIdInput.value && !validateField('InstructorId', true)) {
+      if (instructorIdInput.value && !validateField('InstructorId', true, true)) {
         return;
       }
 
       // اگر ارور تکراری بودن کد مدرسی نمایش داده شده باشد، دوباره فچ کن
-      const input = document.getElementById('InstructorId');
-      if (!input) return;
-      const formGroup = input.closest('.form-group');
-      const errorSpan = formGroup?.querySelector('.error-message');
-      const errorSpanText = errorSpan ? errorSpan.textContent.trim() : '';
-      if (errorSpanText.includes('کد مدرسی تکراری')) {
+      const isInstructorIdDuplicate = @(ViewData["IsInstructorIdDuplicate"] != null && (bool)ViewData["IsInstructorIdDuplicate"] ? "true" : "false");
+      if (isInstructorIdDuplicate === "true") {
         debounceFetchInstructorCode(parsedYear);
         return;
       }

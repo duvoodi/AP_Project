@@ -11,7 +11,7 @@ body, html, input, textarea, select, button {
    ============================ */
 
 .titlebar {
-  margin: 20px 0 10px;
+  margin: 20px 0 30px;
   padding: 0 30px;
 }
 .action-title-tab {
@@ -54,7 +54,7 @@ body, html, input, textarea, select, button {
 .form-container {
   width: 100%;
   margin: 0 auto;
-  padding: 30px 60px;
+  padding: 0 60px;
   box-sizing: border-box;
   background: #fff;
 }
@@ -206,6 +206,8 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   font-size: 13px;
   min-height: 18px;
   margin-top: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.25s ease-in-out;
@@ -217,7 +219,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 }
 
 .error-row {
-  margin-bottom: 42px;
+  height: auto;
 }
 
 .error-message.general-error {
@@ -227,6 +229,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   background-color: #fceefd;  /* پس‌زمینه صورتی-بنفش روشن */
   color: #722872;             /* متن ارغوانی تیره */
   border: 1px solid #e9c7f0;  /* حاشیه بنفش روشن */
+  margin: 50px auto 40px;
   padding: 16px 24px;
   border-radius: 6px;
   font-size: 16px;
@@ -236,9 +239,6 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   width: 80%; /* همیشه ۸۰٪ عرض صفحه */
   box-sizing: border-box;
   line-height: 1.6;
-  white-space: normal;
-  word-wrap: break-word;
-  margin: 0 auto; /* وسط‌چین */
 }
 
 

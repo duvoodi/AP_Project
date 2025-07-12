@@ -33,8 +33,8 @@ namespace AP_Project.Helpers.FormUtils
         // تابع جایگزینی خطا
         public static void ReplaceModelError(this ModelStateDictionary modelState, string propertyName, string message)
         {
-            if (modelState.ContainsKey(propertyName))
-                modelState[propertyName].Errors.Clear();
+            if (modelState.TryGetValue(propertyName, out var entry))
+                entry.Errors.Clear();
 
             if (!string.IsNullOrWhiteSpace(message))
                 modelState.AddModelError(propertyName, message);
@@ -43,18 +43,33 @@ namespace AP_Project.Helpers.FormUtils
         // تابع افزون خطا به خط بعد
         public static void AppendModelError(this ModelStateDictionary modelState, string propertyName, string message)
         {
-            if (modelState.ContainsKey(propertyName) && modelState[propertyName].Errors.Any())
+
+            if (string.IsNullOrWhiteSpace(message))
+                return;
+
+            if (!modelState.TryGetValue(propertyName, out var entry))
             {
-                var existingErrors = modelState[propertyName].Errors.Select(e => e.ErrorMessage).ToList();
-                if (existingErrors.Contains(message)) return; // از قبل بود، اضافه نکن
-                // اگر خطا وجود دارد، پیام جدید را به خط بعدی اضافه می‌کنیم
-                existingErrors.Add(message);
-                modelState[propertyName].Errors.Clear();
-                modelState[propertyName].Errors.Add(string.Join("\n", existingErrors));
-            }
-            else
-                // اگر خطایی وجود ندارد، پیام را اضافه می‌کنیم
+                // اگر هنوز کلیدی وجود نداره، مستقیماً ارور رو اضافه کن
                 modelState.AddModelError(propertyName, message);
+                return;
+            }
+
+            // استخراج خط‌ها به‌صورت جداگانه
+            var existingErrors = entry.Errors
+                .SelectMany(e => (e?.ErrorMessage ?? "").Split('\n'))
+                .Select(line => line.Trim())
+                .Where(line => !string.IsNullOrWhiteSpace(line))
+                .ToList();
+
+            // جلوگیری از تکراری بودن
+            if (existingErrors.Contains(message))
+                return;
+
+            // اضافه کردن ارور جدید
+            existingErrors.Add(message);
+
+            // پاک کردن و جایگزینی با رشته‌های متصل‌شده با \n
+            modelState.ReplaceModelError(propertyName, string.Join("\n", existingErrors));
         }
     }
 }
