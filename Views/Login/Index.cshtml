@@ -11,6 +11,8 @@
 <div class="login-container">
   <h2>صفحه ورود</h2>
   <form asp-controller="Login" asp-action="Index" method="post" id="login-form">
+    @Html.AntiForgeryToken()
+
     <div class="form-group">
       <label>نام کاربری</label>
       <div>
