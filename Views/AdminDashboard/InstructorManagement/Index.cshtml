@@ -5,64 +5,77 @@
   Layout = "_LayoutAdmin";
   var instructors = ViewBag.Instructors as List<AP_Project.Models.Users.Instructor>;
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  if (string.IsNullOrEmpty(currentHash)) 
+  {
+    currentHash = ViewData["Hash"]?.ToString() ?? "";
+  }
   var hasFooter = false;
 }
 
-<!-- استایل اختصاصی این صفحه -->
+<!-- مجموعه فونت آوسوم -->
+<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
+<!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-management.css" asp-append-version="true" />
 
 <main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
   <div class="toolbar">
-    <a asp-controller="InstructorManagement" asp-action="AddInstructorIndex" asp-route-h="@currentHash" class="btn-add-instructor">
+    <a asp-controller="InstructorManagement" asp-action="AddInstructorIndex" asp-route-h="@currentHash"
+      class="btn-add-instructor">
       <span class="icon">&#43;</span>
       <span class="text">افزودن استاد</span>
     </a>
   </div>
 
-    <table class="instructor-table">
-      <thead>
-        <tr>
-          <th class="col-index">ردیف</th>
-          <th class="col-fname">نام</th>
-          <th class="col-lname">نام خانوادگی</th>
-          <th class="col-email">ایمیل</th>
-          <th class="col-hyear">سال استخدام</th>
-          <th class="col-salary">حقوق (تومان)</th>
-          <th class="col-instid">کد مدرسی</th>
-          <th class="col-userid">آی‌دی کاربری</th>
-          <th class="col-actions"></th>
-        </tr>
-      </thead>
+  <table class="instructor-table">
+    <thead>
+      <tr>
+        <th class="col-index">ردیف</th>
+        <th class="col-fname">نام</th>
+        <th class="col-lname">نام خانوادگی</th>
+        <th class="col-email">ایمیل</th>
+        <th class="col-hyear">سال استخدام</th>
+        <th class="col-salary">حقوق (تومان)</th>
+        <th class="col-instid">کد مدرسی</th>
+        <th class="col-userid">آی‌دی کاربری</th>
+        <th class="col-actions"></th>
+      </tr>
+    </thead>
     @if (instructors != null && instructors.Any())
     {
       <tbody>
-      @for (int i = 0; i < instructors.Count; i++)
-      {
-        var inst = instructors[i];
-        var EmailWithBreaks = inst.Email.Replace(".", "\u200B"+".").Replace("@", "\u200B"+"@");
-        var userId = inst.Id.ToString();
-        <tr>
-          <td class="col-index">@((i + 1))</td>
-          <td class="col-fname">@inst.FirstName</td>
-          <td class="col-lname">@inst.LastName</td>
-          <td class="col-email">@Html.Raw(EmailWithBreaks)</td>
-          <td class="col-fixed">@inst.HireYear</td>
-          <td class="col-fixed">@String.Format("{0:N0}", inst.Salary)</td>
-          <td class="col-fixed">@inst.InstructorId</td>
-          <td class="col-userid">
-            <button class="copy-id-button" data-id="@userId" data-tooltip="@userId" data-tooltip-align="center">کپی</button>
-          </td>
-          <td class="col-actions">
-            <div class="actions-wrapper">
-              <button class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center"><i class="icon-edit"></i></button>
-              <button class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center"><i class="icon-delete"></i></button>
-            </div>
-          </td>
-        </tr>
-      }
+        @for (int i = 0; i < instructors.Count; i++)
+        {
+          var inst = instructors[i];
+          var EmailWithBreaks = inst.Email.Replace(".", "\u200B" + ".").Replace("@", "\u200B" + "@");
+          var userId = inst.Id.ToString();
+          <tr>
+            <td class="col-index">@((i + 1))</td>
+            <td class="col-fname">@inst.FirstName</td>
+            <td class="col-lname">@inst.LastName</td>
+            <td class="col-email">@Html.Raw(EmailWithBreaks)</td>
+            <td class="col-fixed">@inst.HireYear</td>
+            <td class="col-fixed">@String.Format("{0:N0}", inst.Salary)</td>
+            <td class="col-fixed">@inst.InstructorId</td>
+            <td class="col-userid">
+              <button class="text-link" data-id="@userId" data-tooltip="@userId"
+                data-tooltip-align="center">کپی</button>
+            </td>
+            <td class="col-actions">
+              <div class="actions-wrapper">
+                <a asp-controller="InstructorManagement" asp-action="EditInstructor" asp-route-id="@inst.Id"
+                  asp-route-h="@currentHash" class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
+                  <i class="fas fa-edit""></i>
+                </a>
+                <button class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
       </tbody>
-  }
-    </table>
+    }
+  </table>
 </main>
 
 <!-- باید خارج مین باشد چون مین همیشه ارتفاع صفحه را پر نمیکند -->
@@ -78,22 +91,22 @@
 }
 
 @section Scripts {
-<script src="~/js/Shared/tooltip.js"></script>
-<script>
-  // دکمه‌های کپی
-  document.querySelectorAll('.copy-id-button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-id');
-      navigator.clipboard.writeText(id).then(() => {
-        tooltip.textContent = 'کپی شد';
-        tooltip.classList.remove('align-left','align-center','align-right','show');
-        tooltip.classList.add('align-center', 'show');
+  <script src="~/js/Shared/tooltip.js"></script>
+  <script>
+    // دکمه‌های کپی
+    document.querySelectorAll('.copy-id-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        navigator.clipboard.writeText(id).then(() => {
+          tooltip.textContent = 'کپی شد';
+          tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
+          tooltip.classList.add('align-center', 'show');
 
-        const r = btn.getBoundingClientRect();
-        tooltip.style.top  = (r.bottom + 6) + 'px';
-        tooltip.style.left = (r.left + r.width/2) + 'px';
+          const r = btn.getBoundingClientRect();
+          tooltip.style.top = (r.bottom + 6) + 'px';
+          tooltip.style.left = (r.left + r.width / 2) + 'px';
+        });
       });
     });
-  });
-</script>
+  </script>
 }

@@ -1,0 +1,122 @@
+@model AP_Project.Models.Users.Admin
+@{
+  ViewData["ActiveTab"] = "Instructor";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  if (string.IsNullOrEmpty(currentHash))
+  {
+    currentHash = ViewData["Hash"]?.ToString() ?? "";
+  }
+  var hasFooter = false;
+
+  var form = (AP_Project.FormViewModels.InstructorForm.InstructorFormViewModel)ViewData["Form"];
+}
+
+<!-- مجموعه فونت آوسوم -->
+<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-form-actions.css"
+  asp-append-version="true" />
+
+  
+
+<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+  <div class="titlebar">
+    <div class="action-title-tab delete">
+      حذف استاد
+    </div>
+  </div>
+  <div class="form-container">
+    <form asp-controller="InstructorManagement" asp-action="DeleteInstructor" asp-route-id="@ViewData["InstructorGuid"]" asp-route-h="@currentHash" method="post" id="delete-instructor-form">
+      @Html.AntiForgeryToken()
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>نام</label>
+          <input class="form-control" id="FirstName" name="FirstName" value="@form?.FirstName" readonly />
+        </div>
+        <div class="form-group">
+          <label>نام خانوادگی</label>
+          <input class="form-control" id="LastName" name="LastName" value="@form?.LastName" readonly />
+        </div>
+        <div class="form-group">
+          <label>ایمیل</label>
+          <input class="form-control" id="Email" name="Email" value="@form?.Email" readonly />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>کد مدرسی</label>
+          <input class="form-control" id="InstructorId" name="InstructorId" value="@form?.InstructorId" readonly />
+        </div>
+        <div class="form-group">
+          <label>میزان حقوق (تومان)</label>
+          <input class="form-control" id="Salary" name="Salary" value="@form?.Salary" readonly />
+        </div>
+        <div class="form-group">
+          <label>سال استخدام</label>
+          <input class="form-control" id="HireYear" name="HireYear" value="@form?.HireYear" readonly />
+        </div>
+      </div>
+
+      <div class="error-row">
+        <div class="error-group">
+          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a type="button" asp-controller="InstructorManagement" asp-action="Index" asp-route-h="@currentHash"
+          class="btn-cancel">انصراف</a>
+        <button type="submit" class="btn-submit btn-delete">تایید</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('delete-instructor-form');
+    const errorBox = document.getElementById("GeneralError");
+    let confirmedOnce = false;
+
+    form.addEventListener('submit', function (e) {
+        // اگر قبلاً تایید شده بود (یعنی بار دوم کلیک شد)، حذف رو انجام بده
+        if (confirmedOnce) {
+            form.submit();
+            return; // اجازه بده فرم سابمیت بشه
+        }
+
+        e.preventDefault(); // جلو سابمیت رو بگیر
+
+        // پاک کردن پیام قبلی
+        errorBox.innerText = "";
+        errorBox.classList.remove("visible");
+
+        fetch('@Url.Action("CheckInstructorHasCourses", "InstructorManagement")?id=@ViewData["InstructorGuid"]')
+            .then(response => response.json())
+            .then(data => {
+                if (data.hasCourses) {
+                    // استاد درس دارد → هشدار نشان بده
+                    errorBox.innerText = "این استاد دارای درس فعال است. اگر دوباره تایید کنید، حذف انجام می‌شود.";
+                    errorBox.classList.add("visible");
+
+                    // فلگ تایید را فعال کن
+                    confirmedOnce = true;
+                } else {
+                    // استاد درس ندارد → مستقیماً حذف
+                    form.submit();
+                }
+            })
+            .catch(() => {
+                errorBox.innerText = "خطا در بررسی وضعیت استاد. لطفاً دوباره تلاش کنید.";
+                errorBox.classList.add("visible");
+            });
+    });
+});
+</script>
+
+

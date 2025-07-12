@@ -4,7 +4,7 @@
   ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  if (string.IsNullOrEmpty(currentHash)) 
+  if (string.IsNullOrEmpty(currentHash))
   {
     currentHash = ViewData["Hash"]?.ToString() ?? "";
   }
@@ -18,12 +18,12 @@
 
 <main class="dashboard-main admin">
   <div class="titlebar">
-    <div class="action-title-tab add">
-      افزودن استاد
+    <div class="action-title-tab edit">
+      ویرایش استاد
     </div>
   </div>
   <div class="form-container">
-    <form asp-controller="InstructorManagement" asp-action="AddInstructor" method="post" id="add-instructor-form">
+    <form asp-controller="InstructorManagement" asp-action="EditInstructor" method="post" id="edit-instructor-form">
       @Html.AntiForgeryToken()
 
       <div class="form-row">
@@ -101,11 +101,9 @@
 
 <partial name="_ValidationScriptsPartial" />
 @section Scripts {
-  <!-- دریافت متغیر های ارسال شده از کنترلر -->
   <script>
     const currentPersianYear = parseInt('@ViewData["currentPersianYear"]');
   </script>
-  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
   <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
   <script src="~/js/FormUtils/Shared/max-length-handler.js"></script>
   <script src="~/js/Shared/debounce.js"></script>
@@ -113,36 +111,29 @@
   <script src="~/js/FormUtils/Shared/valid-numeric-inputs.js"></script>
   <script src="~/js/FormUtils/Shared/valid-email-inputs.js"></script>
   <script src="~/js/FormUtils/Shared/valid-password-inputs.js"></script>
-  <!-- تابع ولیدیت فیلد اختصاصی فیلد های این صفحه -->
-  <!-- آخر همه اضافه شده چون از توابع اسکریپت های بالا استفاده میکند -->
   <script src="~/js/FormUtils/InstructorForm/validateField.js"></script>
   <script>
-    // ولیدیت فیلد ها هنگام خروج از فیلد با نمایش ارور ترو
-    // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+    // ولیدیت فیلدها هنگام خروج از فیلد با نمایش ارور ترو
     document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
       input.addEventListener('blur', function () {
-        validateField(this.id, true) // نتیجه تابع رو در دکمه سابمیت بررسی میکنیم اینجا تابع صرفا برای نمایش ارور فراخوانی میشود
+        validateField(this.id, true, true) // ورودی آخر الو امپتی پسورد هست که در صفحه ادیت مجاز هست
       });
     });
-
-    // مقدار دهی و ولیدیت فیلد ها ریدانلی
-    // چک فیلد های رید آنلی چون توسط کاربر نوشته نشده و ایونت بلور ایجاد نمیکند
 
     // دریافت کد مدرسی به صورت زنده هنگام ورود سال استخدام
     let lastFetchedHireYear = @(form != null && !string.IsNullOrEmpty(form.InstructorId) ? form.HireYear : "null"); // نگهداری آخرین سالی که براش فچ انجام شده
     document.getElementById('HireYear')?.addEventListener('input', function () {
       const instructorIdInput = document.getElementById('InstructorId');
       if(!instructorIdInput) return;
-      if (!validateField('HireYear', false)) { // اول بررسی معتبر بودن سال استخدام به صورت زنده بدون نمایش ارور
-        replaceError('InstructorId', ''); // سال اشتباهه درخواست به سرور نمیده و ارور دریافت هم نباید داشته باشد
-        instructorIdInput.value = ''; // برای سال اشتباه نباید کدی نمایش بده
+      if (!validateField('HireYear', false, true)) {
+        replaceError('InstructorId', '');
+        instructorIdInput.value = '';
         return;
       }
-
       const parsedYear = parseInt(this.value, 10);
 
       // اگر کد مدرسی داریم و ولید هست دیگه کد مدرسی جدید نگیریم
-      if (instructorIdInput.value && !validateField('InstructorId', true)) { // اعتبار سنجی کد نمایش ارور
+      if (instructorIdInput.value && !validateField('InstructorId', true, true)) {
         return;
       }
 
@@ -158,56 +149,45 @@
         return;
       }
 
-      // همه چیز درست بود، کد مدرسی را دریافت می‌کنیم
       debounceFetchInstructorCode(parsedYear);
-    }); 
+    });
+
     // تابع دیبونس برای فچ کد مدرسی
     const debounceFetchInstructorCode = debounce(function (year) {
       const instructorIdInput = document.getElementById('InstructorId');
-
       fetch(`/InstructorManagement/GenerateInstructorCode?year=${year}`)
         .then(r => {
           if (r.redirected) {
-            window.location.href = r.url; // اگر ریدایرکت شده بخاطر منقضی شدن سشن برو به صفحه مقصد
+            window.location.href = r.url;
             return;
           }
-          if (!r.ok) { // درخواست موفق نبوده، ارور نشون بده
+          if (!r.ok) {
             replaceError('InstructorId', 'خطا در دریافت کد مدرسی');
-            instructorIdInput.value = ''; // فچ نتونسته بکنه کدی هم نباید نشان بده
+            instructorIdInput.value = '';
           }
-          // دات اوکی درخواست ریدایرکت رو درخواست ناموفق میدونه برای همین باید بعد ریدایرکت باشه
           return r.json();
         })
         .then(code => {
-          instructorIdInput.value = code; // کد گرفته شده را فیلد قرار میدهیم
-          validateField('InstructorId', true); // اعتبار سنجی کد گرفته شده با نمایش ارور
-          lastFetchedHireYear = year; // سال جدید ثبت شود فقط اگر فچ موفق بود
+          instructorIdInput.value = code;
+          validateField('InstructorId', true, true);
+          lastFetchedHireYear = year;
         })
-        .catch(function () { // درخواست فچ ممکن نبود
+        .catch(function () {
           replaceError('InstructorId', 'خطا در دریافت کد مدرسی');
-          instructorIdInput.value = ''; // هچ نتونسته بکنه کدی هم نباید نشان بده
+          instructorIdInput.value = '';
         });
-    }, 300); // دیبونس سیصد میلی ثانیه
-    // یعنی سیصد ثانیه بعد اینکه کاربر چیزی تایپ نکرد فچ انجام
+    }, 300);
 
     // چک ها بعد زدن کلید تایید
-    document.getElementById('add-instructor-form').addEventListener('submit', function (e) {
-      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
-
+    document.getElementById('edit-instructor-form').addEventListener('submit', function (e) {
+      e.preventDefault();
       let hasError = false;
-
-      // 1. پاک کردن خطاهای قبلی
       this.querySelectorAll('.error-message').forEach(span => span.textContent = '');
-
-      // 2. ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
-      // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
       this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
-        if (!validateField(input.id, true)) {
+        if (!validateField(input.id, true, true)) {
           hasError = true;
         }
       });
-
-      // 3. اگر خطایی نبود فرم ارسال شود
       if (!hasError) {
         this.submit();
       }
