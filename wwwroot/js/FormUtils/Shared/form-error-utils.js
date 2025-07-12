@@ -29,7 +29,7 @@ function replaceError(elementId, message) {
     errorSpan.classList.remove('visible');
     setTimeout(() => {
       errorSpan.textContent = '';
-    }, 250); // مدت زمان انیمیشن در CSS
+    }, 500); // با 500 میلی ثانیه تاخیر
   }
 }
 

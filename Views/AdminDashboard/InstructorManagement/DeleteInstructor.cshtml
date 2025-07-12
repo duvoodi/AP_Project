@@ -9,7 +9,6 @@
     currentHash = ViewData["Hash"]?.ToString() ?? "";
   }
   var hasFooter = false;
-
   var form = (AP_Project.FormViewModels.InstructorForm.InstructorFormViewModel)ViewData["Form"];
 }
 
@@ -74,49 +73,7 @@
     </form>
   </div>
 </main>
-
-<partial name="_ValidationScriptsPartial" />
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('delete-instructor-form');
-    const errorBox = document.getElementById("GeneralError");
-    let confirmedOnce = false;
-
-    form.addEventListener('submit', function (e) {
-        // اگر قبلاً تایید شده بود (یعنی بار دوم کلیک شد)، حذف رو انجام بده
-        if (confirmedOnce) {
-            form.submit();
-            return; // اجازه بده فرم سابمیت بشه
-        }
-
-        e.preventDefault(); // جلو سابمیت رو بگیر
-
-        // پاک کردن پیام قبلی
-        errorBox.innerText = "";
-        errorBox.classList.remove("visible");
-
-        fetch('@Url.Action("CheckInstructorHasCourses", "InstructorManagement")?id=@ViewData["InstructorGuid"]')
-            .then(response => response.json())
-            .then(data => {
-                if (data.hasCourses) {
-                    // استاد درس دارد → هشدار نشان بده
-                    errorBox.innerText = "این استاد دارای درس فعال است. اگر دوباره تایید کنید، حذف انجام می‌شود.";
-                    errorBox.classList.add("visible");
-
-                    // فلگ تایید را فعال کن
-                    confirmedOnce = true;
-                } else {
-                    // استاد درس ندارد → مستقیماً حذف
-                    form.submit();
-                }
-            })
-            .catch(() => {
-                errorBox.innerText = "خطا در بررسی وضعیت استاد. لطفاً دوباره تلاش کنید.";
-                errorBox.classList.add("visible");
-            });
-    });
-});
-</script>
-
-
+@section Scripts {
+  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+}
