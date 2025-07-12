@@ -147,10 +147,10 @@ table, button, td, th {
 }
 
 /* ============================
-   COPY BUTTON
+   TEXT LINK
    ============================ */
 
-.copy-id-button {
+.text-link {
   background: none;
   border: none;
   color: #0645AD;
@@ -173,21 +173,28 @@ table, button, td, th {
   align-items: center;
   justify-content: center;
   height: 100%;
-  gap: 5px;
+  margin: auto 5px;
+  margin-bottom: -5px;
+  gap: 10px;
 }
 
 .btn-action {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 19px;
   padding: 0px;
 }
 
-.icon-edit::before {
-  content: "✏️";
+.btn-edit i {
+  color: #e09c08; /* زرد نارنجی */
 }
 
-.icon-delete::before {
-  content: "🗑️";
+.btn-delete i {
+  color: #d33242; /* قرمز */
+}
+
+/* افکت هاور */
+.btn-action:hover i {
+  color: #524343;
 }

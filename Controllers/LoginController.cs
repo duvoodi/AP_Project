@@ -22,12 +22,6 @@ namespace AP_Project.Controllers
 
                 return View("~/Views/Login/redirect.cshtml");
 
-            // اگر خطای لاگین وجود دارد، نمایش داده شود
-            if (TempData["LoginError"] != null)
-            {
-                ModelState.AddModelError("", TempData["LoginError"].ToString());
-            }
-
             return View();
         }
 
@@ -65,12 +59,13 @@ namespace AP_Project.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Index(LoginFormViewModel LoginForm)
         {
 
-            // تبدیل فیلد ها نال و گرفته نشده به رشته خالی
-            // برای جلوگیری از اکسپشن حین چک کردنشون
-            LoginForm.NullFieldsToEmpty();
+            // تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
+            // تا در ادامه دستی چکشون کنیم
+            ModelState.NullFieldsToValidEmpty(LoginForm);
 
             // چک همه فیلدها با شو ارور ترو
             foreach (var prop in typeof(LoginFormViewModel).GetProperties())

@@ -4,12 +4,6 @@
   ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  if (string.IsNullOrEmpty(currentHash)) // در ریترن ویو گت کوئری منتقل میشه ولی در ریترن ویو پست کوئری پاک میشه و هش رو دستی با ویو دیتا فرستادیم
-  {
-    currentHash = ViewData["Hash"]?.ToString() ?? "";
-  }
-  var hasFooter = false;
-
   var form = (AP_Project.FormViewModels.InstructorForm.InstructorFormViewModel)ViewData["Form"];
 }
 
@@ -18,14 +12,14 @@
 <!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-form-actions.css" asp-append-version="true" />
 
-<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main admin">
   <div class="titlebar">
     <div class="action-title-tab add">
       افزودن استاد
     </div>
   </div>
   <div class="form-container">
-    <form asp-controller="InstructorManagement" asp-action="AddInstructor" method="post" id="add-instructor-form">
+    <form asp-controller="InstructorManagement" asp-action="AddInstructor" asp-route-h="@currentHash" method="post" id="add-instructor-form">
       @Html.AntiForgeryToken()
 
       <div class="form-row">
@@ -49,7 +43,7 @@
       <div class="form-row">
         <div class="form-group">
           <label>کد مدرسی</label>
-          <input class="form-control readonly" id="InstructorId" name="InstructorId" value="@form?.InstructorId" readonly placeholder="منتظر سال استخدام معتبر ..." />
+          <input class="form-control" id="InstructorId" name="InstructorId" value="@form?.InstructorId" readonly placeholder="منتظر سال استخدام معتبر ..." />
           <span class="error-message">@Html.ValidationMessage("InstructorId")</span>
         </div>
         <div class="form-group">
@@ -131,9 +125,10 @@
     // چک فیلد های رید آنلی چون توسط کاربر نوشته نشده و ایونت بلور ایجاد نمیکند
 
     // دریافت کد مدرسی به صورت زنده هنگام ورود سال استخدام
-    let lastFetchedHireYear = null; // نگهداری آخرین سالی که براش فچ انجام شده
+    let lastFetchedHireYear = @(form != null && !string.IsNullOrEmpty(form.InstructorId) ? form.HireYear : "null"); // نگهداری آخرین سالی که براش فچ انجام شده
     document.getElementById('HireYear')?.addEventListener('input', function () {
       const instructorIdInput = document.getElementById('InstructorId');
+      if(!instructorIdInput) return;
       if (!validateField('HireYear', false)) { // اول بررسی معتبر بودن سال استخدام به صورت زنده بدون نمایش ارور
         replaceError('InstructorId', ''); // سال اشتباهه درخواست به سرور نمیده و ارور دریافت هم نباید داشته باشد
         instructorIdInput.value = ''; // برای سال اشتباه نباید کدی نمایش بده
@@ -148,12 +143,8 @@
       }
 
       // اگر ارور تکراری بودن کد مدرسی نمایش داده شده باشد، دوباره فچ کن
-      const input = document.getElementById('InstructorId');
-      if (!input) return;
-      const formGroup = input.closest('.form-group');
-      const errorSpan = formGroup?.querySelector('.error-message');
-      const errorSpanText = errorSpan ? errorSpan.textContent.trim() : '';
-      if (errorSpanText.includes('کد مدرسی تکراری')) {
+      const isInstructorIdDuplicate = @(ViewData["IsInstructorIdDuplicate"] != null && (bool)ViewData["IsInstructorIdDuplicate"] ? "true" : "false");
+      if (isInstructorIdDuplicate === "true") {
         debounceFetchInstructorCode(parsedYear);
         return;
       }

@@ -5,6 +5,7 @@ using System.Globalization;
 using AP_Project.Helpers.FormUtils;
 using Microsoft.EntityFrameworkCore;
 using AP_Project.FormViewModels.InstructorForm;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AP_Project.Controllers
 {
@@ -48,10 +49,16 @@ namespace AP_Project.Controllers
         {
             // کلاس پایه سشن را برای هر اکشن چک میکند
             // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
-
-            var codeGenerator = new CodeGenerator(_db);
-            var code = await codeGenerator.GenerateInstructorCodeAsync(year);
-            return Json(code);
+            try
+            {
+                var codeGenerator = new CodeGenerator(_db);
+                var code = await codeGenerator.GenerateInstructorCodeAsync(year);
+                return Json(code);
+            }
+            catch (Exception)
+            {
+                return Json(" ");
+            }
         }
 
 
@@ -63,9 +70,12 @@ namespace AP_Project.Controllers
             // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
             var admin = CurrentAdmin;
 
-            // تبدیل فیلد ها نال و گرفته نشده به رشته خالی
-            // برای جلوگیری از اکسپشن حین چک کردنشون
-            InstructorForm.NullFieldsToEmpty();
+            // ریست ارور های سمت سرور برای مقدار دهی مجدد
+            ModelState.ReplaceModelError("GeneralError", "");
+
+            // تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
+            // بدلیل فیلد های آپشنال یا خطای نال ندادن در چک ها
+            ModelState.NullFieldsToValidEmpty(InstructorForm);
 
             // چک همه فیلدها با شو ارور ترو
             foreach (var prop in typeof(InstructorFormViewModel).GetProperties())
@@ -73,22 +83,40 @@ namespace AP_Project.Controllers
                 ModelState.ValidateField(InstructorForm, prop.Name, true);
             }
 
+            // چک تکراری نبودن داده های یکتا با سرور
+
             // چک یکتایی کد مدرسی
             if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt))
             {
-                var exists = await _db.Instructors.AnyAsync(i => i.InstructorId == instructorIdInt);
-                if (exists)
+                var InstructorIdExists = await _db.Instructors.AnyAsync(i => i.InstructorId == instructorIdInt);
+                if (InstructorIdExists)
                 {
-                    ModelState.ReplaceModelError("InstructorId", "کد مدرسی تکراری بود و مجدداً تولید شد");
+                    ModelState.AppendModelError("GeneralError", "کد مدرسی تولید شده تکراری بود و مجدداً تولید شد.");
+                    ViewData["IsInstructorIdDuplicate"] = true;
                 }
+            }
+
+            // چک یکتایی نام و نام خانوادگی
+            var nameExists = await _db.Instructors.AnyAsync(i => 
+                i.FirstName == InstructorForm.FirstName && 
+                i.LastName == InstructorForm.LastName);
+            if (nameExists)
+            {
+                ModelState.AppendModelError("GeneralError", "نام و نام خانوادگی وارد شده قبلاً ثبت شده است.");
+            }
+
+            // چک یکتایی ایمیل
+            var emailExists = await _db.Instructors.AnyAsync(i => 
+                i.Email.ToLower() == InstructorForm.Email.ToLower());
+            if (emailExists)
+            {
+                ModelState.AppendModelError("GeneralError", "ایمیل وارد شده قبلاً ثبت شده است.");
             }
 
             // برگشت در صورت وجود خطا
             if (!ModelState.IsValid)
             {
                 ViewData["Form"] = InstructorForm;
-                ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
-
                 ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
                 return View("~/Views/AdminDashboard/InstructorManagement/AddInstructor.cshtml", admin);
             }
@@ -119,11 +147,11 @@ namespace AP_Project.Controllers
 
                 return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ModelState.AddModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد. لطفاً دوباره تلاش کنید.");
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد؛ لطفاً دوباره تلاش کنید...");
+                ViewData["Form"] = InstructorForm;
                 ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
-                ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
                 return View("~/Views/AdminDashboard/InstructorManagement/AddInstructor.cshtml", admin);
             }
         }
@@ -131,12 +159,14 @@ namespace AP_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> EditInstructor(Guid id)
         {
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
             var admin = CurrentAdmin;
+
+            // پیدا کردن استاد جی یو آی دی گرفته شده
             var instructor = await _db.Instructors.FindAsync(id);
             if (instructor == null)
-            {
                 return NotFound();
-            }
 
             var form = new InstructorFormViewModel
             {
@@ -150,11 +180,8 @@ namespace AP_Project.Controllers
                 Password = "",
                 ConfirmPassword = ""
             };
-
             ViewData["Form"] = form;
-            ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
             ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
-
             return View("~/Views/AdminDashboard/InstructorManagement/EditInstructor.cshtml", admin);
         }
 
@@ -162,49 +189,74 @@ namespace AP_Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditInstructor(Guid id, InstructorFormViewModel InstructorForm)
         {
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
             var admin = CurrentAdmin;
 
-            InstructorForm.NullFieldsToEmpty();
-
-            // اعتبارسنجی همه فیلدها
-            foreach (var prop in typeof(InstructorFormViewModel).GetProperties())
-            {
-                ModelState.ValidateField(InstructorForm, prop.Name, true);
-            }
-
-            // پیدا کردن استاد
+            // پیدا کردن استاد جی یو آی دی گرفته شده
             var instructor = await _db.Instructors.FindAsync(id);
             if (instructor == null)
                 return NotFound();
 
-            // اگر سال استخدام تغییر کرده بود، کد مدرسی جدید تولید کن
-            bool hireYearChanged = InstructorForm.HireYear != instructor.HireYear.ToString();
-            int newHireYear = int.Parse(InstructorForm.HireYear);
+            // ریست ارور های سمت سرور برای مقدار دهی مجدد
+            ModelState.ReplaceModelError("GeneralError", "");
 
-            if (hireYearChanged)
+
+            // تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
+            // بدلیل فیلد های آپشنال یا خطای نال ندادن در چک ها
+            ModelState.NullFieldsToValidEmpty(InstructorForm);
+
+            // چک همه فیلدها با شو ارور ترو
+            foreach (var prop in typeof(InstructorFormViewModel).GetProperties())
             {
-                // تولید کد مدرسی جدید با سال جدید (مثل اکشن افزودن استاد)
-                var codeGenerator = new CodeGenerator(_db);
-                var newInstructorId = await codeGenerator.GenerateInstructorCodeAsync(newHireYear);
-                InstructorForm.InstructorId = newInstructorId.ToString();
+                ModelState.ValidateField(InstructorForm, prop.Name, true, true);
             }
 
-            // چک یکتایی کد مدرسی (در هر صورت)
-            if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt))
+            // چک تکراری نبودن داده های یکتا با سرور (اگر تغییر کردند)
+
+            // چک یکتایی کد مدرسی (اگر تغییر کرده)
+            if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt) &&
+                instructor.InstructorId != instructorIdInt)
             {
-                var exists = await _db.Instructors
-                    .AnyAsync(i => i.InstructorId == instructorIdInt && i.Id != id);
-                if (exists)
+                var InstructorIdExists = await _db.Instructors.AnyAsync(i => i.InstructorId == instructorIdInt);
+                if (InstructorIdExists)
                 {
-                    ModelState.ReplaceModelError("InstructorId", "کد مدرسی تکراری است.");
+                    ModelState.AppendModelError("GeneralError", "کد مدرسی تولید شده تکراری بود و مجدداً تولید شد.");
+                    ViewData["IsInstructorIdDuplicate"] = true;
                 }
             }
 
+            // چک یکتایی نام و نام خانوادگی (اگر تغییر کرده)
+            if (instructor.FirstName != InstructorForm.FirstName ||
+                instructor.LastName != InstructorForm.LastName)
+            {
+                var nameExists = await _db.Instructors.AnyAsync(i =>
+                    i.FirstName == InstructorForm.FirstName &&
+                    i.LastName == InstructorForm.LastName &&
+                    i.Id != instructor.Id);
+                if (nameExists)
+                {
+                    ModelState.AppendModelError("GeneralError", "نام و نام خانوادگی وارد شده قبلاً ثبت شده است.");
+                }
+            }
+
+
+            // چک یکتایی ایمیل (اگر تغییر کرده)
+            if (!string.Equals(instructor.Email, InstructorForm.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                var emailExists = await _db.Instructors.AnyAsync(i =>
+                    i.Email.ToLower() == InstructorForm.Email.ToLower() &&
+                    i.Id != instructor.Id);
+                if (emailExists)
+                {
+                    ModelState.AppendModelError("GeneralError", "ایمیل وارد شده قبلاً ثبت شده است.");
+                }
+            }
+            
             // برگشت در صورت وجود خطا
             if (!ModelState.IsValid)
             {
                 ViewData["Form"] = InstructorForm;
-                ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
                 ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
                 return View("~/Views/AdminDashboard/InstructorManagement/EditInstructor.cshtml", admin);
             }
@@ -214,14 +266,15 @@ namespace AP_Project.Controllers
                 instructor.FirstName = InstructorForm.FirstName;
                 instructor.LastName = InstructorForm.LastName;
                 instructor.Email = InstructorForm.Email;
-                instructor.HireYear = newHireYear;
-                instructor.Salary = decimal.Parse(InstructorForm.Salary);
 
                 // اگر سال استخدام تغییر کرده بود، کد مدرسی جدید ست کن
-                if (hireYearChanged)
+                if (InstructorForm.HireYear != instructor.HireYear.ToString())
                 {
                     instructor.InstructorId = int.Parse(InstructorForm.InstructorId);
                 }
+
+                instructor.HireYear = int.Parse(InstructorForm.HireYear);
+                instructor.Salary = decimal.Parse(InstructorForm.Salary);
 
                 // اگر رمز عبور جدید وارد شده بود، هش کن و ذخیره کن
                 if (!string.IsNullOrWhiteSpace(InstructorForm.Password))
@@ -235,11 +288,109 @@ namespace AP_Project.Controllers
             }
             catch (Exception)
             {
-                ModelState.AddModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد. لطفاً دوباره تلاش کنید.");
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد؛ لطفاً دوباره تلاش کنید...");
                 ViewData["Form"] = InstructorForm;
-                ViewData["Hash"] = ComputeHash.Sha1(admin.AdminId.ToString());
                 ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
                 return View("~/Views/AdminDashboard/InstructorManagement/EditInstructor.cshtml", admin);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteInstructor(Guid id)
+        {
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
+
+            // پیدا کردن استاد جی یو آی دی گرفته شده
+            var instructor = await _db.Instructors.FindAsync(id);
+            if (instructor == null)
+                return NotFound();
+
+            // ریست ارور های سمت سرور برای مقدار دهی مجدد
+            ModelState.ReplaceModelError("GeneralError", "");
+
+            // اگر استاد تیچزی دارد هشدار دهد
+            var hasCourses = await _db.Teaches.AnyAsync(t => t.InstructorUserId == id);
+            if(hasCourses)
+                ModelState.AppendModelError("GeneralError", "با حذف این استاد، بعضی از دروس بدون استاد می‌مانند و باید در پنل مدیریت دروس آن دروس را ویرایش یا حذف کنید");
+
+            var form = new InstructorFormViewModel
+            {
+                FirstName = instructor.FirstName,
+                LastName = instructor.LastName,
+                Email = instructor.Email,
+                InstructorId = instructor.InstructorId.ToString(),
+                HireYear = instructor.HireYear.ToString(),
+                Salary = instructor.Salary.ToString("0")
+            };
+            ViewData["Form"] = form;
+            return View("~/Views/AdminDashboard/InstructorManagement/DeleteInstructor.cshtml", admin);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteInstructor(Guid id, InstructorFormViewModel InstructorForm) // ویو مدل فرم صرفا جهت متفاوت بودن پارامتر ها اکشن پست با گت اش گرفته شده و از آن هیچ استفاده ای نشده
+        {
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
+
+            // پیدا کردن استاد جی یو آی دی گرفته شده
+            var instructor = await _db.Instructors.FindAsync(id);
+            if (instructor == null)
+                return NotFound();
+
+            // ریست ارور های سمت سرور برای مقدار دهی مجدد
+            ModelState.ReplaceModelError("GeneralError", "");
+
+            // تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
+            // بدلیل فیلد های آپشنال یا خطای نال ندادن در چک ها
+            ModelState.NullFieldsToValidEmpty(InstructorForm);
+
+            try
+            {
+                // نال کردن آی دی این استاد در تیچز ها
+                var teachesToUpdate = await _db.Teaches
+                    .Where(t => t.InstructorUserId == id)
+                    .ToListAsync();
+                foreach (var t in teachesToUpdate)
+                    t.InstructorUserId = null;
+                await _db.SaveChangesAsync(); // برای حذف وابستگی تیچز به استاد تا بتوان استاد را حذف کرد
+
+                // حذف استاد
+                _db.Instructors.Remove(instructor);
+
+                // حذف دستی یوزر بجای مانده از استاد چون امکان وان تو وان نداشتند
+                var user = await _db.Users.FindAsync(id);
+                if (user != null)
+                    _db.Users.Remove(user);
+
+                // طبق تنظیمات دی بی کانتکست یوزر رول یوزر به صورت اتومات حذف می شود
+
+                // ذخیره تغییرات
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
+            }
+            catch (Exception)
+            {
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام حذف اطلاعات رخ داد؛ لطفاً دوباره تلاش کنید...");
+                // اگر استاد تیچزی دارد هشدار دهد
+                var hasCourses = await _db.Teaches.AnyAsync(t => t.InstructorUserId == id);
+                if(hasCourses)
+                    ModelState.AppendModelError("GeneralError", "با حذف این استاد، بعضی از دروس بدون استاد می‌مانند و باید در پنل مدیریت دروس آن دروس را ویرایش یا حذف کنید");
+                var form = new InstructorFormViewModel
+                {
+                    FirstName = instructor.FirstName,
+                    LastName = instructor.LastName,
+                    Email = instructor.Email,
+                    InstructorId = instructor.InstructorId.ToString(),
+                    HireYear = instructor.HireYear.ToString(),
+                    Salary = instructor.Salary.ToString("0")
+                };
+                ViewData["Form"] = form;
+                return View("~/Views/AdminDashboard/InstructorManagement/DeleteInstructor.cshtml", admin);
             }
         }
     }
