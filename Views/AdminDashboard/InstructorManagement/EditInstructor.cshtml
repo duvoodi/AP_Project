@@ -4,10 +4,6 @@
   ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  if (string.IsNullOrEmpty(currentHash))
-  {
-    currentHash = ViewData["Hash"]?.ToString() ?? "";
-  }
   var form = (AP_Project.FormViewModels.InstructorForm.InstructorFormViewModel)ViewData["Form"];
 }
 
@@ -23,7 +19,7 @@
     </div>
   </div>
   <div class="form-container">
-    <form asp-controller="InstructorManagement" asp-action="EditInstructor" method="post" id="edit-instructor-form">
+    <form asp-controller="InstructorManagement" asp-action="EditInstructor" asp-route-h="@currentHash" method="post" id="edit-instructor-form">
       @Html.AntiForgeryToken()
 
       <div class="form-row">
