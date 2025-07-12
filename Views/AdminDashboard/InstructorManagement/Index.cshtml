@@ -5,7 +5,7 @@
   Layout = "_LayoutAdmin";
   var instructors = ViewBag.Instructors as List<AP_Project.Models.Users.Instructor>;
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  if (string.IsNullOrEmpty(currentHash)) // در ریترن ویو گت کوئری منتقل میشه ولی در ریترن ویو پست کوئری پاک میشه و هش رو دستی با ویو دیتا فرستادیم
+  if (string.IsNullOrEmpty(currentHash)) 
   {
     currentHash = ViewData["Hash"]?.ToString() ?? "";
   }
