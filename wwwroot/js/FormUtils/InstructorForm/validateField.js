@@ -37,7 +37,7 @@ function validateConfirmPasswordWith_Password() {
 /* ========================================
   تابع اعتبارسنجی فیلد با آی دی اش
    ======================================== */
-function validateField(inputId, showError) {
+function validateField(inputId, showError, AllowOptionalFieldsInEdit = false) {
   const input = document.getElementById(inputId);
   if (!input) return false;
   let value = input.value;
@@ -53,6 +53,15 @@ function validateField(inputId, showError) {
   function appendError_IfAllowed(Id, message){
     if(showError) appendError(Id, message);
     return;
+  }
+
+  // 0. چک نکردن فیلد های اختیاری خالی
+  let optionalFields = [];
+  if (AllowOptionalFieldsInEdit) optionalFields.push('Password', 'ConfirmPassword');  
+  if (optionalFields.includes(inputId) && !value) {
+    // خالی هست هیچ ارور ندهد و ولید باشد
+    replaceError_IfAllowed(inputId, '');
+    return true;
   }
 
   // 1. چک خالی بودن فیلد های اجباری

@@ -59,6 +59,44 @@
       });
     });
 
+    // ارسال فرم اگر داخل ابنپوت بودیم و اینتر زدیم
+    // بخاطر اینکه اینتر کاراکتر مجاز ولد یوزر نیم و پسورد نیست اجازه زدنش را نمیدهد و باید اسکریپت جداگانه بزنیم
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        const active = document.activeElement;
+        if (active && ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName)) {
+          if (active.type === 'password') {
+            // اجازه بده اینتر زده بشه ولی سابمیت نکن
+            return;
+          }
+
+          e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
+
+          const form = document.getElementById('login-form');
+          if (!form) return;
+
+          // اعتبارسنجی فرم (همان کدی که قبلا داشتی)
+          let hasError = false;
+
+          // 1. پاک کردن خطاهای قبلی
+          form.querySelectorAll('.error-message').forEach(span => span.textContent = '');
+
+          // 2. ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
+          // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+          form.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+            if (!validateField(input.id, true)) {
+              hasError = true;
+            }
+          });
+
+          // 3. اگر خطایی نبود فرم ارسال شود
+          if (!hasError) {
+            form.requestSubmit ? form.requestSubmit() : form.submit();
+          }
+        }
+      }
+    });
+
     // چک ها بعد زدن کلید تایید
     document.getElementById('login-form').addEventListener('submit', function (e) {
       e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود

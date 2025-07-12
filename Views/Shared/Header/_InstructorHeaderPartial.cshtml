@@ -1,7 +1,7 @@
 @model AP_Project.Models.Users.Instructor
 @{
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  if (string.IsNullOrEmpty(currentHash)) // در ریترن ویو گت کوئری منتقل میشه ولی در ریترن ویو پست کوئری پاک میشه و هش رو دستی با ویو دیتا فرستادیم
+  if (string.IsNullOrEmpty(currentHash)) 
   {
     currentHash = ViewData["Hash"]?.ToString() ?? "";
   }
@@ -17,7 +17,7 @@
     {
       <span class="user-name instructor">@Model.FirstName @Model.LastName</span>
       <div class="nav-links">
-        <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-h="@currentHash" class="@(ViewData["ActiveTab"]?.ToString()=="Class"?"active":"")">مدیریت کلاس‌ها</a>
+        <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-h="@currentHash" class="@(activeTab =="Class"?"active":"")">مدیریت کلاس‌ها</a>
         <a asp-controller="Login" asp-action="Logout">خروج</a>
       </div>
     }
