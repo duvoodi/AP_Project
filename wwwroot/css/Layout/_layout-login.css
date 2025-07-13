@@ -74,7 +74,7 @@ html, body {
 .login-container {
   margin-top: 80px;
   background-color: #fff;
-  padding: 50px 60px;
+  padding: 40px 60px;
   border: 1px solid #dcdcdc;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -92,7 +92,7 @@ html, body {
   text-align: center;
   direction: rtl;
   margin-top: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   font-size: 28px;
   font-weight: 900;
   color: #333;
