@@ -155,5 +155,142 @@ namespace AP_Project.Controllers
                 return View("~/Views/AdminDashboard/StudentManagement/AddStudent.cshtml", admin);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> EditStudent(Guid id)
+        {
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
+
+            // پیدا کردن دانشجو جی یو آی دی گرفته شده
+            var student = await _db.Students.FindAsync(id);
+            if (student == null)
+                return NotFound();
+
+            var form = new StudentFormViewModel
+            {
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                Email = student.Email,
+                StudentId = student.StudentId.ToString(),
+                EnrollmentYear = student.EnrollmentYear.ToString(),
+                // رمز عبور را خالی می‌گذاریم (برای امنیت)
+                Password = "",
+                ConfirmPassword = ""
+            };
+            ViewData["Form"] = form;
+            ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
+            return View("~/Views/AdminDashboard/StudentManagement/EditStudent.cshtml", admin);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditStudent(Guid id, StudentFormViewModel StudentForm)
+        {
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
+
+            // پیدا کردن دانشجو جی یو آی دی گرفته شده
+            var student = await _db.Students.FindAsync(id);
+            if (student == null)
+                return NotFound();
+
+            // ریست ارور های سمت سرور برای مقدار دهی مجدد
+            ModelState.ReplaceModelError("GeneralError", "");
+
+
+            // تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
+            // بدلیل فیلد های آپشنال یا خطای نال ندادن در چک ها
+            ModelState.NullFieldsToValidEmpty(StudentForm);
+
+            // چک همه فیلدها با شو ارور ترو
+            foreach (var prop in typeof(StudentFormViewModel).GetProperties())
+            {
+                ModelState.ValidateField(StudentForm, prop.Name, true, true);
+            }
+
+            // چک تکراری نبودن داده های یکتا با سرور (اگر تغییر کردند)
+
+            // چک یکتایی کد دانشجویی (اگر تغییر کرده)
+            if (int.TryParse(StudentForm.StudentId, out int studentIdInt) &&
+                student.StudentId != studentIdInt)
+            {
+                var StudentIdExists = await _db.Students.AnyAsync(i => i.StudentId == studentIdInt);
+                if (StudentIdExists)
+                {
+                    ModelState.AppendModelError("GeneralError", "کد دانشجویی تولید شده تکراری بود و مجدداً تولید شد.");
+                    ViewData["IsStudentIdDuplicate"] = true;
+                }
+            }
+
+            // چک یکتایی نام و نام خانوادگی (اگر تغییر کرده)
+            if (student.FirstName != StudentForm.FirstName ||
+                student.LastName != StudentForm.LastName)
+            {
+                var nameExists = await _db.Students.AnyAsync(i =>
+                    i.FirstName == StudentForm.FirstName &&
+                    i.LastName == StudentForm.LastName &&
+                    i.Id != student.Id);
+                if (nameExists)
+                {
+                    ModelState.AppendModelError("GeneralError", "نام و نام خانوادگی وارد شده قبلاً ثبت شده است.");
+                }
+            }
+
+
+            // چک یکتایی ایمیل (اگر تغییر کرده)
+            if (!string.Equals(student.Email, StudentForm.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                var emailExists = await _db.Students.AnyAsync(i =>
+                    i.Email.ToLower() == StudentForm.Email.ToLower() &&
+                    i.Id != student.Id);
+                if (emailExists)
+                {
+                    ModelState.AppendModelError("GeneralError", "ایمیل وارد شده قبلاً ثبت شده است.");
+                }
+            }
+
+            // برگشت در صورت وجود خطا
+            if (!ModelState.IsValid)
+            {
+                ViewData["Form"] = StudentForm;
+                ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
+                return View("~/Views/AdminDashboard/StudentManagement/EditStudent.cshtml", admin);
+            }
+
+            try
+            {
+                student.FirstName = StudentForm.FirstName;
+                student.LastName = StudentForm.LastName;
+                student.Email = StudentForm.Email;
+
+                // اگر سال استخدام تغییر کرده بود، کد دانشجویی جدید ست کن
+                if (StudentForm.EnrollmentYear != student.EnrollmentYear.ToString())
+                {
+                    student.StudentId = int.Parse(StudentForm.StudentId);
+                }
+
+                student.EnrollmentYear = int.Parse(StudentForm.EnrollmentYear);
+
+                // اگر رمز عبور جدید وارد شده بود، هش کن و ذخیره کن
+                if (!string.IsNullOrWhiteSpace(StudentForm.Password))
+                {
+                    student.HashedPassword = ComputeHash.Sha1(StudentForm.Password);
+                }
+
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
+            }
+            catch (Exception)
+            {
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد؛ لطفاً دوباره تلاش کنید...");
+                ViewData["Form"] = StudentForm;
+                ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
+                return View("~/Views/AdminDashboard/StudentManagement/EditStudent.cshtml", admin);
+            }
+        }
     }
 }
