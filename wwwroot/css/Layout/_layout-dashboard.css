@@ -126,14 +126,12 @@ html, body {
 
 .dashboard-main {
   opacity: 0;
-  visibility: hidden;
   transform: scale(95%);
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .dashboard-main.visible {
   opacity: 1;
-  visibility: visible;
   transform: scale(100%);
 }
 
@@ -155,13 +153,11 @@ html, body {
   font-size: 14px;
   max-width: 200px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  visibility: hidden;
   opacity: 0;
   transition: opacity 0.25s ease;
 }
 
 .custom-tooltip.show {
-  visibility: visible;
   opacity: 1;
 }
 
@@ -196,12 +192,10 @@ html, body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   font-size: 18px;
-  visibility: hidden;
   opacity: 0;
   transition: opacity 0.4s ease-in-out;
 }
 .empty-popup.visible {
-  visibility: visible;
   opacity: 1;
   animation: popupScaleAnim 0.6s ease forwards;
 }
@@ -242,13 +236,11 @@ html, body {
 
 .dashboard-footer {
   opacity: 0;
-  visibility: hidden;
   transform: translateY(20px);
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 .dashboard-footer.visible {
   opacity: 1;
-  visibility: visible;
   transform: translateY(0);
 }

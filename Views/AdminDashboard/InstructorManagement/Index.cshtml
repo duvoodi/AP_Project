@@ -33,7 +33,8 @@
         <th class="col-salary">حقوق (تومان)</th>
         <th class="col-instid">کد مدرسی</th>
         <th class="col-userid">آی‌دی کاربری</th>
-        <th class="col-actions"></th>
+        @if (instructors != null && instructors.Any())
+        {<th class="col-actions"></th>}
       </tr>
     </thead>
     @if (instructors != null && instructors.Any())
@@ -60,7 +61,7 @@
               <div class="actions-wrapper">
                 <a asp-controller="InstructorManagement" asp-action="EditInstructor" asp-route-id="@inst.Id" asp-route-h="@currentHash"
                   class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
-                  <i class="fas fa-edit""></i>
+                  <i class="fas fa-edit"></i>
                 </a>
                 <a asp-controller="InstructorManagement" asp-action="DeleteInstructor" asp-route-id="@inst.Id" asp-route-h="@currentHash"
                   class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">

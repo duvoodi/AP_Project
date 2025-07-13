@@ -12,14 +12,12 @@
 
 .login-container {
   opacity: 0;
-  visibility: hidden;
   transform: translateY(40px);
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .login-container.visible {
   opacity: 1;
-  visibility: visible;
   transform: translateY(0);
 }
 
@@ -124,7 +122,6 @@ input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear,
 input[type="password"]::-webkit-credentials-auto-fill-button {
   display: none !important;
-  visibility: hidden;
   pointer-events: none;
 }
 
