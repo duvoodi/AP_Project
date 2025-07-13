@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using AP_Project.Data;
 using AP_Project.Models.Users;
-using Microsoft.AspNetCore.Http;
+using System.Globalization;
+using AP_Project.Helpers.FormUtils;
+using Microsoft.EntityFrameworkCore;
+using AP_Project.FormViewModels.InstructorForm;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AP_Project.Controllers
 {
@@ -18,7 +22,13 @@ namespace AP_Project.Controllers
             // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
             var admin = CurrentAdmin;
 
-            return View("~/Views/AdminDashboard/Student.cshtml", admin);
+            var students = _db.Students
+                .OrderBy(i => i.LastName)
+                .ThenBy(i => i.FirstName)
+                .ToList();
+
+            ViewBag.Students = students;
+            return View("~/Views/AdminDashboard/StudentManagement/Index.cshtml", admin);
         }
     }
 }
