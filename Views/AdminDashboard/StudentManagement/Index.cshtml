@@ -40,27 +40,27 @@
       <tbody>
         @for (int i = 0; i < students.Count; i++)
         {
-          var inst = students[i];
-          var EmailWithBreaks = inst.Email.Replace(".", "\u200B" + ".").Replace("@", "\u200B" + "@");
-          var userId = inst.Id.ToString();
+          var std = students[i];
+          var EmailWithBreaks = std.Email.Replace(".", "\u200B" + ".").Replace("@", "\u200B" + "@");
+          var userId = std.Id.ToString();
           <tr>
             <td class="col-index">@((i + 1))</td>
-            <td class="col-fname">@inst.FirstName</td>
-            <td class="col-lname">@inst.LastName</td>
+            <td class="col-fname">@std.FirstName</td>
+            <td class="col-lname">@std.LastName</td>
             <td class="col-email">@Html.Raw(EmailWithBreaks)</td>
-            <td class="col-fixed">@inst.EnrollmentYear</td>
-            <td class="col-fixed">@inst.StudentId</td>
+            <td class="col-fixed">@std.EnrollmentYear</td>
+            <td class="col-fixed">@std.StudentId</td>
             <td class="col-userid">
               <button class="text-link copy-id-button" data-id="@userId" data-tooltip="@userId"
                 data-tooltip-align="center">کپی</button>
             </td>
             <td class="col-actions">
               <div class="actions-wrapper">
-                <a asp-controller="StudentManagement" asp-action="EditStudent" asp-route-id="@inst.Id" asp-route-h="@currentHash"
+                <a asp-controller="StudentManagement" asp-action="EditStudent" asp-route-id="@std.Id" asp-route-h="@currentHash"
                   class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
                   <i class="fas fa-edit""></i>
                 </a>
-                <a asp-controller="StudentManagement" asp-action="DeleteStudent" asp-route-id="@inst.Id" asp-route-h="@currentHash"
+                <a asp-controller="StudentManagement" asp-action="DeleteStudent" asp-route-id="@std.Id" asp-route-h="@currentHash"
                   class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
                   <i class="fas fa-trash-alt"></i>
                 </a>
