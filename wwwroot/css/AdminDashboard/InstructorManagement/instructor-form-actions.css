@@ -132,7 +132,7 @@ body, html, input, textarea, select, button {
    READONLY FIELDS
    ============================ */
 
-.form-control.readonly[readonly] {
+.form-control[readonly] {
   background: #f3f3f3;
   color: #888;
   border-color: #ddd;

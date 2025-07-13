@@ -5,10 +5,6 @@
   Layout = "_LayoutAdmin";
   var instructors = ViewBag.Instructors as List<AP_Project.Models.Users.Instructor>;
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  if (string.IsNullOrEmpty(currentHash)) 
-  {
-    currentHash = ViewData["Hash"]?.ToString() ?? "";
-  }
   var hasFooter = false;
 }
 
@@ -57,18 +53,19 @@
             <td class="col-fixed">@String.Format("{0:N0}", inst.Salary)</td>
             <td class="col-fixed">@inst.InstructorId</td>
             <td class="col-userid">
-              <button class="text-link" data-id="@userId" data-tooltip="@userId"
+              <button class="text-link copy-id-button" data-id="@userId" data-tooltip="@userId"
                 data-tooltip-align="center">کپی</button>
             </td>
             <td class="col-actions">
               <div class="actions-wrapper">
-                <a asp-controller="InstructorManagement" asp-action="EditInstructor" asp-route-id="@inst.Id"
-                  asp-route-h="@currentHash" class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
+                <a asp-controller="InstructorManagement" asp-action="EditInstructor" asp-route-id="@inst.Id" asp-route-h="@currentHash"
+                  class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
                   <i class="fas fa-edit""></i>
                 </a>
-                <button class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
+                <a asp-controller="InstructorManagement" asp-action="DeleteInstructor" asp-route-id="@inst.Id" asp-route-h="@currentHash"
+                  class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
                   <i class="fas fa-trash-alt"></i>
-                </button>
+                </a>
               </div>
             </td>
           </tr>

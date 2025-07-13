@@ -1,10 +1,6 @@
 @model AP_Project.Models.Users.Student
 @{
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  if (string.IsNullOrEmpty(currentHash)) 
-  {
-    currentHash = ViewData["Hash"]?.ToString() ?? "";
-  }
   var activeTab = ViewData["ActiveTab"]?.ToString();
 }
 

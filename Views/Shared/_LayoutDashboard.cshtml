@@ -13,24 +13,14 @@
       .then(data => {
           const role = data.role;
           const sessionHash = data.id;
-
           if (role === 'none') {
-          window.location.href = '/Login/Index';
-          return;
+            window.location.href = '/Login/Index';
+            return;
           }
-
-          const queryString = window.location.search;
-
-          const params = new URLSearchParams(queryString);
-          const currentHash = params.get('h');
-
-          const Hash = '@ViewData["Hash"]?.ToString()';
-
-          const hashToCompare =  (currentHash && currentHash !== 'null') ? currentHash : Hash;
-
-          if (!hashToCompare  || hashToCompare  !== sessionHash) {
-          window.location.href = '/Login/Index';
-          return;
+          const currentHash = (new URLSearchParams(window.location.search)).get('h');
+          if (currentHash !== sessionHash) {
+            window.location.href = '/Login/Index';
+            return;
           }
       })
       .catch(() => {
