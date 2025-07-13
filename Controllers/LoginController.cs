@@ -62,6 +62,8 @@ namespace AP_Project.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index(LoginFormViewModel LoginForm)
         {
+            // ریست ارور های سمت سرور برای مقدار دهی مجدد
+            ModelState.ReplaceModelError("GeneralError", "");
 
             // تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
             // تا در ادامه دستی چکشون کنیم
@@ -75,45 +77,59 @@ namespace AP_Project.Controllers
 
             var hashedInputPassword = ComputeHash.Sha1(LoginForm.Password);
 
-            // بررسی در جدول Admin
-            var admin = _db.Set<Admin>()
-                .FirstOrDefault(a => a.AdminId.ToString() == LoginForm.Username && a.HashedPassword == hashedInputPassword);
-
-            if (admin != null)
+            try
             {
-                HttpContext.Session.Clear(); // سشن ها قبلی اگر اشتباهی باز هست ببندد
-                HttpContext.Session.SetInt32("AdminId", admin.AdminId);
-                return View("~/Views/Login/redirect.cshtml");
-                // میره صفحه ریدایرکت و از اونجا میره داشبورد  تا با بک زدن از صفحه داشبورد به صفحه لاگین کش شده نره            }
+                // بررسی در جدول Admin
+                var admin = _db.Set<Admin>()
+                    .FirstOrDefault(a => a.AdminId.ToString() == LoginForm.Username && a.HashedPassword == hashedInputPassword);
+
+                if (admin != null)
+                {
+                    HttpContext.Session.Clear(); // سشن ها قبلی اگر اشتباهی باز هست ببندد
+                    HttpContext.Session.SetInt32("AdminId", admin.AdminId);
+                    return View("~/Views/Login/redirect.cshtml");
+                    // میره صفحه ریدایرکت و از اونجا میره داشبورد  تا با بک زدن از صفحه داشبورد به صفحه لاگین کش شده نره            }
+                }
+
+                // بررسی در جدول Instructor
+                var instructor = _db.Set<Instructor>()
+                    .FirstOrDefault(i => i.InstructorId.ToString() == LoginForm.Username && i.HashedPassword == hashedInputPassword);
+
+                if (instructor != null)
+                {
+                    HttpContext.Session.Clear(); // سشن ها قبلی اگر اشتباهی باز هست ببندد
+                    HttpContext.Session.SetInt32("InstructorId", instructor.InstructorId);
+                    return View("~/Views/Login/redirect.cshtml");
+                    // میره صفحه ریدایرکت و از اونجا میره داشبورد  تا با بک زدن از صفحه داشبورد به صفحه لاگین کش شده نره
+                }
+
+                // بررسی در جدول Student
+                var student = _db.Set<Student>()
+                    .FirstOrDefault(s => s.StudentId.ToString() == LoginForm.Username && s.HashedPassword == hashedInputPassword);
+
+                if (student != null)
+                {
+                    HttpContext.Session.Clear(); // سشن ها قبلی اگر اشتباهی باز هست ببندد
+                    HttpContext.Session.SetInt32("StudentId", student.StudentId);
+                    return View("~/Views/Login/redirect.cshtml");
+                    // میره صفحه ریدایرکت و از اونجا میره داشبورد  تا با بک زدن از صفحه داشبورد به صفحه لاگین کش شده نره
+                }
+
+                ModelState.AppendModelError("GeneralError", "نام کاربری یا رمز عبور وارد شده نامعتبر است.");
+            }
+            catch
+            {
+                ModelState.AppendModelError("GeneralError", "خطایی غیر منتظره هنگام بررسی اطلاعات رخ داد!");
+
             }
 
-            // بررسی در جدول Instructor
-            var instructor = _db.Set<Instructor>()
-                .FirstOrDefault(i => i.InstructorId.ToString() == LoginForm.Username && i.HashedPassword == hashedInputPassword);
-
-            if (instructor != null)
+            var form = new LoginFormViewModel
             {
-                HttpContext.Session.Clear(); // سشن ها قبلی اگر اشتباهی باز هست ببندد
-                HttpContext.Session.SetInt32("InstructorId", instructor.InstructorId);
-                return View("~/Views/Login/redirect.cshtml");
-                // میره صفحه ریدایرکت و از اونجا میره داشبورد  تا با بک زدن از صفحه داشبورد به صفحه لاگین کش شده نره            }
-            }
-
-            // بررسی در جدول Student
-            var student = _db.Set<Student>()
-                .FirstOrDefault(s => s.StudentId.ToString() == LoginForm.Username && s.HashedPassword == hashedInputPassword);
-
-            if (student != null)
-            {
-                HttpContext.Session.Clear(); // سشن ها قبلی اگر اشتباهی باز هست ببندد
-                HttpContext.Session.SetInt32("StudentId", student.StudentId);
-                return View("~/Views/Login/redirect.cshtml");
-                // میره صفحه ریدایرکت و از اونجا میره داشبورد  تا با بک زدن از صفحه داشبورد به صفحه لاگین کش شده نره
-            }
-
-            // اگر لاگین ناموفق بود
-            return RedirectToAction("Index");
-
+                Username = LoginForm.Username,
+                Password = LoginForm.Password
+            };
+            ViewData["Form"] = form;
+            return View("Index");
         }
     }
 }
