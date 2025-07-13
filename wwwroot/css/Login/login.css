@@ -27,7 +27,7 @@
 
 .form-group {
   position: relative;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
 }
 
 /* ============================
@@ -135,7 +135,7 @@ button[type="submit"] {
   background-color: #007bff;
   color: white;
   padding: 10px;
-  margin-top: 30px;
+  margin-top: 20px;
   border: none;
   font-family: 'Vazirmatn', sans-serif;
   font-weight: bold;
@@ -172,6 +172,46 @@ button[type="submit"]:hover {
   opacity: 1;
 }
 
+.error-row {
+  height: auto;
+  margin: 0;
+}
+
+.error-message.general-error {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fceefd;  /* پس‌زمینه صورتی-بنفش روشن */
+  color: #722872;             /* متن ارغوانی تیره */
+  border: 1px solid #e9c7f0;  /* حاشیه بنفش روشن */
+  margin-top: -2.5px;
+  padding: 0 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.6;
+  box-sizing: border-box;
+
+  overflow: hidden;
+  max-height: 0;
+  transform: scaleY(0.9);
+  opacity: 0;
+  transition:
+    max-height 0.25s ease,
+    padding 0.25s ease,
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+/* فعال‌سازی انیمیشن */
+.general-error.visible {
+  padding: 16px 0;
+  transform: scaleY(1);
+  opacity: 1;
+}
+
 /* ============================
    FOOTER
    ============================ */
@@ -194,4 +234,14 @@ footer a {
 
 footer a:hover {
   color: #0056b3;
+}
+
+/* ============================
+   BLOCK ANIMATION-IN
+   ============================ */
+
+.no-animation-in {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
 }

@@ -12,7 +12,7 @@
 <!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-form-actions.css" asp-append-version="true" />
 
-<main class="dashboard-main admin">
+<main class="dashboard-main admin @(ViewData["NoAnimationIn"] as bool? == true ? "no-animation-in" : "")">
   <div class="titlebar">
     <div class="action-title-tab edit">
       ویرایش استاد
@@ -103,7 +103,6 @@
   </script>
   <!-- اسکریپت های کمکی مورد نیاز این فرم -->
   <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
-  <script src="~/js/FormUtils/Shared/max-length-handler.js"></script>
   <script src="~/js/Shared/debounce.js"></script>
   <script src="~/js/FormUtils/Shared/valid-person-name-inputs.js"></script>
   <script src="~/js/FormUtils/Shared/valid-numeric-inputs.js"></script>
@@ -117,7 +116,7 @@
     // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
     document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
       input.addEventListener('blur', function () {
-        validateField(this.id, true, true) // ورودی آخر الو امپتی پسورد هست که در صفحه ادیت مجاز هست
+        validateField(this.id, true, true) // ورودی آخر الو امپتی آپشنال فیلدز این ادیت هست که در صفحه ادیت مجاز هست
       });
     });
 
@@ -186,27 +185,46 @@
     }, 300); // دیبونس سیصد میلی ثانیه
     // یعنی سیصد ثانیه بعد اینکه کاربر چیزی تایپ نکرد فچ انجام
 
-    // چک ها بعد زدن کلید تایید
+    // چک و ارسال بعد زدن کلید تایید
     document.getElementById('edit-instructor-form').addEventListener('submit', function (e) {
       e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
 
-      let hasError = false;
+      const submitBtn = this.querySelector('.btn-submit');
+      submitBtn.blur(); // خارج شدن  سابمیت از حالت فشرده‌شده
 
-      // 1. پاک کردن خطاهای قبلی
-      this.querySelectorAll('.error-message').forEach(span => span.textContent = '');
-
-      // 2. ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
-      // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
-      this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
-        if (!validateField(input.id, true, true)) {
-          hasError = true;
+      // حذف ارور های قبلی برای انیمیشن رفتن ارور ها قبلی و آماده شدن برای آمدن ارور های جدید ادامه
+      const errorMessages = document.querySelectorAll('.error-message');
+      errorMessages.forEach(errorSpan => {
+        const parentGroup = errorSpan.closest('.form-group, .error-group');
+        if (parentGroup) {
+          const firstWithId = parentGroup.querySelector('[id]');
+          if (firstWithId) {
+            replaceError(firstWithId.id, '')
+          }
         }
       });
 
-      // 3. اگر خطایی نبود فرم ارسال شود
-      if (!hasError) {
-        this.submit();
-      }
+      setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر بالا اجرا تا خالی کردن ارور ها رندر گرفته بشه
+
+        let hasError = false;
+
+        // ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
+        // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+        this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+          if (!validateField(input.id, true)) {
+            hasError = true;
+          }
+        });
+
+        // اگر خطایی نبود فرم ارسال شود
+        if (!hasError) {
+          // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
+          replaceError("GeneralError", '');
+          setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+            this.submit();
+          }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+        }
+      }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
     });
   </script>
 }

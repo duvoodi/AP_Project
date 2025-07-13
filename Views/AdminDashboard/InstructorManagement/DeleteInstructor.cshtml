@@ -14,14 +14,14 @@
 
   
 
-<main class="dashboard-main admin">
+<main class="dashboard-main admin @(ViewData["NoAnimationIn"] as bool? == true ? "no-animation-in" : "")">
   <div class="titlebar">
     <div class="action-title-tab delete">
       حذف استاد
     </div>
   </div>
   <div class="form-container">
-    <form asp-controller="InstructorManagement" asp-action="DeleteInstructor" asp-route-id="@ViewData["InstructorGuid"]" asp-route-h="@currentHash" method="post" id="delete-instructor-form">
+    <form asp-controller="InstructorManagement" asp-action="DeleteInstructor" asp-route-h="@currentHash" method="post" id="delete-instructor-form">
       @Html.AntiForgeryToken()
 
       <div class="form-row">
@@ -71,4 +71,19 @@
 @section Scripts {
   <!-- اسکریپت های کمکی مورد نیاز این فرم -->
   <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <script>
+    // بعد زدن کلید تایید
+    document.getElementById('delete-instructor-form').addEventListener('submit', function (e) {
+      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
+
+      const submitBtn = this.querySelector('.btn-submit');
+      submitBtn.blur(); // خارج شدن  سابمیت از حالت فشرده‌شده
+
+        // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
+      replaceError("GeneralError", '');
+      setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+        this.submit();
+      }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+    });
+  </script>
 }

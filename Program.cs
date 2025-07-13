@@ -17,6 +17,10 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<NoAnimationInOnPostAttribute>();
+});
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
