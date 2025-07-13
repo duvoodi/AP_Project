@@ -4,7 +4,6 @@
   ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  var hasFooter = false;
   var form = (AP_Project.FormViewModels.InstructorForm.InstructorFormViewModel)ViewData["Form"];
 }
 
@@ -15,7 +14,7 @@
 
   
 
-<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main admin">
   <div class="titlebar">
     <div class="action-title-tab delete">
       حذف استاد
