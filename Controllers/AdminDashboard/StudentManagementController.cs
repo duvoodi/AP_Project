@@ -292,5 +292,88 @@ namespace AP_Project.Controllers
                 return View("~/Views/AdminDashboard/StudentManagement/EditStudent.cshtml", admin);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteStudent(Guid id)
+        {
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
+
+            // پیدا کردن دانشجو جی یو آی دی گرفته شده
+            var student = await _db.Students.FindAsync(id);
+            if (student == null)
+                return NotFound();
+
+            // ریست ارور های سمت سرور برای مقدار دهی مجدد
+            ModelState.ReplaceModelError("GeneralError", "");
+
+            var form = new StudentFormViewModel
+            {
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                Email = student.Email,
+                StudentId = student.StudentId.ToString(),
+                EnrollmentYear = student.EnrollmentYear.ToString(),
+            };
+
+            ViewData["StudentGuid"] = id;
+
+            ViewData["Form"] = form;
+            return View("~/Views/AdminDashboard/StudentManagement/DeleteStudent.cshtml", admin);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteStudent(Guid id, StudentFormViewModel StudentForm) // ویو مدل فرم صرفا جهت متفاوت بودن پارامتر ها اکشن پست با گت اش گرفته شده و از آن هیچ استفاده ای نشده
+        {
+            // کلاس پایه سشن را برای هر اکشن چک میکند
+            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
+            var admin = CurrentAdmin;
+
+            // پیدا کردن دانشجو جی یو آی دی گرفته شده
+            var student = await _db.Students.FindAsync(id);
+            if (student == null)
+                return NotFound();
+
+            // ریست ارور های سمت سرور برای مقدار دهی مجدد
+            ModelState.ReplaceModelError("GeneralError", "");
+
+            // تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
+            // بدلیل فیلد های آپشنال یا خطای نال ندادن در چک ها
+            ModelState.NullFieldsToValidEmpty(StudentForm);
+
+            try
+            {
+                // حذف دانشجو
+                _db.Students.Remove(student);
+
+                // حذف دستی یوزر بجای مانده از دانشجو چون امکان وان تو وان نداشتند
+                var user = await _db.Users.FindAsync(id);
+                if (user != null)
+                    _db.Users.Remove(user);
+
+                // طبق تنظیمات دی بی کانتکست یوزر رول یوزر به صورت اتومات حذف می شود
+
+                // ذخیره تغییرات
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
+            }
+            catch (Exception)
+            {
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام حذف اطلاعات رخ داد؛ لطفاً دوباره تلاش کنید...");
+                var form = new StudentFormViewModel
+                {
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    Email = student.Email,
+                    StudentId = student.StudentId.ToString(),
+                    EnrollmentYear = student.EnrollmentYear.ToString(),
+                };
+                ViewData["Form"] = form;
+                return View("~/Views/AdminDashboard/StudentManagement/DeleteStudent.cshtml", admin);
+            }
+        }
     }
 }
