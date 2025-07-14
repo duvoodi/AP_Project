@@ -1,0 +1,85 @@
+@model AP_Project.Models.Users.Admin
+@{
+  ViewData["ActiveTab"] = "Student";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var form = (AP_Project.FormViewModels.StudentForm.StudentFormViewModel)ViewData["Form"];
+}
+
+<!-- مجموعه فونت آوسوم -->
+<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/AdminDashboard/StudentManagement/student-form-actions.css"
+  asp-append-version="true" />
+
+  
+
+<main class="dashboard-main admin @(ViewData["NoAnimationIn"] as bool? == true ? "no-animation-in" : "")">
+  <div class="titlebar">
+    <div class="action-title-tab delete">
+      حذف دانشجو
+    </div>
+  </div>
+  <div class="form-container">
+    <form asp-controller="StudentManagement" asp-action="DeleteStudent" asp-route-h="@currentHash" method="post" id="delete-student-form">
+      @Html.AntiForgeryToken()
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>نام</label>
+          <input class="form-control" id="FirstName" name="FirstName" value="@form?.FirstName" readonly />
+        </div>
+        <div class="form-group">
+          <label>نام خانوادگی</label>
+          <input class="form-control" id="LastName" name="LastName" value="@form?.LastName" readonly />
+        </div>
+        <div class="form-group">
+          <label>ایمیل</label>
+          <input class="form-control" id="Email" name="Email" value="@form?.Email" readonly />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>کد دانشجویی</label>
+          <input class="form-control" id="StudentId" name="StudentId" value="@form?.StudentId" readonly />
+        </div>
+        <div class="form-group">
+          <label>سال استخدام</label>
+          <input class="form-control" id="EnrollmentYear" name="EnrollmentYear" value="@form?.EnrollmentYear" readonly />
+        </div>
+      </div>
+
+      <div class="error-row">
+        <div class="error-group">
+          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a type="button" asp-controller="StudentManagement" asp-action="Index" asp-route-h="@currentHash"
+          class="btn-cancel">انصراف</a>
+        <button type="submit" class="btn-submit btn-delete">تایید</button>
+      </div>
+    </form>
+  </div>
+</main>
+@section Scripts {
+  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+    <script>
+    // بعد زدن کلید تایید
+    document.getElementById('delete-student-form').addEventListener('submit', function (e) {
+      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
+
+      const submitBtn = this.querySelector('.btn-submit');
+      submitBtn.blur(); // خارج شدن  سابمیت از حالت فشرده‌شده
+
+        // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
+      replaceError("GeneralError", '');
+      setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+        this.submit();
+      }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+    });
+  </script>
+}

@@ -1,0 +1,200 @@
+/* ============================
+   FONT
+   ============================ */
+
+table, button, td, th {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* ============================
+   ADD STUDENT BUTTON
+   ============================ */
+
+.toolbar {
+  position: sticky;
+  margin: 0;
+  padding: 15px 0;
+  top: 100px;
+  background: white;
+  z-index: 3;
+}
+
+.btn-add-student {
+  background-color: #84e291;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  position: relative;
+  transition: background .2s;
+}
+
+.btn-add-student .icon {
+  color: #22a74a;
+  font-size: 30px;
+  font-weight: 600;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  margin-top: -8px;
+  margin-bottom: -8px;
+  margin-left: 8px;
+  display: inline-block;
+}
+
+.btn-add-student .text {
+  color: #265C26;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btn-add-student:hover,
+.btn-add-student:focus {
+  background-color: #22a74a;
+}
+.btn-add-student:hover .icon,
+.btn-add-student:focus .icon,
+.btn-add-student:hover .text,
+.btn-add-student:focus .text {
+  color: #ffffff;
+}
+
+
+/* ============================
+   TABLE STYLES
+   ============================ */
+
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ccdfef;
+  font-size: 16px;
+}
+
+.student-table thead tr {
+  font-size: 18px;
+}
+
+.student-table tbody tr {
+  background-color: #ccdfef;
+  color: #000000;
+}
+
+.student-table th,
+.student-table td {
+  border: 1px solid white;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.student-table th:last-child,
+.student-table td:last-child {
+  border-right: none;
+}
+
+.student-table thead th {
+  color: white;
+  background-color: #00b0f0;
+  font-weight: 600;
+  position: sticky;
+  top: 180px; /* ارتفاع تول بار */
+  border-top: 5px solid white;
+  background-clip: padding-box;
+  border-top: none; /* تا کامل بچسبد به تول بار */
+  z-index: 2;
+}
+
+/* ============================
+   COLUMN WIDTHS
+   ============================ */
+
+.col-index {
+  width: 40px;
+}
+
+.col-hyear {
+  width: 0%;
+}
+
+.col-salary,
+.col-instid {
+  width: 10%;
+}
+
+.col-fname,
+.col-lname,
+.col-email {
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.col-email {
+  width: 20%;
+}
+
+.col-userid {
+  width: 0%;
+}
+
+.col-actions {
+  width: 0%;
+}
+
+/* ============================
+   TEXT LINK
+   ============================ */
+
+.text-link {
+  background: none;
+  border: none;
+  color: #0645AD;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+}
+
+/* ============================
+   ACTION COLUMN
+   ============================ */
+
+.col-actions {
+  margin: 0px;
+}
+
+.actions-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin: auto 5px;
+  margin-bottom: -5px;
+  gap: 10px;
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 19px;
+  padding: 0px;
+}
+
+.btn-edit i {
+  color: #e09c08; /* زرد نارنجی */
+}
+
+.btn-delete i {
+  color: #d33242; /* قرمز */
+}
+
+/* افکت هاور */
+.btn-action:hover i {
+  color: #524343;
+}

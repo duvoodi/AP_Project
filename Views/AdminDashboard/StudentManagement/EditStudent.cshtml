@@ -1,0 +1,234 @@
+@model AP_Project.Models.Users.Admin
+@{
+  ViewData["ActiveTab"] = "Student";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var form = (AP_Project.FormViewModels.StudentForm.StudentFormViewModel)ViewData["Form"];
+}
+
+<!-- مجموعه فونت آوسوم -->
+<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/StudentManagement/student-form-actions.css"
+  asp-append-version="true" />
+
+<main class="dashboard-main admin @(ViewData["NoAnimationIn"] as bool? == true ? "no-animation-in" : "")">
+  <div class="titlebar">
+    <div class="action-title-tab edit">
+      ویرایش دانشجو
+    </div>
+  </div>
+  <div class="form-container">
+    <form asp-controller="StudentManagement" asp-action="EditStudent" asp-route-h="@currentHash" method="post"
+      id="edit-student-form">
+      @Html.AntiForgeryToken()
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>نام</label>
+          <input class="form-control valid-person-name" id="FirstName" name="FirstName" value="@form?.FirstName"
+            data-maxlength="32" />
+          <span class="error-message">@Html.ValidationMessage("FirstName")</span>
+        </div>
+        <div class="form-group">
+          <label>نام خانوادگی</label>
+          <input class="form-control valid-person-name" id="LastName" name="LastName" value="@form?.LastName"
+            data-maxlength="32" />
+          <span class="error-message">@Html.ValidationMessage("LastName")</span>
+        </div>
+        <div class="form-group">
+          <label>ایمیل</label>
+          <input class="form-control valid-email" id="Email" name="Email" value="@form?.Email" data-maxlength="320" />
+          <span class="error-message">@Html.ValidationMessage("Email")</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>کد دانشجویی</label>
+          <input class="form-control" id="StudentId" name="StudentId" value="@form?.StudentId" readonly
+            placeholder="منتظر سال ورودی معتبر ..." />
+          <span class="error-message">@Html.ValidationMessage("StudentId")</span>
+        </div>
+        <div class="form-group">
+          <label>سال ورودی</label>
+          <input class="form-control valid-numeric" id="EnrollmentYear" name="EnrollmentYear"
+            value="@form?.EnrollmentYear" data-maxlength="4" data-allow-slice="true" />
+          <span class="error-message">@Html.ValidationMessage("EnrollmentYear")</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>رمز عبور</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-control valid-password" id="Password" name="Password"
+              value="@form?.Password" data-maxlength="32" />
+            <button type="button" class="toggle-password">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+          <span class="error-message">@Html.ValidationMessage("Password")</span>
+        </div>
+        <div class="form-group">
+          <label>تکرار رمز عبور</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-control valid-password" id="ConfirmPassword" name="ConfirmPassword"
+              value="@form?.ConfirmPassword" data-maxlength="32" />
+            <button type="button" class="toggle-password">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+          <span class="error-message">@Html.ValidationMessage("ConfirmPassword")</span>
+        </div>
+      </div>
+
+      <div class="error-row">
+        <div class="error-group">
+          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a type="button" asp-controller="StudentManagement" asp-action="Index" asp-route-h="@currentHash"
+          class="btn-cancel">انصراف</a>
+        <button type="submit" class="btn-submit">تایید</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+  <!-- دریافت متغیر های ارسال شده از کنترلر -->
+  <script>
+    const currentPersianYear = parseInt('@ViewData["currentPersianYear"]');
+  </script>
+  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <script src="~/js/Shared/debounce.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-person-name-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-numeric-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-email-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-password-inputs.js"></script>
+  <!-- تابع ولیدیت فیلد اختصاصی فیلد های این صفحه -->
+  <!-- آخر همه اضافه شده چون از توابع اسکریپت های بالا استفاده میکند -->
+  <script src="~/js/FormUtils/StudentForm/validateField.js"></script>
+  <script>
+    // ولیدیت فیلد ها هنگام خروج از فیلد با نمایش ارور ترو
+    // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+    document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+      input.addEventListener('blur', function () {
+        validateField(this.id, true, true) // ورودی آخر الو امپتی اپشنال فیلد این ادیت هست که در صفحه ادیت مجاز هست
+      });
+    });
+
+    // مقدار دهی و ولیدیت فیلد ها ریدانلی
+    // چک فیلد های رید آنلی چون توسط کاربر نوشته نشده و ایونت بلور ایجاد نمیکند
+
+    // دریافت کد دانشجویی به صورت زنده هنگام ورود سال استخدام
+    let lastFetchedEnrollmentYear = @(form != null && !string.IsNullOrEmpty(form.StudentId) ? form.EnrollmentYear : "null"); // نگهداری آخرین سالی که براش فچ انجام شده
+    document.getElementById('EnrollmentYear')?.addEventListener('input', function () {
+      const studentIdInput = document.getElementById('StudentId');
+      if (!studentIdInput) return;
+      if (!validateField('EnrollmentYear', false, true)) {
+        replaceError('StudentId', '');
+        studentIdInput.value = '';
+        return;
+      }
+
+      const parsedYear = parseInt(this.value, 10);
+
+      // اگر کد دانشجویی داریم و ولید هست دیگه کد دانشجویی جدید نگیریم
+      if (studentIdInput.value && !validateField('StudentId', true, true)) {
+        return;
+      }
+
+      // اگر ارور تکراری بودن کد دانشجویی نمایش داده شده باشد، دوباره فچ کن
+      const isStudentIdDuplicate = @(ViewData["isStudentIdDuplicate"] != null && (bool)ViewData["isStudentIdDuplicate"] ? "true" : "false");
+      if (isStudentIdDuplicate === "true") {
+        debounceFetchStudentCode(parsedYear);
+        return;
+      }
+
+      // بغیر از زمانی که کد تکراری بوده اگر سال تغییر نکرده، دوباره فچ نکن
+      if (parsedYear === lastFetchedEnrollmentYear) {
+        return;
+      }
+
+      // همه چیز درست بود، کد مدرسی را دریافت می‌کنیم
+      debounceFetchStudentCode(parsedYear);
+    });
+    // تابع دیبونس برای فچ کد مدرسی
+    const debounceFetchStudentCode = debounce(function (year) {
+      const studentIdInput = document.getElementById('StudentId');
+
+      fetch(`/StudentManagement/GenerateStudentCode?year=${year}`)
+        .then(r => {
+          if (r.redirected) {
+            window.location.href = r.url; // اگر ریدایرکت شده بخاطر منقضی شدن سشن برو به صفحه مقصد
+            return;
+          }
+          if (!r.ok) { // درخواست موفق نبوده، ارور نشون بده
+            replaceError('StudentId', 'خطا در دریافت کد دانشجویی');
+            studentIdInput.value = ''; // فچ نتونسته بکنه کدی هم نباید نشان بده
+          }
+          // دات اوکی درخواست ریدایرکت رو درخواست ناموفق میدونه برای همین باید بعد ریدایرکت باشه
+          return r.json();
+        })
+        .then(code => {
+          studentIdInput.value = code; // کد گرفته شده را فیلد قرار میدهیم
+          validateField('StudentId', true, true); // اعتبار سنجی کد گرفته شده با نمایش ارور
+          lastFetchedEnrollmentYear = year; // سال جدید ثبت شود فقط اگر فچ موفق بود
+        })
+        .catch(function () { // درخواست فچ ممکن نبود
+          replaceError('StudentId', 'خطا در دریافت کد دانشجویی');
+          studentIdInput.value = ''; // هچ نتونسته بکنه کدی هم نباید نشان بده
+        });
+    }, 300); // دیبونس سیصد میلی ثانیه
+    // یعنی سیصد ثانیه بعد اینکه کاربر چیزی تایپ نکرد فچ انجام
+
+    // چک و ارسال بعد زدن کلید تایید
+    document.getElementById('edit-student-form').addEventListener('submit', function (e) {
+      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
+
+      const submitBtn = this.querySelector('.btn-submit');
+      submitBtn.blur(); // خارج شدن  سابمیت از حالت فشرده‌شده
+
+      // حذف ارور های قبلی برای انیمیشن رفتن ارور ها قبلی و آماده شدن برای آمدن ارور های جدید ادامه
+      const errorMessages = document.querySelectorAll('.error-message');
+      errorMessages.forEach(errorSpan => {
+        const parentGroup = errorSpan.closest('.form-group, .error-group');
+        if (parentGroup) {
+          const firstWithId = parentGroup.querySelector('[id]');
+          if (firstWithId) {
+            replaceError(firstWithId.id, '')
+          }
+        }
+      });
+
+      setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر بالا اجرا تا خالی کردن ارور ها رندر گرفته بشه
+
+        let hasError = false;
+
+        // ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
+        // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+        this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+          if (!validateField(input.id, true)) {
+            hasError = true;
+          }
+        });
+
+        // اگر خطایی نبود فرم ارسال شود
+        if (!hasError) {
+          // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
+          replaceError("GeneralError", '');
+          setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+            this.submit();
+          }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+        }
+      }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+    });
+  </script>
+}
