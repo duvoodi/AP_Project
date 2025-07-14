@@ -30,7 +30,7 @@ table, button, td, th {
   text-decoration: none !important;
   box-shadow: none !important;
   position: relative;
-  transition: background .2s;
+  transition: background 0.25s ease;
 }
 
 .btn-add-student .icon {
@@ -51,9 +51,15 @@ table, button, td, th {
   font-weight: 700;
 }
 
+
+.btn-add-instructor .icon,
+.btn-add-instructor .text {
+  transition: color 0.25s ease;
+}
+
 .btn-add-student:hover,
 .btn-add-student:focus {
-  background-color: #22a74a;
+  background-color: #4dc44d;
 }
 .btn-add-student:hover .icon,
 .btn-add-student:focus .icon,
@@ -117,7 +123,7 @@ table, button, td, th {
 }
 
 .col-eyear {
-  width: 0%;
+  width: 7%;
 }
 
 .col-stdid {
@@ -138,11 +144,11 @@ table, button, td, th {
 }
 
 .col-userid {
-  width: 0%;
+  width: 5%;
 }
 
 .col-actions {
-  width: 0%;
+  width: 6%;
 }
 
 /* ============================
@@ -157,6 +163,23 @@ table, button, td, th {
   cursor: pointer;
   padding: 0;
   position: relative;
+  transition: color 0.25s ease;
+}
+
+/* افکت هاور */
+.text-link:hover {
+  color: #ce0e84;
+}
+
+/* ============================
+
+COPY ID BUTTOON
+
+============================ */
+
+.copy-id-button {
+  font-size: 12pt;
+  font-weight: 450;
 }
 
 /* ============================
@@ -174,7 +197,7 @@ table, button, td, th {
   height: 100%;
   margin: auto 5px;
   margin-bottom: -5px;
-  gap: 10px;
+  gap: 1vw;
 }
 
 .btn-action {
@@ -186,14 +209,16 @@ table, button, td, th {
 }
 
 .btn-edit i {
-  color: #e09c08; /* زرد نارنجی */
+  color: rgb(255, 166, 0); /* نارنجی */
+  transition: scale 0.1s ease;
 }
 
 .btn-delete i {
-  color: #d33242; /* قرمز */
+  color: #eb1c31; /* قرمز */
+  transition: scale 0.1s ease;
 }
 
 /* افکت هاور */
 .btn-action:hover i {
-  color: #524343;
+  scale: 1.2;
 }

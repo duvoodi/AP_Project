@@ -193,7 +193,6 @@ input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear,
 input[type="password"]::-webkit-credentials-auto-fill-button {
   display: none !important;
-  visibility: hidden;
   pointer-events: none;
 }
 
@@ -208,13 +207,11 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   margin-top: 4px;
   white-space: pre-wrap;
   word-wrap: break-word;
-  visibility: hidden;
   opacity: 0;
   transition: opacity 0.25s ease-in-out;
 }
 
 .error-message.visible {
-  visibility: visible;
   opacity: 1;
 }
 
@@ -286,7 +283,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   text-decoration: none !important;
   box-shadow: none !important;
   border: none !important;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.25s, color 0.25s;
 }
 
 .btn-submit {
@@ -296,17 +293,17 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 
 .btn-submit:hover,
 .btn-submit:focus {
-  background-color: #22a74a;
+  background-color: #4dc44d;
   color: #ffffff;
 }
 
 .btn-cancel {
   background-color: #ff8a80;
-  color: #a32626;
+  color: #851b1b;
 }
 
 .btn-cancel:hover,
 .btn-cancel:focus {
-  background-color: #eb4c4c;
+  background-color: #ff4545;
   color: #ffffff;
 }
