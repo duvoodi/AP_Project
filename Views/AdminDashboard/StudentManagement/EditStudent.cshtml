@@ -10,27 +10,31 @@
 <!-- مجموعه فونت آوسوم -->
 <link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
 <!-- استایل اختصاصی -->
-<link rel="stylesheet" href="~/css/AdminDashboard/StudentManagement/student-form-actions.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/AdminDashboard/StudentManagement/student-form-actions.css"
+  asp-append-version="true" />
 
-<main class="dashboard-main admin">
+<main class="dashboard-main admin @(ViewData["NoAnimationIn"] as bool? == true ? "no-animation-in" : "")">
   <div class="titlebar">
     <div class="action-title-tab edit">
       ویرایش دانشجو
     </div>
   </div>
   <div class="form-container">
-    <form asp-controller="StudentManagement" asp-action="EditStudent" asp-route-h="@currentHash" method="post" id="edit-student-form">
+    <form asp-controller="StudentManagement" asp-action="EditStudent" asp-route-h="@currentHash" method="post"
+      id="edit-student-form">
       @Html.AntiForgeryToken()
 
       <div class="form-row">
         <div class="form-group">
           <label>نام</label>
-          <input class="form-control valid-person-name" id="FirstName" name="FirstName" value="@form?.FirstName" data-maxlength="32"/>
+          <input class="form-control valid-person-name" id="FirstName" name="FirstName" value="@form?.FirstName"
+            data-maxlength="32" />
           <span class="error-message">@Html.ValidationMessage("FirstName")</span>
         </div>
         <div class="form-group">
           <label>نام خانوادگی</label>
-          <input class="form-control valid-person-name" id="LastName" name="LastName" value="@form?.LastName" data-maxlength="32" />
+          <input class="form-control valid-person-name" id="LastName" name="LastName" value="@form?.LastName"
+            data-maxlength="32" />
           <span class="error-message">@Html.ValidationMessage("LastName")</span>
         </div>
         <div class="form-group">
@@ -43,12 +47,14 @@
       <div class="form-row">
         <div class="form-group">
           <label>کد دانشجویی</label>
-          <input class="form-control" id="StudentId" name="StudentId" value="@form?.StudentId" readonly placeholder="منتظر سال ورودی معتبر ..." />
+          <input class="form-control" id="StudentId" name="StudentId" value="@form?.StudentId" readonly
+            placeholder="منتظر سال ورودی معتبر ..." />
           <span class="error-message">@Html.ValidationMessage("StudentId")</span>
         </div>
         <div class="form-group">
           <label>سال ورودی</label>
-          <input class="form-control valid-numeric" id="EnrollmentYear" name="EnrollmentYear" value="@form?.EnrollmentYear" data-maxlength="4" data-allow-slice="true" />
+          <input class="form-control valid-numeric" id="EnrollmentYear" name="EnrollmentYear"
+            value="@form?.EnrollmentYear" data-maxlength="4" data-allow-slice="true" />
           <span class="error-message">@Html.ValidationMessage("EnrollmentYear")</span>
         </div>
       </div>
@@ -57,7 +63,8 @@
         <div class="form-group">
           <label>رمز عبور</label>
           <div class="password-wrapper">
-            <input type="password" class="form-control valid-password" id="Password" name="Password" value="@form?.Password" data-maxlength="32" />
+            <input type="password" class="form-control valid-password" id="Password" name="Password"
+              value="@form?.Password" data-maxlength="32" />
             <button type="button" class="toggle-password">
               <i class="fa fa-eye"></i>
             </button>
@@ -67,7 +74,8 @@
         <div class="form-group">
           <label>تکرار رمز عبور</label>
           <div class="password-wrapper">
-            <input type="password" class="form-control valid-password" id="ConfirmPassword" name="ConfirmPassword" value="@form?.ConfirmPassword" data-maxlength="32" />
+            <input type="password" class="form-control valid-password" id="ConfirmPassword" name="ConfirmPassword"
+              value="@form?.ConfirmPassword" data-maxlength="32" />
             <button type="button" class="toggle-password">
               <i class="fa fa-eye"></i>
             </button>
@@ -77,13 +85,14 @@
       </div>
 
       <div class="error-row">
-        <div class="error-group" >
-          <span class="error-message general-error" id="GeneralError" >@Html.ValidationMessage("GeneralError")</span>
+        <div class="error-group">
+          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
         </div>
       </div>
-      
+
       <div class="form-actions">
-        <a type="button" asp-controller="StudentManagement" asp-action="Index" asp-route-h="@currentHash" class="btn-cancel">انصراف</a>
+        <a type="button" asp-controller="StudentManagement" asp-action="Index" asp-route-h="@currentHash"
+          class="btn-cancel">انصراف</a>
         <button type="submit" class="btn-submit">تایید</button>
       </div>
     </form>
@@ -98,7 +107,6 @@
   </script>
   <!-- اسکریپت های کمکی مورد نیاز این فرم -->
   <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
-  <script src="~/js/FormUtils/Shared/max-length-handler.js"></script>
   <script src="~/js/Shared/debounce.js"></script>
   <script src="~/js/FormUtils/Shared/valid-person-name-inputs.js"></script>
   <script src="~/js/FormUtils/Shared/valid-numeric-inputs.js"></script>
@@ -112,7 +120,7 @@
     // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
     document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
       input.addEventListener('blur', function () {
-        validateField(this.id, true, true) // ورودی آخر الو امپتی پسورد هست که در صفحه ادیت مجاز هست
+        validateField(this.id, true, true) // ورودی آخر الو امپتی اپشنال فیلد این ادیت هست که در صفحه ادیت مجاز هست
       });
     });
 
@@ -123,7 +131,7 @@
     let lastFetchedEnrollmentYear = @(form != null && !string.IsNullOrEmpty(form.StudentId) ? form.EnrollmentYear : "null"); // نگهداری آخرین سالی که براش فچ انجام شده
     document.getElementById('EnrollmentYear')?.addEventListener('input', function () {
       const studentIdInput = document.getElementById('StudentId');
-      if(!studentIdInput) return;
+      if (!studentIdInput) return;
       if (!validateField('EnrollmentYear', false, true)) {
         replaceError('StudentId', '');
         studentIdInput.value = '';
@@ -151,7 +159,7 @@
 
       // همه چیز درست بود، کد مدرسی را دریافت می‌کنیم
       debounceFetchStudentCode(parsedYear);
-    }); 
+    });
     // تابع دیبونس برای فچ کد مدرسی
     const debounceFetchStudentCode = debounce(function (year) {
       const studentIdInput = document.getElementById('StudentId');
@@ -181,27 +189,46 @@
     }, 300); // دیبونس سیصد میلی ثانیه
     // یعنی سیصد ثانیه بعد اینکه کاربر چیزی تایپ نکرد فچ انجام
 
-    // چک ها بعد زدن کلید تایید
+    // چک و ارسال بعد زدن کلید تایید
     document.getElementById('edit-student-form').addEventListener('submit', function (e) {
       e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
 
-      let hasError = false;
+      const submitBtn = this.querySelector('.btn-submit');
+      submitBtn.blur(); // خارج شدن  سابمیت از حالت فشرده‌شده
 
-      // 1. پاک کردن خطاهای قبلی
-      this.querySelectorAll('.error-message').forEach(span => span.textContent = '');
-
-      // 2. ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
-      // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
-      this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
-        if (!validateField(input.id, true, true)) {
-          hasError = true;
+      // حذف ارور های قبلی برای انیمیشن رفتن ارور ها قبلی و آماده شدن برای آمدن ارور های جدید ادامه
+      const errorMessages = document.querySelectorAll('.error-message');
+      errorMessages.forEach(errorSpan => {
+        const parentGroup = errorSpan.closest('.form-group, .error-group');
+        if (parentGroup) {
+          const firstWithId = parentGroup.querySelector('[id]');
+          if (firstWithId) {
+            replaceError(firstWithId.id, '')
+          }
         }
       });
 
-      // 3. اگر خطایی نبود فرم ارسال شود
-      if (!hasError) {
-        this.submit();
-      }
+      setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر بالا اجرا تا خالی کردن ارور ها رندر گرفته بشه
+
+        let hasError = false;
+
+        // ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
+        // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+        this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+          if (!validateField(input.id, true)) {
+            hasError = true;
+          }
+        });
+
+        // اگر خطایی نبود فرم ارسال شود
+        if (!hasError) {
+          // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
+          replaceError("GeneralError", '');
+          setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+            this.submit();
+          }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+        }
+      }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
     });
   </script>
 }

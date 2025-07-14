@@ -149,7 +149,7 @@ namespace AP_Project.Controllers
             }
             catch (Exception)
             {
-                ModelState.AppendModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد؛ لطفاً دوباره تلاش کنید...");
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد! لطفاً دوباره تلاش کنید...");
                 ViewData["Form"] = StudentForm;
                 ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
                 return View("~/Views/AdminDashboard/StudentManagement/AddStudent.cshtml", admin);
@@ -286,7 +286,7 @@ namespace AP_Project.Controllers
             }
             catch (Exception)
             {
-                ModelState.AppendModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد؛ لطفاً دوباره تلاش کنید...");
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد! لطفاً دوباره تلاش کنید...");
                 ViewData["Form"] = StudentForm;
                 ViewData["currentPersianYear"] = new PersianCalendar().GetYear(DateTime.Now);
                 return View("~/Views/AdminDashboard/StudentManagement/EditStudent.cshtml", admin);
@@ -339,10 +339,6 @@ namespace AP_Project.Controllers
             // ریست ارور های سمت سرور برای مقدار دهی مجدد
             ModelState.ReplaceModelError("GeneralError", "");
 
-            // تبدیل فیلد خالی فرم که اینجا نال میشوند و اینولید میشوند به فیلد امپتی ولید
-            // بدلیل فیلد های آپشنال یا خطای نال ندادن در چک ها
-            ModelState.NullFieldsToValidEmpty(StudentForm);
-
             try
             {
                 // حذف دانشجو
@@ -362,7 +358,7 @@ namespace AP_Project.Controllers
             }
             catch (Exception)
             {
-                ModelState.AppendModelError("GeneralError", "خطایی هنگام حذف اطلاعات رخ داد؛ لطفاً دوباره تلاش کنید...");
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام حذف اطلاعات رخ داد! لطفاً دوباره تلاش کنید...");
                 var form = new StudentFormViewModel
                 {
                     FirstName = student.FirstName,
