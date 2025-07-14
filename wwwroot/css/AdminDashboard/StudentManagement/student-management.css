@@ -116,12 +116,11 @@ table, button, td, th {
   width: 40px;
 }
 
-.col-hyear {
+.col-eyear {
   width: 0%;
 }
 
-.col-salary,
-.col-instid {
+.col-stdid {
   width: 10%;
 }
 
