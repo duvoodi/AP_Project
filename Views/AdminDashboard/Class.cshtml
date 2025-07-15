@@ -67,6 +67,10 @@
             config = new {
               ShowListProps = true,
               ListProps = new[] { "Courses" },
+              SimplePropDisplayNames = new Dictionary<string, string> {
+                { "Courses", "دروس" }
+              },
+
               ListPropFieldOrder = new Dictionary<string, string[]> {
                 { "Courses", new[] { "Title", "Code" } }
               },
@@ -132,7 +136,8 @@
         { "InstructorName", "نام استاد" },
         { "ClassTime", "زمان برگزاری" },
         { "ExamDate", "تاریخ امتحان" },
-        { "Description", "توضیحات" }
+        { "Description", "توضیحات" },
+        { "Prerequisites", "پیش‌نیازها" }
       },
       ShowListProps = true,
       ListProps = new[] { "Prerequisites" },
