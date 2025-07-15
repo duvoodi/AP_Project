@@ -1,6 +1,11 @@
+@using Newtonsoft.Json
+@using AP_Project.Models
+@using AP_Project.Models.Popups
+
 @{
     Layout = null;
 }
+
 
 <!DOCTYPE html>
 <html lang="fa">
@@ -34,16 +39,68 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"]</title>
-  @RenderSection("Styles", required: false)
+  <link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" /> <!-- آیکون های استفاده شده در کل برنامه -->
+  <link rel="stylesheet" href="~/css/Layout/_layout-dashboard.css"  asp-append-version="true" /> <!-- استایل مشترک داشبورد لی اوت -->
+  <link rel="stylesheet" href="~/css/Layout/_global-popup.css"  asp-append-version="true" /> <!-- استایل گلوبال پاپ آپ -->
+  @RenderSection("Styles", required: false) <!-- استایل لی اوت ادمین یا استاد یا دانشجو اینجا رندر -->
 </head>
 <body>
   @RenderSection("Header", required: true)
+
   <main class="main">
     @RenderBody()
+
+    <!-- کانتینر خالی برای پاپ‌آپ -->
+    <div id="globalPopupContainer"></div>
+
     @RenderSection("Scripts", required: false)
   </main>
+
+  <!-- بارگذاری پاپ‌آپ -->
+  <script src="~/js/Shared/global-popup.js" asp-append-version="true"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      GlobalPopup.init('globalPopupContainer');
+      
+      @if (ViewBag.PopupOptions != null) {
+        <text>
+        const options = @Html.Raw(Json.Serialize(ViewBag.PopupOptions));
+        const model = @Html.Raw(Json.Serialize(ViewData["PopupModel"]));
+        const config = @Html.Raw(Json.Serialize(ViewData["PopupModelConfig"]));
+        GlobalPopup.show(options, model, config);
+        </text>
+      }
+    });
+  </script>
+  
 </body>
 </html>
+
+  
+<script>
+  // بعد از لود کامل DOM و مقداردهی اولیه پاپ‌آپ
+  document.addEventListener('DOMContentLoaded', function() {
+    // مدیریت کلیک دکمه‌های پاپ‌آپ
+    document.querySelectorAll('.btn-popup').forEach(btn => {
+      btn.addEventListener('click', function() {
+        try {
+          const popupData = JSON.parse(this.dataset.popup);
+          if (!popupData) return;
+          
+          // نمایش پاپ‌آپ با داده‌های دریافتی
+          GlobalPopup.show(
+            popupData.options || {},
+            popupData.model || null,
+            popupData.config || null
+          );
+        } catch (e) {
+          console.error('خطا در پردازش داده‌های پاپ‌آپ:', e);
+        }
+      });
+    });
+  });
+</script>
+
 
 <script>
   // بعد از لود موارد بالا یعنی بعد از لود تمام موارد صفحه، داشبورد مین و فوتر را نمایان میکنیم

@@ -1,0 +1,173 @@
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Html
+@using System.Linq
+@using System.Reflection
+@using AP_Project.Models
+@using AP_Project.Models.Popups
+
+@inject JavaScriptEncoder JsEncoder
+@inject HtmlEncoder HtmlEncoder
+
+@{
+  var opts = ViewBag.PopupOptions as PopupOptions;
+  var cfg = ViewData["PopupModelConfig"] as PopupModelConfig;
+  var model = ViewData["PopupModel"];
+}
+
+@functions {
+    private IEnumerable<object> ApplySorting(IEnumerable<object> list, string firstSortKey, string secondSortKey)
+    {
+        if (list == null) return list;
+
+        // تبدیل به لیست برای جلوگیری از ارزیابی چندباره
+        var items = list.ToList();
+
+        if (!string.IsNullOrEmpty(firstSortKey))
+        {
+            var prop = typeof(object).GetProperty(firstSortKey);
+            if (prop != null)
+            {
+                items = items
+                    .OrderBy(x => prop.GetValue(x))
+                    .ToList();
+            }
+        }
+
+        if (!string.IsNullOrEmpty(secondSortKey))
+        {
+            var prop = typeof(object).GetProperty(secondSortKey);
+            if (prop != null)
+            {
+                items = items
+                    .OrderBy(x => prop.GetValue(x)) // OrderBy به جای ThenBy
+                    .ToList();
+            }
+        }
+
+        return items;
+    }
+}
+
+
+<div id="globalPopupBackdrop" class="global-popup-backdrop">
+  <div id="globalPopupBox" class="global-popup-box @(opts?.CanCloseManually == true ? "can-close" : "")">
+    @if (!string.IsNullOrEmpty(opts?.PopupTitle)) {
+      <div class="popup-title">@HtmlEncoder.Encode(opts.PopupTitle)</div>
+    }
+    
+    @if (opts?.CanCloseManually == true) {
+      <button class="popup-close-btn" onclick="GlobalPopup.hide()">&times;</button>
+    }
+
+    @if (!string.IsNullOrEmpty(opts?.SimpleMessage)) {
+      <div class="popup-content-line">@HtmlEncoder.Encode(opts.SimpleMessage)</div>
+    }
+
+    @* نمایش ایمن مدل *@
+    @if (cfg != null && model != null) {
+      @foreach (var p in cfg.SimplePropsOrder ?? Enumerable.Empty<string>()) {
+        var name = cfg.SimplePropDisplayNames?.GetValueOrDefault(p) ?? p;
+        var propInfo = model.GetType().GetProperty(p);
+        if (propInfo != null) {
+          var val = propInfo.GetValue(model)?.ToString() ?? "";
+          <div class="popup-content-line">
+            @HtmlEncoder.Encode(name): @HtmlEncoder.Encode(val)
+          </div>
+        }
+      }
+      
+      @if (cfg.ShowListProps && cfg.ListProps?.Any() == true) {
+        @foreach (var lp in cfg.ListProps) {
+          var listProp = model.GetType().GetProperty(lp);
+          if (listProp != null) {
+            var list = listProp.GetValue(model) as IEnumerable<object>;
+            if (list?.Any() == true) {
+              <div class="popup-content-line">@HtmlEncoder.Encode(lp)</div>
+              
+              @try {
+                var sorted = ApplySorting(
+                  list,
+                  cfg.ListPropSortKey1?.GetValueOrDefault(lp),
+                  cfg.ListPropSortKey2?.GetValueOrDefault(lp)
+                );
+
+                int idx = 1;
+                @foreach (var item in sorted) {
+                  <div class="popup-content-list-item">
+                    @idx. 
+                    @if (cfg.ListPropFieldOrder?.ContainsKey(lp) == true) {
+                      var fields = cfg.ListPropFieldOrder[lp];
+                      @foreach (var f in fields) {
+                        var fieldName = cfg.ListPropItemDisplayNames?.GetValueOrDefault(lp)?.GetValueOrDefault(f) ?? f;
+                        var fieldValue = item.GetType().GetProperty(f)?.GetValue(item)?.ToString() ?? "";
+                        <span>@HtmlEncoder.Encode(fieldName): @HtmlEncoder.Encode(fieldValue)</span>
+                        @if (f != fields.Last()) {
+                          <span> - </span>
+                        }
+                      }
+                    }
+                  </div>
+                  idx++;
+                }
+              } catch {
+                <div class="popup-content-line">خطا در نمایش اطلاعات</div>
+              }
+            }
+          }
+        }
+      }
+    }
+
+    @* نمایش ایمن لیست *@
+    @if (opts?.ShowList == true && opts.PopupList is IEnumerable<object> blist && blist.Any()) {
+      try {
+        var sorted = ApplySorting(
+          blist,
+          opts.PopupListSortKey1,
+          opts.PopupListSortKey2
+        );
+
+        int idx = 1;
+        @foreach (var item in sorted) {
+          <div class="popup-content-line">
+            @idx.
+            @{
+              var fields = opts.PopupListFieldOrder ?? Enumerable.Empty<string>();
+            }
+            @foreach (var f in fields) {
+              var name = opts.PopupListDisplayNames?.GetValueOrDefault(f) ?? f;
+              var value = item.GetType().GetProperty(f)?.GetValue(item)?.ToString() ?? "";
+              <span>@HtmlEncoder.Encode(name): @HtmlEncoder.Encode(value)</span>
+              @if (f != fields.Last()) {
+                <span> - </span>
+              }
+            }
+            
+            @if (opts.ShowListItemButtons) {
+              var idValue = item.GetType().GetProperty("Id")?.GetValue(item)?.ToString() ?? "";
+              var actionJs = opts.ListItemButtonActionJs?.Replace("id", idValue) ?? "";
+              <a href="javascript:void(0)" onclick="@Html.Raw(actionJs)">
+                @HtmlEncoder.Encode(opts.ListItemButtonText)
+              </a>
+            }
+          </div>
+          idx++;
+        }
+      } catch {
+        <div class="popup-content-line">خطا در نمایش لیست</div>
+      }
+    }
+
+    @* دکمه‌های ایمن *@
+    @if (opts?.ShowActionButtons == true) {
+      <div class="global-popup-actions">
+        <button class="btn-green" onclick="@opts?.OnGreenClickJs">
+          @HtmlEncoder.Encode(opts?.GreenButtonText)
+        </button>
+        <button class="btn-red" onclick="@opts?.OnRedClickJs">
+          @HtmlEncoder.Encode(opts?.RedButtonText)
+        </button>
+      </div>
+    }
+  </div>
+</div>

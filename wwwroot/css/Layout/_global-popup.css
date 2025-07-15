@@ -1,0 +1,236 @@
+/* ============================
+   GLOBAL POPUP (Shared)
+   ============================ */
+
+.global-popup-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+.global-popup-backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.global-popup-box {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 700px;
+  width: 90%;
+  position: relative;
+  direction: rtl;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(-50px);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              opacity 0.3s ease;
+}
+
+.global-popup-backdrop.visible .global-popup-box {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.popup-close-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #777;
+  transition: color 0.2s;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.popup-close-btn:hover {
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+.popup-title-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 15px;
+}
+
+.popup-icon {
+  font-size: 1.8em;
+}
+
+.popup-icon .fa-check-circle { color: #28a745; }
+.popup-icon .fa-info-circle { color: #17a2b8; }
+.popup-icon .fa-exclamation-triangle { color: #ffc107; }
+.popup-icon .fa-times-circle { color: #dc3545; }
+
+.popup-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.popup-simple-message {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 15px 0;
+  border-left: 4px solid #0d6efd;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.popup-content-line {
+  margin-bottom: 12px;
+  font-size: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.popup-section-title {
+  font-weight: bold;
+  margin: 20px 0 10px;
+  font-size: 18px;
+  color: #444;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 5px;
+}
+
+.popup-bulk-actions {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+
+.popup-list-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  margin-bottom: 8px;
+  font-size: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.popup-list-item-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  flex-grow: 1;
+}
+
+.item-index {
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.popup-item-spacer {
+  flex-grow: 1;
+  min-width: 15px;
+}
+
+.popup-checkbox {
+  margin-left: 10px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.popup-delete-btn {
+  background-color: #f08080;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.popup-delete-btn:hover {
+  background-color: #e06060;
+}
+
+.global-popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.global-popup-actions button {
+  padding: 12px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.btn-yellow {
+  background-color: #ffd166;
+  color: #333;
+}
+
+.btn-yellow:hover {
+  background-color: #ffc44d;
+}
+
+.btn-green {
+  background-color: #84e291;
+  color: #000;
+}
+
+.btn-green:hover {
+  background-color: #70d080;
+}
+
+.btn-red {
+  background-color: #f08080;
+  color: #fff;
+}
+
+.btn-red:hover {
+  background-color: #e06060;
+}
+
+/* Slide animation for popups */
+@keyframes slideOut {
+  to { transform: translateY(-50px); opacity: 0; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.popup-slide-out {
+  animation: slideOut 0.3s ease forwards;
+}
+
+.popup-slide-in {
+  animation: slideIn 0.3s ease forwards;
+}
