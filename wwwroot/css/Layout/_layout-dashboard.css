@@ -135,7 +135,6 @@ html, body {
   transform: scale(100%);
 }
 
-
 /* ============================
    CUSTOM TOOLTIP (Shared)
    ============================ */
@@ -199,6 +198,37 @@ html, body {
   opacity: 1;
   animation: popupScaleAnim 0.6s ease forwards;
 }
+
+/* ============================
+   ERROR POPUP (Shared)
+   ============================ */
+
+.error-popup {
+  position: fixed;
+  bottom: 40px; /* به اندازه ارتفاع فوتر */
+  left: 50%;
+  transform: translateX(-50%) translateY(0) scale(1);
+  text-align: center;
+  background-color: #d9534f; /* رنگ قرمز Bootstrap */
+  color: white;
+  width: 400px;
+  padding: 10px 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-size: 18px;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+.error-popup.visible {
+  opacity: 1;
+  animation: popupScaleAnim 0.6s ease forwards;
+}
+
+/* ============================
+   POPUP ANIMATION
+   ============================ */
+   
 @keyframes popupScaleAnim {
   0% {
     transform: translateX(-50%) translateY(0) scale(1);
@@ -210,6 +240,7 @@ html, body {
     transform: translateX(-50%) translateY(0) scale(1);
   }
 }
+
 
 /* ============================
    FOOTER (Shared)

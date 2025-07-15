@@ -21,24 +21,22 @@ namespace AP_Project.Controllers
         {
             var admin = CurrentAdmin;
 
-            var courses = _db.Courses
-                .Include(c => c.CourseCode)
-                .Include(c => c.Prerequisites)
+            var sections = _db.Sections
+                .Include(s => s.Course)
+                    .ThenInclude(c => c.CourseCode)
+                .Include(s => s.Teaches)
+                    .ThenInclude(t => t.Instructor)
+                .Include(s => s.TimeSlot)
+                .Include(s => s.Course.Prerequisites)
                     .ThenInclude(p => p.PrerequisiteCourseCode)
-                .Include(c => c.Sections)
-                    .ThenInclude(s => s.Teaches)
-                        .ThenInclude(t => t.Instructor)
-                .Include(c => c.Sections)
-                    .ThenInclude(s => s.TimeSlot) // اطمینان از لود TimeSlot
-                .OrderBy(i => i.CourseCode.Title)
-                .ThenBy(i => i.CourseCode.Code)
-                .AsNoTracking() // برای بهبود عملکرد
                 .ToList();
 
-            ViewBag.Courses = courses;
+            bool anyWithoutInstructor = sections.Any(s => s.Teaches == null || s.Teaches.Instructor == null);
+            ViewBag.AnyWithoutInstructor = anyWithoutInstructor;
+            ViewBag.Sections = sections;
+
             return View("~/Views/AdminDashboard/CourseManagement/Index.cshtml", admin);
         }
-
 
         [HttpGet]
         public IActionResult AddCourseIndex()
