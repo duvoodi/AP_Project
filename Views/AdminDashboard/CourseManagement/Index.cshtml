@@ -1,12 +1,14 @@
 @model AP_Project.Models.Users.Admin
+@using System.Globalization
 @{
     ViewData["ActiveTab"] = "Course";
     ViewData["Title"] = "داشبورد ادمین";
     Layout = "_LayoutAdmin";
 
-    var courses = ViewBag.Courses as List<AP_Project.Models.Courses.Course>;
+    var sections = ViewBag.Sections as List<AP_Project.Models.Courses.Section>;
     var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
     var hasFooter = false;
+    var pc = new PersianCalendar();
 }
 
 <link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
@@ -35,31 +37,31 @@
                 <th class="col-examdate">تاریخ امتحان</th>
                 <th class="col-description">توضیحات</th>
                 <th class="col-courseid">آی‌دی درس</th>
-                @if (courses != null && courses.Any())
+                @if (sections != null && sections.Any())
                 {
                     <th class="col-actions"></th>
                 }
             </tr>
         </thead>
 
-        @if (courses != null && courses.Any())
+        @if (sections != null && sections.Any())
         {
             <tbody>
-                @for (int i = 0; i < courses.Count; i++)
+                @for (int i = 0; i < sections.Count; i++)
                 {
-                    var course = courses[i];
-                    var section = course.Sections?.FirstOrDefault();
-                    var instructor = section?.Teaches?.Instructor;
-                    var timeSlot = section?.TimeSlot;
-                    var prereq = course.Prerequisites?.FirstOrDefault()?.PrerequisiteCourseCode?.Code.ToString() ?? "-";
+                    var s = sections[i];
+                    var course = s.Course;
+                    var instructor = s.Teaches?.Instructor;
+                    var timeSlot = s.TimeSlot;
+                    var prereq = course?.Prerequisites?.FirstOrDefault()?.PrerequisiteCourseCode?.Code.ToString() ?? "-";
 
                     <tr>
                         <td class="col-index">@((i + 1))</td>
-                        <td class="col-title">@course.CourseCode?.Title</td>
-                        <td class="col-code">@course.CourseCode?.Code</td>
+                        <td class="col-title">@course.CourseCode.Title</td>
+                        <td class="col-code">@course.CourseCode.Code</td>
                         <td class="col-units">@course.Unit</td>
                         <td class="col-prereq">@prereq</td>
-                        <td class="col-semester">@(section?.Semester.ToString() ?? "-")</td>
+                        <td class="col-semester">@($"{s.Year}{s.Semester}")</td>
                         <td class="col-instructor @(instructor == null ? "no-instructor" : "")">
                             @(instructor != null ? $"{instructor.FirstName} {instructor.LastName}" : "استاد ندارد")
                         </td>
@@ -74,26 +76,34 @@
                                 <span>-</span>
                             }
                         </td>
-                        <td class="col-examdate">@course.FinalExamDate.ToString("yyyy/MM/dd")</td>
-                        <td class="col-description">@course.Description</td>
+                        <td class="col-examdate">
+                            @(course?.FinalExamDate != default(DateTime)
+                                ? $"{pc.GetYear(course.FinalExamDate)}/{pc.GetMonth(course.FinalExamDate):00}/{pc.GetDayOfMonth(course.FinalExamDate):00}"
+                                : "-")
+                        </td>
+                        <td class="col-description">@(string.IsNullOrWhiteSpace(course?.Description) ? "-" : course.Description)</td>
+
+                        <!-- نمایش آیدی سکشن -->
                         <td class="col-courseid">
                             <button class="text-link copy-id-button"
-                                    data-id="@course.Id"
-                                    data-tooltip="@course.Id"
+                                    data-id="@s.Id"
+                                    data-tooltip="@s.Id"
                                     data-tooltip-align="center">
                                 کپی
                             </button>
                         </td>
+
+                        <!-- دکمه‌ها با آیدی سکشن -->
                         <td class="col-actions">
                             <div class="actions-wrapper">
-                                <a asp-controller="CourseManagement" asp-action="EditCourse"
-                                   asp-route-id="@course.Id" asp-route-h="@currentHash"
-                                   class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
+                                <a asp-controller="CourseManagement" asp-action="EditSection"
+                                asp-route-id="@s.Id" asp-route-h="@currentHash"
+                                class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a asp-controller="CourseManagement" asp-action="DeleteCourse"
-                                   asp-route-id="@course.Id" asp-route-h="@currentHash"
-                                   class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
+                                <a asp-controller="CourseManagement" asp-action="DeleteSection"
+                                asp-route-id="@s.Id" asp-route-h="@currentHash"
+                                class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
                             </div>
@@ -105,9 +115,17 @@
     </table>
 </main>
 
-<div class="empty-popup @(courses == null || !courses.Any() ? "will-show" : "")">
+<div class="empty-popup @(sections == null || !sections.Any() ? "will-show" : "")">
     <p>موردی جهت نمایش وجود ندارد</p>
 </div>
+
+@if (ViewBag.AnyWithoutInstructor == true)
+{
+    <div class="error-popup visible">
+        <p>بعضی درس‌ها استاد ندارند، لطفاً استادشان را مشخص یا آن درس را حذف کنید.</p>
+    </div>
+}
+
 
 @if (hasFooter)
 {
@@ -119,6 +137,25 @@
 @section Scripts {
     <script src="~/js/Shared/tooltip.js"></script>
     <script>
+        // فارسی‌سازی روزهای تایم‌اسلات در جدول
+        document.addEventListener('DOMContentLoaded', function () {
+            const dayMap = {
+                'Saturday': 'شنبه',
+                'Sunday': 'یکشنبه',
+                'Monday': 'دوشنبه',
+                'Tuesday': 'سه‌شنبه',
+                'Wednesday': 'چهارشنبه',
+                'Thursday': 'پنجشنبه',
+                'Friday': 'جمعه'
+            };
+
+            document.querySelectorAll('.col-schedule span:first-child').forEach(span => {
+                const originalText = span.textContent.trim();
+                if (dayMap[originalText]) {
+                    span.textContent = dayMap[originalText];
+                }
+            });
+        });
         document.querySelectorAll('.copy-id-button').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.getAttribute('data-id');

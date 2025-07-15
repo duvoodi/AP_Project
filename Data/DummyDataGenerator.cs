@@ -51,6 +51,29 @@ namespace AP_Project.Data
 
     public static class SeedDataForFirstTime
     {
+        private static DateTime GenerateRandomExamDate(Random rand)
+        {
+            // بازه تاریخ امتحان برای نیم‌سال 14041
+            DateTime examStart1 = new DateTime(2026, 1, 21);
+            DateTime examEnd1 = new DateTime(2026, 2, 19);
+            
+            // بازه تاریخ امتحان برای نیم‌سال 14042
+            DateTime examStart2 = new DateTime(2026, 6, 5);
+            DateTime examEnd2 = new DateTime(2026, 7, 6);
+
+            // انتخاب تصادفی یکی از دو نیم‌سال
+            if (rand.Next(2) == 0)
+            {
+                int examDaysRange1 = (examEnd1 - examStart1).Days;
+                return examStart1.AddDays(rand.Next(examDaysRange1));
+            }
+            else
+            {
+                int examDaysRange2 = (examEnd2 - examStart2).Days;
+                return examStart2.AddDays(rand.Next(examDaysRange2));
+            }
+        }
+
         public static void Generate(
             AppDbContext context,
             int adminCount = 1,
@@ -184,32 +207,56 @@ namespace AP_Project.Data
             context.SaveChanges();
 
             // 8. Courses
-            DateTime examstart = new DateTime(2026, 1, 21); // we create all the courses wtih 4041 exam time for 4041 section (later we will transfer some of them to the 4042 exam time and section)
-            DateTime examend = new DateTime(2026, 2, 19);
-            int range = (examend - examstart).Days;
             var courses = codes.Select(cc => new Course
             {
                 CodeId = cc.Id,
                 Unit = rand.Next(1, 4),
                 Description = $"توضیحات {cc.Title}",
-                FinalExamDate = examstart.AddDays(rand.Next(range + 1))
+                FinalExamDate = GenerateRandomExamDate(rand) // تابع جدید برای تولید تاریخ تصادفی
             }).ToList();
+
             context.Courses.AddRange(courses);
             context.SaveChanges();
 
-            // 9. Prerequisites (random subset)
+            // 9. Prerequisites (random subset) — اصلاح شده برای خطی بودن و عدم حلقه
+            // این کد مطمئن می‌شود پیش‌نیازهای هر درس فقط از دروس با شماره کوچکتر باشند و بنابراین چرخه پیش‌نیاز ایجاد نمی‌شود.
             var prereqs = new List<Prerequisite>();
-            foreach (var course in courses)
+            double prerequisiteProbability = 0.6; // حدود 60 درصد درس‌ها پیش‌نیاز دارند
+            int maxPrereqsPerCourse = 3;
+
+            for (int i = 0; i < courses.Count; i++)
             {
-                if (rand.NextDouble() < 0.4)
+                var course = courses[i];
+                if (i == 0)
                 {
-                    var pc = codes[rand.Next(codes.Count)];
-                    if (pc.Id != course.CodeId)
+                    // اولین درس نمی‌تواند پیش‌نیاز داشته باشد چون هیچ درسی قبلش نیست
+                    continue;
+                }
+
+                if (rand.NextDouble() < prerequisiteProbability)
+                {
+                    // تعداد پیش‌نیاز بین 1 تا maxPrereqsPerCourse (مثلاً 3)
+                    int prereqCount = rand.Next(1, Math.Min(maxPrereqsPerCourse, i) + 1);
+
+                    // لیست ایندکس‌های دروس قبلی
+                    var possiblePrereqsIndexes = Enumerable.Range(0, i).ToList();
+
+                    // انتخاب رندوم پیش‌نیازها بدون تکرار
+                    for (int p = 0; p < prereqCount; p++)
+                    {
+                        if (possiblePrereqsIndexes.Count == 0)
+                            break;
+
+                        int selectedIndexInList = rand.Next(possiblePrereqsIndexes.Count);
+                        int prereqIndex = possiblePrereqsIndexes[selectedIndexInList];
+                        possiblePrereqsIndexes.RemoveAt(selectedIndexInList);
+
                         prereqs.Add(new Prerequisite
                         {
                             CourseId = course.Id,
-                            PrerequisiteCourseCodeId = pc.Id
+                            PrerequisiteCourseCodeId = courses[prereqIndex].CodeId
                         });
+                    }
                 }
             }
             context.Prerequisites.AddRange(prereqs);
@@ -219,74 +266,58 @@ namespace AP_Project.Data
             var allSlots = context.TimeSlots.ToList();
             var sections = new List<Section>();
 
-            // بازه تاریخ امتحان برای نیم‌سال 1
-            DateTime examStart1 = new DateTime(2026, 1, 21);
-            DateTime examEnd1 = new DateTime(2026, 2, 19);
-
-            // بازه تاریخ امتحان برای نیم‌سال 2
-            DateTime examStart2 = new DateTime(2026, 6, 5);
-            DateTime examEnd2 = new DateTime(2026, 7, 6);
-            int examRange2 = (examEnd2 - examStart2).Days;
-
-            foreach (var course in courses)
+            // تابع کمکی برای تعیین نیم‌سال از تاریخ امتحان
+            int GetSemesterFromDate(DateTime date)
             {
-                // سکشن‌های نیم‌سال 2
-                int sectionCountSemester2 = sectionCount / 2;
-                for (int j = 0; j < sectionCountSemester2; j++)
-                {
-                    course.FinalExamDate = examStart2.AddDays(rand.Next(examRange2 + 1));
-                    sections.Add(new Section
-                    {
-                        CourseId = course.Id,
-                        Year = 1404,
-                        Semester = 2,
-                        ClassroomId = classrooms[rand.Next(classrooms.Count)].Id,
-                        TimeSlotId = allSlots[rand.Next(allSlots.Count)].Id
-                    });
-                }
-
-                // سکشن‌های نیم‌سال 1
-                int sectionCountSemester1 = sectionCount - sectionCount / 2;
-                for (int j = 0; j < sectionCountSemester1; j++)
-                {
-                    // حلقه while تا کورسی با تاریخ مناسب پیدا شود
-                    Course courseForSemester1 = null;
-                    int attempts = 0;
-                    const int maxAttempts = 100; // برای جلوگیری از حلقه بی‌نهایت
-
-                    while (courseForSemester1 == null && attempts < maxAttempts)
-                    {
-                        var candidate = courses[rand.Next(courses.Count)];
-                        if (candidate.FinalExamDate >= examStart1 && candidate.FinalExamDate <= examEnd1)
-                        {
-                            courseForSemester1 = candidate;
-                            break;
-                        }
-                        attempts++;
-                    }
-
-                    if (courseForSemester1 != null)
-                    {
-                        sections.Add(new Section
-                        {
-                            CourseId = courseForSemester1.Id,
-                            Year = 1404,
-                            Semester = 1,
-                            ClassroomId = classrooms[rand.Next(classrooms.Count)].Id,
-                            TimeSlotId = allSlots[rand.Next(allSlots.Count)].Id
-                        });
-                    }
-                }
+                if (date >= new DateTime(2026, 1, 21) && date <= new DateTime(2026, 2, 19))
+                    return 1;
+                else if (date >= new DateTime(2026, 6, 5) && date <= new DateTime(2026, 7, 6))
+                    return 2;
+                else
+                    return 0; // تاریخ نامعتبر
             }
 
-            // حذف سکشن‌های تکراری بر اساس Year, Semester, ClassroomId و TimeSlotId یکسان
+            // ابتدا برای هر درس یک سکشن بساز (حداقل یکی برای هر درس)
+            foreach (var course in courses)
+            {
+                int semester = GetSemesterFromDate(course.FinalExamDate);
+                if (semester == 0) continue; // از کورس‌هایی که تاریخ امتحان معتبر ندارند صرف‌نظر کن
+
+                sections.Add(new Section
+                {
+                    CourseId = course.Id,
+                    Year = 1404,
+                    Semester = semester,
+                    ClassroomId = classrooms[rand.Next(classrooms.Count)].Id,
+                    TimeSlotId = allSlots[rand.Next(allSlots.Count)].Id
+                });
+            }
+
+            // سپس با حلقه while ادامه بده تا به تعداد کلی sectionCount برسیم
+            while (sections.Count < sectionCount)
+            {
+                var course = courses[rand.Next(courses.Count)];
+                int semester = GetSemesterFromDate(course.FinalExamDate);
+                if (semester == 0) continue;
+
+                sections.Add(new Section
+                {
+                    CourseId = course.Id,
+                    Year = 1404,
+                    Semester = semester,
+                    ClassroomId = classrooms[rand.Next(classrooms.Count)].Id,
+                    TimeSlotId = allSlots[rand.Next(allSlots.Count)].Id
+                });
+            }
+
+            // جلوگیری از سکشن‌های تکراری با کلاس و زمان تکراری در همان ترم و سال
             sections = sections
                 .GroupBy(s => new { s.Year, s.Semester, s.ClassroomId, s.TimeSlotId })
                 .Select(g => g.First())
                 .ToList();
+
             context.Sections.AddRange(sections);
             context.SaveChanges();
-
 
             // 11. Teaches
             var teaches = sections.Select(s => new Teaches
