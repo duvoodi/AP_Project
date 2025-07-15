@@ -146,7 +146,7 @@
       },
       ListPropItemDisplayNames = new Dictionary<string, Dictionary<string, string>> {
         { "Prerequisites", new Dictionary<string, string> {
-          { "Title", "عنوان درس پیشنیاز" },
+          { "Title", "عنوان درس پیش نیاز" },
           { "Code", "کد درس" }
         }}
       },
@@ -339,9 +339,10 @@
     }
     
     // Client-side course deletion
-    function deleteCourseClientSide() {
-      GlobalPopup.show({
-        options: {
+  function deleteCourseClientSide() {
+    GlobalPopup.hide().then(() => {
+      GlobalPopup.show(
+        {
           PopupTitle: "موفقیت",
           SimpleMessage: "درس با موفقیت حذف شد (کلاینت‌ساید)",
           CanCloseManually: false,
@@ -350,8 +351,10 @@
           AutoClose: true,
           AutoCloseDelay: 3000
         }
-      });
-    }
+      );
+    });
+  }
+
     
     // Bulk client-side deletion
     function deleteSelectedCoursesClientSide(selectedIds) {
