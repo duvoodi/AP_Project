@@ -110,6 +110,7 @@ html, body {
 .dashboard-main {
   background-color: #fff;
   box-sizing: border-box;
+  margin-bottom: 30px;
 }
 
 .dashboard-main.has-footer {
@@ -121,18 +122,18 @@ html, body {
 }
 
 /* ============================
-   MAIN ANIMATION: Scale-IN
+   MAIN ANIMATION: FADE-IN
    ============================ */
 
 .dashboard-main {
   opacity: 0;
-  transform: scale(95%);
+  transform: translateY(20px); /* به جای scale */
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .dashboard-main.visible {
   opacity: 1;
-  transform: scale(100%);
+  transform: translateY(0);
 }
 
 /* ============================
@@ -242,6 +243,7 @@ html, body {
 }
 
 
+
 /* ============================
    FOOTER (Shared)
    ============================ */
@@ -256,19 +258,42 @@ html, body {
   align-items: center;
   justify-content: center;
   color: #094e8f;
-  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
   font-size: 17px;
   z-index: 9997; /* هدر 9999 پاپ آپ 9998 فوتر 9997 */
 }
 
 /* ============================
-   FOOTER ANIMATION: FLOAT-UP
+   FOOTER ANIMATION: OVERT_SHOOT
    ============================ */
+
+@keyframes footerEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  40% {
+    opacity: 0.7;
+    transform: translateY(-10px);
+  }
+  60% {
+    opacity: 0.85;
+    transform: translateY(10px);
+  }
+  80% {
+    opacity: 0.95;
+    transform: translateY(-3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 .dashboard-footer {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
+  animation: footerEnter 1s ease forwards;
 }
 
 .dashboard-footer.visible {
