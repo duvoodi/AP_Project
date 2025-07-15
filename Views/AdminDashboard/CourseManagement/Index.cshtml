@@ -1,0 +1,143 @@
+@model AP_Project.Models.Users.Admin
+@{
+    ViewData["ActiveTab"] = "Course";
+    ViewData["Title"] = "داشبورد ادمین";
+    Layout = "_LayoutAdmin";
+
+    var courses = ViewBag.Courses as List<AP_Project.Models.Courses.Course>;
+    var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+    var hasFooter = false;
+}
+
+<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/AdminDashboard/CourseManagement/course-management.css" asp-append-version="true" />
+
+<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+    <div class="toolbar">
+        <a asp-controller="CourseManagement" asp-action="AddCourseIndex"
+           asp-route-h="@currentHash" class="btn-add-course">
+            <span class="icon">&#43;</span>
+            <span class="text">افزودن درس</span>
+        </a>
+    </div>
+
+    <table class="course-table">
+        <thead>
+            <tr>
+                <th class="col-index">ردیف</th>
+                <th class="col-title">عنوان درس</th>
+                <th class="col-code">کد درس</th>
+                <th class="col-units">تعداد واحد</th>
+                <th class="col-prereq">کد پیش‌نیاز</th>
+                <th class="col-semester">نیم‌سال</th>
+                <th class="col-instructor">نام استاد</th>
+                <th class="col-schedule">زمان برگزاری</th>
+                <th class="col-examdate">تاریخ امتحان</th>
+                <th class="col-description">توضیحات</th>
+                <th class="col-courseid">آی‌دی درس</th>
+                @if (courses != null && courses.Any())
+                {
+                    <th class="col-actions"></th>
+                }
+            </tr>
+        </thead>
+
+        @if (courses != null && courses.Any())
+        {
+            <tbody>
+                @for (int i = 0; i < courses.Count; i++)
+                {
+                    var course = courses[i];
+                    var section = course.Sections?.FirstOrDefault();
+                    var instructor = section?.Teaches?.Instructor;
+                    var timeSlot = section?.TimeSlot;
+                    var prereq = course.Prerequisites?.FirstOrDefault()?.PrerequisiteCourseCode?.Code.ToString() ?? "-";
+
+                    <tr>
+                        <td class="col-index">@((i + 1))</td>
+                        <td class="col-title">@course.CourseCode?.Title</td>
+                        <td class="col-code">@course.CourseCode?.Code</td>
+                        <td class="col-units">@course.Unit</td>
+                        <td class="col-prereq">@prereq</td>
+                        <td class="col-semester">@(section?.Semester.ToString() ?? "-")</td>
+                        <td class="col-instructor @(instructor == null ? "no-instructor" : "")">
+                            @(instructor != null ? $"{instructor.FirstName} {instructor.LastName}" : "استاد ندارد")
+                        </td>
+                        <td class="col-schedule">
+                            @if (timeSlot != null)
+                            {
+                                <span>@timeSlot.Day</span><br />
+                                <span>@timeSlot.StartTime.ToString(@"hh\:mm") - @timeSlot.EndTime.ToString(@"hh\:mm")</span>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                        <td class="col-examdate">@course.FinalExamDate.ToString("yyyy/MM/dd")</td>
+                        <td class="col-description">@course.Description</td>
+                        <td class="col-courseid">
+                            <button class="text-link copy-id-button"
+                                    data-id="@course.Id"
+                                    data-tooltip="@course.Id"
+                                    data-tooltip-align="center">
+                                کپی
+                            </button>
+                        </td>
+                        <td class="col-actions">
+                            <div class="actions-wrapper">
+                                <a asp-controller="CourseManagement" asp-action="EditCourse"
+                                   asp-route-id="@course.Id" asp-route-h="@currentHash"
+                                   class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-controller="CourseManagement" asp-action="DeleteCourse"
+                                   asp-route-id="@course.Id" asp-route-h="@currentHash"
+                                   class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+</main>
+
+<div class="empty-popup @(courses == null || !courses.Any() ? "will-show" : "")">
+    <p>موردی جهت نمایش وجود ندارد</p>
+</div>
+
+@if (hasFooter)
+{
+    <footer class="dashboard-footer admin">
+        <p>متن فوتر</p>
+    </footer>
+}
+
+@section Scripts {
+    <script src="~/js/Shared/tooltip.js"></script>
+    <script>
+        document.querySelectorAll('.copy-id-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                navigator.clipboard.writeText(id).then(() => {
+                    const tooltip = document.querySelector('.custom-tooltip');
+                    if (tooltip) {
+                        tooltip.textContent = 'کپی شد!';
+                        tooltip.classList.add('show');
+                        const r = btn.getBoundingClientRect();
+                        tooltip.style.top = (r.top - 30) + 'px';
+                        tooltip.style.left = (r.left + r.width / 2 - tooltip.offsetWidth / 2) + 'px';
+                        setTimeout(() => {
+                            tooltip.classList.remove('show');
+                        }, 2000);
+                    }
+                }).catch(err => {
+                    console.error('خطا در کپی:', err);
+                });
+            });
+        });
+    </script>
+}
