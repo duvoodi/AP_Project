@@ -374,38 +374,42 @@
     }
     
     // Test functions
-    function testSuccessfulDelete() {
-      // Simulate API call delay
-      setTimeout(() => {
-        GlobalPopup.show({
-          options: {
+  function testSuccessfulDelete() {
+    GlobalPopup.hide().then(() => {
+      GlobalPopup.show(
+        {
             PopupTitle: "موفقیت",
-            SimpleMessage: "آیتم با موفقیت حذف شد",
-            CanCloseManually: false,
-            iconType: "success",
-            BlockScroll: true,
-            AutoClose: true,
-            AutoCloseDelay: 3000
-          }
-        });
-      }, 500);
-    }
-    
-    function testFailedDelete() {
-      // Simulate API call delay
-      setTimeout(() => {
-        GlobalPopup.show({
-          options: {
-            PopupTitle: "خطا",
-            SimpleMessage: "مشکلی در حذف آیتم به وجود آمده است",
-            CanCloseManually: false,
-            iconType: "error",
-            BlockScroll: true,
-            AutoClose: true,
-            AutoCloseDelay: 3000
-          }
-        });
-      }, 500);
-    }
+          SimpleMessage: "آیتم با موفقیت حذف شد",
+          CanCloseManually: false,
+          iconType: "success",
+          BlockScroll: true,
+          AutoClose: true,
+          AutoCloseDelay: 3000
+        },
+        null,
+        null
+      );
+    });
+  }
+
+
+  function testFailedDelete() {
+    GlobalPopup.hide().then(() => {
+      GlobalPopup.show(
+        {
+          PopupTitle: "خطا",
+          SimpleMessage: "مشکلی در حذف آیتم به وجود آمده است",
+          CanCloseManually: false,
+          iconType: "error",
+          BlockScroll: true,
+          AutoClose: true,
+          AutoCloseDelay: 3000
+        },
+        null,
+        null
+      );
+    });
+  }
+
   </script>
 }
