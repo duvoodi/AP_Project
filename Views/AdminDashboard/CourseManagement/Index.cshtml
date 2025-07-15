@@ -61,7 +61,7 @@
                         <td class="col-code">@course.CourseCode.Code</td>
                         <td class="col-units">@course.Unit</td>
                         <td class="col-prereq">@prereq</td>
-                        <td class="col-semester">@s.Semester</td>
+                        <td class="col-semester">@($"{s.Year}{s.Semester}")</td>
                         <td class="col-instructor @(instructor == null ? "no-instructor" : "")">
                             @(instructor != null ? $"{instructor.FirstName} {instructor.LastName}" : "استاد ندارد")
                         </td>
@@ -98,12 +98,12 @@
                             <div class="actions-wrapper">
                                 <a asp-controller="CourseManagement" asp-action="EditSection"
                                 asp-route-id="@s.Id" asp-route-h="@currentHash"
-                                class="btn-action btn-edit" data-tooltip="ویرایش سکشن" data-tooltip-align="center">
+                                class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <a asp-controller="CourseManagement" asp-action="DeleteSection"
                                 asp-route-id="@s.Id" asp-route-h="@currentHash"
-                                class="btn-action btn-delete" data-tooltip="حذف سکشن" data-tooltip-align="center">
+                                class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
                             </div>
