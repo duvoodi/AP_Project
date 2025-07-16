@@ -1,19 +1,473 @@
+@using Newtonsoft.Json
+@using static Newtonsoft.Json.JsonConvert
 @model AP_Project.Models.Users.Admin
 @{
   ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
   ViewData["ActiveTab"] = "Class";
   var hasFooter = false;
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
 }
 
-<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="admin-main @(hasFooter ? "has-footer" : "has-not-footer")">
   <h2 class="page-title">مدیریت کلاس‌ها</h2>
-  <!-- محتوای مدیریت کلاس‌ها -->
+
+  <!-- دکمه 1: پاپ‌آپ موفقیت با ریدایرکت -->
+  <button class="btn-popup" 
+          data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = new {
+              PopupTitle = "موفقیت",
+              SimpleMessage = "عملیات با موفقیت انجام شد",
+              CanCloseManually = false,
+              CloseOnBackdropClick = false,
+              RedirectUrl = Url.Action("Index", "InstructorManagement", new { h = currentHash }),
+              RedirectDelayMs = 3000,
+              BlockScroll = true,
+              iconType = "success"
+            }
+          }))'>
+    پاپ‌آپ موفقیت با ریدایرکت
+  </button>
+
+  <!-- دکمه تست پاپ‌آپ ناموفق -->
+  <button class="btn-popup" 
+          data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = new {
+              PopupTitle = "خطا",
+              SimpleMessage = "عملیات با مشکل مواجه شد",
+              CanCloseManually = true,
+              CloseOnBackdropClick = true,
+              iconType = "error",
+              BlockScroll = true,
+              AutoClose = true,
+              AutoCloseDelay = 3000
+            }
+          }))'>
+    تست پاپ‌آپ ناموفق
+  </button>
+
+  <!-- دکمه 2: لیست دروس پیش‌نیاز (کلاینت ساید) -->
+<button class="btn-popup" 
+        data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+          options = new {
+            PopupTitle = "لیست دروس پیش‌نیاز",
+            CanCloseManually = true,
+            CloseOnBackdropClick = true,
+            BlockScroll = true,
+            iconType = "info"
+          },
+          model = new {
+            Courses = new[] {
+              new { Id = 1, Title = "برنامه‌سازی پیشرفته", Code = "CS102" },
+              new { Id = 2, Title = "مدار منطقی", Code = "CE201" },
+              new { Id = 3, Title = "ریاضیات گسسته", Code = "MA140" },
+              new { Id = 4, Title = "ساختمان داده", Code = "CS220" }
+            }
+          },
+          config = new {
+            ShowListProps = true,
+            ListProps = new[] { "Courses" },
+            SimplePropDisplayNames = new Dictionary<string, string> {
+              { "Courses", "دروس" }
+            },
+            ListPropFieldOrder = new Dictionary<string, string[]> {
+              { "Courses", new[] { "Title", "Code" } }
+            },
+            ListPropItemDisplayNames = new Dictionary<string, Dictionary<string, string>> {
+              { "Courses", new Dictionary<string, string> {
+                { "Title", "عنوان درس" },
+                { "Code", "کد درس" }
+              }}
+            },
+            // همه گزینه‌های زیر غیرفعال یا خالی برای حذف کامل چک‌باکس و حذف
+            ShowCheckboxes = new Dictionary<string, bool> {
+              { "Courses", false }
+            },
+            ClientSideLists = new string[] { },
+            ClientSideDelete = new Dictionary<string, bool>(),
+            DeleteIdFields = new Dictionary<string, string>(),
+            BulkActionText = new Dictionary<string, string>(),
+            OnBulkActionJs = ""
+          }
+        }))'>
+  لیست دروس پیش‌نیاز
+</button>
+
+
+
+  <!-- دکمه 3: مشخصات درس -->
+  @{
+    var popupOptions = new {
+      PopupTitle = "مشخصات درس",
+      CanCloseManually = true,
+      CloseOnBackdropClick = true,
+      BlockScroll = true,
+      iconType = "info"
+    };
+
+    var popupModel = new {
+      Title = "برنامه‌سازی پیشرفته",
+      Code = "CS102",
+      Units = 3,
+      InstructorCode = "INS-1402-01",
+      InstructorName = "دکتر احمدی",
+      ClassTime = "شنبه‌ها ساعت ۱۰ تا ۱۲",
+      ExamDate = "۱۴۰۴/۰۳/۲۵",
+      Description = "درس پایه برای دروس برنامه‌نویسی دیگر",
+      Prerequisites = new[] {
+        new { Id = 1, Title = "برنامه‌سازی مقدماتی", Code = "CS101" },
+        new { Id = 2, Title = "مبانی کامپیوتر", Code = "CS100" }
+      }
+    };
+
+    var popupConfig = new {
+      SimplePropsOrder = new[] {
+        "Title", "Code", "Units", "InstructorCode", "InstructorName", "ClassTime", "ExamDate", "Description"
+      },
+      SimplePropDisplayNames = new Dictionary<string, string> {
+        { "Title", "عنوان درس" },
+        { "Code", "کد درس" },
+        { "Units", "تعداد واحد" },
+        { "InstructorCode", "کد مدرسی" },
+        { "InstructorName", "نام استاد" },
+        { "ClassTime", "زمان برگزاری" },
+        { "ExamDate", "تاریخ امتحان" },
+        { "Description", "توضیحات" },
+        { "Prerequisites", "پیش‌نیازها" }
+      },
+      ShowListProps = true,
+      ListProps = new[] { "Prerequisites" },
+      ListPropFieldOrder = new Dictionary<string, string[]> {
+        { "Prerequisites", new[] { "Title", "Code" } }
+      },
+      ListPropItemDisplayNames = new Dictionary<string, Dictionary<string, string>> {
+        { "Prerequisites", new Dictionary<string, string> {
+          { "Title", "عنوان درس پیش نیاز" },
+          { "Code", "کد درس" }
+        }}
+      },
+      ListPropSortKey1 = new Dictionary<string, string> {
+        { "Prerequisites", "Title" }
+      }
+    };
+  }
+
+  <button class="btn-popup"
+          data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = popupOptions,
+            model = popupModel,
+            config = popupConfig
+          }))'>
+    مشخصات درس
+  </button>
+
+  <!-- دکمه 4: تایید حذف درس (سرورساید) -->
+  <button class="btn-popup" 
+          data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = new {
+              PopupTitle = "حذف درس",
+              CanCloseManually = true,
+              CloseOnBackdropClick = true,
+              ShowActionButtons = true,
+              GreenButtonText = "انصراف",
+              OnGreenClickJs = "GlobalPopup.hide()",
+              RedButtonText = "حذف",
+              OnRedClickJs = "deleteCourse(123)",
+              BlockScroll = true,
+              iconType = "warning"
+            },
+            model = new {
+              Title = "مدارهای الکتریکی",
+              Unit = 3,
+              InstructorName = "مهندس رضایی",
+              Time = "یکشنبه ۸ تا ۱۰",
+              ExamDate = "1404/03/28"
+            },
+            config = new {
+              SimplePropsOrder = new[] { "Title", "Unit", "InstructorName", "Time", "ExamDate" },
+              SimplePropDisplayNames = new Dictionary<string, string> {
+                { "Title", "عنوان درس" },
+                { "Unit", "تعداد واحد" },
+                { "InstructorName", "نام استاد" },
+                { "Time", "زمان برگزاری" },
+                { "ExamDate", "تاریخ امتحان" }
+              },
+              ShowListProps = false
+            }
+          }))'>
+    تایید حذف درس (سرورساید)
+  </button>
+
+  <!-- دکمه 5: تایید حذف درس (کلاینت‌ساید) -->
+  <button class="btn-popup" 
+          data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = new {
+              PopupTitle = "حذف درس",
+              CanCloseManually = true,
+              CloseOnBackdropClick = true,
+              ShowActionButtons = true,
+              GreenButtonText = "انصراف",
+              OnGreenClickJs = "GlobalPopup.hide()",
+              RedButtonText = "حذف",
+              OnRedClickJs = "deleteCourseClientSide()",
+              BlockScroll = true,
+              iconType = "warning"
+            },
+            model = new {
+              Title = "معادلات دیفرانسیل",
+              Unit = 3,
+              InstructorName = "دکتر حسینی",
+              Time = "دوشنبه ۱۴ تا ۱۶",
+              ExamDate = "1404/04/05"
+            },
+            config = new {
+              SimplePropsOrder = new[] { "Title", "Unit", "InstructorName", "Time", "ExamDate" },
+              SimplePropDisplayNames = new Dictionary<string, string> {
+                { "Title", "عنوان درس" },
+                { "Unit", "تعداد واحد" },
+                { "InstructorName", "نام استاد" },
+                { "Time", "زمان برگزاری" },
+                { "ExamDate", "تاریخ امتحان" }
+              },
+              ShowListProps = false
+            }
+          }))'>
+    تایید حذف درس (کلاینت‌ساید)
+  </button>
+
+  <!-- دکمه‌های تست -->
+  <button class="btn-popup" 
+          data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = new {
+              PopupTitle = "تست حذف موفق",
+              SimpleMessage = "این آیتم با موفقیت حذف خواهد شد",
+              CanCloseManually = true,
+              CloseOnBackdropClick = true,
+              BlockScroll = true,
+              ShowActionButtons = true,
+              GreenButtonText = "انصراف",
+              OnGreenClickJs = "GlobalPopup.hide()",
+              RedButtonText = "حذف",
+              OnRedClickJs = "testSuccessfulDelete()",
+              iconType = "warning"
+            }
+          }))'>
+    تست حذف موفق
+  </button>
+
+  <button class="btn-popup" 
+          data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = new {
+              PopupTitle = "تست حذف ناموفق",
+              SimpleMessage = "این آیتم با خطا در حذف مواجه خواهد شد",
+              CanCloseManually = true,
+              CloseOnBackdropClick = true,
+              BlockScroll = true,
+              ShowActionButtons = true,
+              GreenButtonText = "انصراف",
+              OnGreenClickJs = "GlobalPopup.hide()",
+              RedButtonText = "حذف",
+              OnRedClickJs = "testFailedDelete()",
+              iconType = "warning"
+            }
+          }))'>
+    تست حذف ناموفق
+  </button>
+
+
+<!-- دکمه آخر: لیست دروس پیش‌نیاز (کلاینت‌ساید بایگانی شده) -->
+<div class="archived-section">
+  <button class="btn-popup" 
+          data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = new {
+              PopupTitle = "لیست دروس پیش‌نیاز",
+              CanCloseManually = true,
+              CloseOnBackdropClick = true,
+              BlockScroll = true,
+              iconType = "info"
+            },
+            model = new {
+              Courses = new[] {
+                new { Id = 1, Title = "برنامه‌سازی پیشرفته", Code = "CS102" },
+                new { Id = 2, Title = "مدار منطقی", Code = "CE201" },
+                new { Id = 3, Title = "ریاضیات گسسته", Code = "MA140" },
+                new { Id = 4, Title = "ساختمان داده", Code = "CS220" }
+              }
+            },
+            config = new {
+              ShowListProps = true,
+              ListProps = new[] { "Courses" },
+              SimplePropDisplayNames = new Dictionary<string, string> {
+                { "Courses", "دروس" }
+              },
+
+              ListPropFieldOrder = new Dictionary<string, string[]> {
+                { "Courses", new[] { "Title", "Code" } }
+              },
+              ListPropItemDisplayNames = new Dictionary<string, Dictionary<string, string>> {
+                { "Courses", new Dictionary<string, string> {
+                  { "Title", "عنوان درس" },
+                  { "Code", "کد درس" }
+                }}
+              },
+              ShowCheckboxes = new Dictionary<string, bool> {
+                { "Courses", true }
+              },
+              ClientSideLists = new[] { "Courses" },
+              ClientSideDelete = new Dictionary<string, bool> {
+                { "Courses", true }
+              },
+              DeleteIdFields = new Dictionary<string, string> {
+                { "Courses", "Id" }
+              },
+              BulkActionText = new Dictionary<string, string> {
+                { "Courses", "حذف انتخاب شده‌ها" }
+              },
+              OnBulkActionJs = "deleteSelectedCoursesClientSide"
+            }
+          }))'>
+    لیست دروس پیش‌نیاز (کلاینت‌ساید بایگانی شده)
+  </button>
+</div>
+
+  
+
 </main>
 
 @if (hasFooter)
 {
-  <footer class="dashboard-footer admin">
+  <footer class="admin-footer">
     <p>متن فوتر</p>
   </footer>
+}
+
+@section Scripts {
+  <script>
+    // API endpoint for course deletion
+    const DELETE_COURSE_URL = "/api/course/delete";
+    
+    // Delete course function (server-side)
+    function deleteCourse(id) {
+      if (!id) {
+        console.error('Course ID not provided');
+        return;
+      }
+      
+      fetch(`${DELETE_COURSE_URL}?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          GlobalPopup.show({
+            options: {
+              PopupTitle: "موفقیت",
+              SimpleMessage: "درس با موفقیت حذف شد",
+              CanCloseManually: false,
+              iconType: "success",
+              BlockScroll: true,
+              AutoClose: true,
+              AutoCloseDelay: 3000
+            }
+          });
+        } else {
+          throw new Error('Deletion failed');
+        }
+      })
+      .catch(error => {
+        console.error('Deletion error:', error);
+        GlobalPopup.show({
+          options: {
+            PopupTitle: "خطا",
+            SimpleMessage: "مشکلی در حذف درس به وجود آمده است",
+            CanCloseManually: false,
+            iconType: "error",
+            BlockScroll: true,
+            AutoClose: true,
+            AutoCloseDelay: 3000
+          }
+        });
+      });
+    }
+    
+    // Client-side course deletion
+  function deleteCourseClientSide() {
+    GlobalPopup.hide().then(() => {
+      GlobalPopup.show(
+        {
+          PopupTitle: "موفقیت",
+          SimpleMessage: "درس با موفقیت حذف شد (کلاینت‌ساید)",
+          CanCloseManually: false,
+          iconType: "success",
+          BlockScroll: true,
+          AutoClose: true,
+          AutoCloseDelay: 3000
+        }
+      );
+    });
+  }
+
+    
+    // Bulk client-side deletion
+    function deleteSelectedCoursesClientSide(selectedIds) {
+      if (!selectedIds || selectedIds.length === 0) {
+        alert('لطفاً حداقل یک مورد را انتخاب کنید');
+        return;
+      }
+      
+      GlobalPopup.show({
+        options: {
+          PopupTitle: "موفقیت",
+          SimpleMessage: `${selectedIds.length} مورد با موفقیت حذف شدند (کلاینت‌ساید)`,
+          CanCloseManually: false,
+          iconType: "success",
+          BlockScroll: true,
+          AutoClose: true,
+          AutoCloseDelay: 3000
+        }
+      });
+    }
+    
+    // Test functions
+  function testSuccessfulDelete() {
+    GlobalPopup.hide().then(() => {
+      GlobalPopup.show(
+        {
+            PopupTitle: "موفقیت",
+          SimpleMessage: "آیتم با موفقیت حذف شد",
+          CanCloseManually: false,
+          iconType: "success",
+          BlockScroll: true,
+          AutoClose: true,
+          AutoCloseDelay: 3000
+        },
+        null,
+        null
+      );
+    });
+  }
+
+
+  function testFailedDelete() {
+    GlobalPopup.hide().then(() => {
+      GlobalPopup.show(
+        {
+          PopupTitle: "خطا",
+          SimpleMessage: "مشکلی در حذف آیتم به وجود آمده است",
+          CanCloseManually: false,
+          iconType: "error",
+          BlockScroll: true,
+          AutoClose: true,
+          AutoCloseDelay: 3000
+        },
+        null,
+        null
+      );
+    });
+  }
+
+  </script>
 }
