@@ -151,6 +151,11 @@ const GlobalPopup = (function () {
     popupBox.appendChild(bulkContainer);
   }
 
+  function toPersianNumber(num) {
+    const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+    return String(num).split('').map(d => persianDigits[d] || d).join('');
+  }
+
   function renderListItems(popupBox, list, options = {}) {
     const sorted = applySorting(list, options.sortKey1, options.sortKey2);
 
@@ -167,7 +172,7 @@ const GlobalPopup = (function () {
       }
 
       const itemContent = createSafeElement('span', '', 'popup-list-item-content');
-      itemContent.appendChild(createSafeElement('span', `${index + 1}. `, 'item-index'));
+      itemContent.appendChild(createSafeElement('span', `${toPersianNumber(index + 1)}. `, 'item-index'));
 
       (options.fieldOrder || []).forEach((field, i) => {
         const displayName = options.displayNames?.[field] || field;
