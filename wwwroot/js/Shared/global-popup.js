@@ -491,14 +491,20 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.target.matches('.btn-popup')) {
       e.preventDefault(); // جلوگیری از رفتار پیش‌فرض
       try {
-        const popupData = JSON.parse(e.target.dataset.popup);
-        GlobalPopup.show(
+        const popupData = JSON.parse(e.target.dataset.popup); // ✅ این خط اضافه شد
+
+        const popupResult = GlobalPopup.show(
           popupData.options,
           popupData.model || null,
           popupData.config || null
-        ).catch(error => {
-          console.error('Popup show error:', error);
-        });
+        );
+
+        if (popupResult && typeof popupResult.then === 'function') {
+          popupResult.catch(error => {
+            console.error('Popup show error:', error);
+          });
+        }
+
       } catch (error) {
         console.error('Error parsing popup data:', error);
       }
