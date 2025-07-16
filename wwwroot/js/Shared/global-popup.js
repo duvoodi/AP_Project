@@ -73,9 +73,15 @@ const GlobalPopup = (function () {
   function renderModelContent(popupBox, model, config) {
     config.SimplePropsOrder?.forEach(prop => {
       const displayName = config.SimplePropDisplayNames?.[prop] || prop;
-      const value = model[prop] || '';
+      let value = model[prop] || '';
+
+      if (prop === 'ExamDate' && typeof value === 'string') {
+        value = toPersianNumber(value);
+      }
+
       popupBox.appendChild(createSafeElement('div', `${displayName}: ${value}`, 'popup-content-line'));
     });
+
 
     if (config.ShowListProps && config.ListProps?.length > 0) {
       config.ListProps.forEach(listProp => {
@@ -185,7 +191,7 @@ const GlobalPopup = (function () {
           itemContent.appendChild(createSafeElement('span', '  '));
         }
       });
-      
+
 
       // Add space between content and buttons
       const spacer = createSafeElement('span', '', 'popup-item-spacer');
