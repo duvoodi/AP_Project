@@ -1,11 +1,5 @@
 const LOGGING_ENABLED = true;
 
-function consoleLogIfAllowed(...args) {
-  if (LOGGING_ENABLED) {
-    console.log('[GlobalPopup]', ...args);
-  }
-}
-
 // Sorting function for list items
 function applySorting(list, sortKey1, sortKey2) {
   if (!sortKey1) return list;
@@ -177,8 +171,21 @@ const GlobalPopup = (function () {
       (options.fieldOrder || []).forEach((field, i) => {
         const displayName = options.displayNames?.[field] || field;
         const value = item[field] || '';
-        itemContent.appendChild(createSafeElement('span', `${displayName}: ${value}`));
+
+        if (field === 'Code') {
+          const tag = createSafeElement('div', '', 'popup-course-code-tag');
+          tag.innerText = `کد درس: ${value}`;
+          itemContent.appendChild(tag);
+        } else {
+          const span = createSafeElement('span', `${displayName}: ${value}`);
+          itemContent.appendChild(span);
+        }
+
+        if (i < options.fieldOrder.length - 1) {
+          itemContent.appendChild(createSafeElement('span', '  '));
+        }
       });
+      
 
       // Add space between content and buttons
       const spacer = createSafeElement('span', '', 'popup-item-spacer');
@@ -222,8 +229,6 @@ const GlobalPopup = (function () {
     const listName = e.target.dataset.list;
     const listItem = e.target.closest('.popup-list-item');
 
-    consoleLogIfAllowed(`Deleting item - URL: ${url}, ID: ${id}`);
-
     if (confirm('آیا از حذف این مورد مطمئن هستید؟')) {
       // Animate removal
       listItem.style.opacity = '0';
@@ -245,7 +250,6 @@ const GlobalPopup = (function () {
           throw new Error('Deletion failed');
         })
         .then(data => {
-          consoleLogIfAllowed(`Item deleted successfully - ID: ${id}`);
           // Show success popup with animation
           setTimeout(() => {
             showAnimatedPopup(
@@ -258,7 +262,6 @@ const GlobalPopup = (function () {
           }, 300);
         })
         .catch(error => {
-          consoleLogIfAllowed(`Deletion failed - ID: ${id}`, error);
           // Show error popup with animation
           showAnimatedPopup(
             'خطا',
@@ -278,7 +281,7 @@ const GlobalPopup = (function () {
     const listName = e.target.dataset.list;
     const listItem = e.target.closest('.popup-list-item');
 
-    consoleLogIfAllowed(`Client-side delete - ID: ${id}, List: ${listName}`);
+
 
     if (confirm('آیا از حذف این مورد مطمئن هستید؟')) {
       // Update client-side list
