@@ -81,7 +81,12 @@
                             }
                         </td>
                         <td class="col-details">
-                            @* مشخصات اضافه درس اینجا قرار می‌گیرد *@
+                            <button class="text-link view-course-btn"
+                                data-course-id="@(section.CourseId)"
+                                data-tooltip="مشاهده"
+                                data-tooltip-align="center">
+                                مشاهده
+                            </button>
                         </td>
                         <td class="col-students">
                             @* لیست یا تعداد دانشجویان اینجا قرار می‌گیرد *@
@@ -120,6 +125,9 @@
     <p>موردی جهت نمایش وجود ندارد</p>
 </div>
 
+<!-- پاپ‌آپ مشخصات درس -->
+<div id="course-popup-container"></div>
+
 @if (hasFooter)
 {
     <footer class="dashboard-footer instructor">
@@ -127,22 +135,58 @@
     </footer>
 }
 
-@section Scripts {
-    <script src="~/js/Shared/tooltip.js"></script>
-    <script>
-        document.querySelectorAll('.copy-id-button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = btn.getAttribute('data-id');
-                navigator.clipboard.writeText(id).then(() => {
-                    tooltip.textContent = 'کپی شد';
-                    tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
-                    tooltip.classList.add('align-center', 'show');
 
-                    const r = btn.getBoundingClientRect();
-                    tooltip.style.top = (r.bottom + 6) + 'px';
-                    tooltip.style.left = (r.left + r.width / 2) + 'px';
-                });
-            });
+@section Scripts {
+    <script src="~/js/Shared/tooltip.js" asp-append-version="true"></script>
+    <script src="~/js/Shared/globalPopup.js" asp-append-version="true"></script>
+
+    <script>
+        // هندل کردن دکمه‌های کپی
+    document.querySelectorAll('.copy-id-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        navigator.clipboard.writeText(id).then(() => {
+          tooltip.textContent = 'کپی شد';
+          tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
+          tooltip.classList.add('align-center', 'show');
+
+          const r = btn.getBoundingClientRect();
+          tooltip.style.top = (r.bottom + 6) + 'px';
+          tooltip.style.left = (r.left + r.width / 2) + 'px';
         });
+      });
+    });
+
+        document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('view-course-btn')) {
+    const courseId = e.target.getAttribute('data-course-id');
+    openCoursePopup(courseId);
+  }
+});
+
+
+function openCoursePopup(courseId) {
+    fetch(`/InstructorClassManagement/GetCourseInfo?courseId=${courseId}`)
+        .then(res => res.text())
+        .then(html => {
+            const container = document.getElementById("course-popup-container");
+            container.innerHTML = html;
+
+            // بعد از اینکه html لود شد، دکمه btn-popup که داخلش هست رو پیدا کن
+            const popupBtn = container.querySelector(".btn-popup");
+            if (popupBtn) {
+                popupBtn.click(); // تریگر کردن پاپ‌آپ!
+            } else {
+                console.warn("btn-popup not found in loaded content");
+            }
+        })
+        .catch(err => {
+            console.error("خطا در دریافت مشخصات درس:", err);
+        });
+}
+
     </script>
 }
+
+
+

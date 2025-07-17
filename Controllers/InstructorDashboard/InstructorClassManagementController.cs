@@ -15,8 +15,6 @@ namespace AP_Project.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // کلاس پایه سشن را برای هر اکشن چک میکند
-            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
             var instructor = CurrentInstructor;
 
             var classrooms = _db.Classrooms
@@ -27,10 +25,30 @@ namespace AP_Project.Controllers
                     .ThenInclude(s => s.TimeSlot)
                 .Include(c => c.Sections)
                     .ThenInclude(s => s.Teaches)
+                        .ThenInclude(t => t.Instructor)
                 .ToList();
 
             ViewBag.Classrooms = classrooms;
             return View("~/Views/InstructorDashboard/ClassManagement/Index.cshtml", instructor);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetCourseInfo(Guid courseId)
+        {
+            var course = await _db.Courses
+                .Include(c => c.CourseCode)
+                .Include(c => c.Prerequisites)
+                    .ThenInclude(p => p.PrerequisiteCourseCode)
+                .Include(c => c.Sections)
+                    .ThenInclude(s => s.Teaches)
+                        .ThenInclude(t => t.Instructor)
+                .Include(c => c.Sections)
+                    .ThenInclude(s => s.TimeSlot)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (course == null)
+                return NotFound();
+
+            return PartialView("~/Views/InstructorDashboard/ClassManagement/CourseDetailsPopup.cshtml", course);
         }
 
     }
