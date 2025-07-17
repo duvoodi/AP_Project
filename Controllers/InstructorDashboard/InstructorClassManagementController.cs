@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using AP_Project.Data;
 using AP_Project.Models.Users;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace AP_Project.Controllers
 {
@@ -18,7 +19,19 @@ namespace AP_Project.Controllers
             // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
             var instructor = CurrentInstructor;
 
-            return View("~/Views/InstructorDashboard/Class.cshtml", instructor);
+            var classrooms = _db.Classrooms
+                .Include(c => c.Sections)
+                    .ThenInclude(s => s.Course)
+                        .ThenInclude(c => c.CourseCode)
+                .Include(c => c.Sections)
+                    .ThenInclude(s => s.TimeSlot)
+                .Include(c => c.Sections)
+                    .ThenInclude(s => s.Teaches)
+                .ToList();
+
+            ViewBag.Classrooms = classrooms;
+            return View("~/Views/InstructorDashboard/ClassManagement/Index.cshtml", instructor);
         }
+
     }
 }
