@@ -1,0 +1,159 @@
+@model AP_Project.Models.Users.Instructor
+@{
+  ViewData["ActiveTab"] = "Student";
+  ViewData["Title"] = "داشبورد استاد";
+  Layout = "_LayoutInstructor";
+  var students = ViewBag.Students as List<AP_Project.Models.Users.Student>;
+  var takes = ViewBag.Takes as List<AP_Project.Models.Courses.Takes>;
+  var sectionId = (Guid)ViewBag.SectionId;
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var hasFooter = false;
+}
+
+<link rel="stylesheet" href="~/css/InstructorDashboard/ClassManagement/set-grade.css" asp-append-version="true" />
+
+<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+  <div class="titlebar"></div>
+  <div class="action-title-tab edit">
+    ثبت نمره
+  </div>
+
+  <form id="grade-submit-form" method="post" asp-controller="InstructorClassManagement" asp-action="EditGrades"
+    asp-route-h="@currentHash" novalidate>
+    <input type="hidden" name="sectionId" value="@sectionId" />
+
+    <table class="student-table">
+      <thead>
+        <tr>
+          <th class="col-index">ردیف</th>
+          <th class="col-fname">نام</th>
+          <th class="col-lname">نام خانوادگی</th>
+          <th class="col-email">ایمیل</th>
+          <th class="col-eyear">سال ورودی</th>
+          <th class="col-stdid">کد دانشجویی</th>
+          <th class="col-grade">نمره</th>
+          <th class="col-status">وضعیت</th>
+        </tr>
+      </thead>
+      @if (students != null && students.Any())
+      {
+        <tbody>
+          @for (int i = 0; i < students.Count; i++)
+          {
+            var std = students[i];
+            var take = takes.FirstOrDefault(t => t.StudentUserId == std.Id && t.SectionId == sectionId);
+            var gradeVal = (take != null && double.TryParse(take.Grade, out var g)) ? g.ToString("0.00") : "";
+            var statusText = "ثبت نشده";
+            var statusClass = "text-danger";
+            if (take != null && double.TryParse(take.Grade, out var stg))
+            {
+              if (stg >= 0 && stg <= 20)
+              {
+                statusText = "در انتظار تایید";
+                statusClass = "text-warning";
+              }
+              else
+              {
+                statusText = "ورودی نامعتبر";
+                statusClass = "text-danger";
+              }
+            }
+            <tr>
+              <td class="col-index">@(i + 1)</td>
+              <td class="col-fname">@std.FirstName</td>
+              <td class="col-lname">@std.LastName</td>
+              <td class="col-email">@Html.Raw(std.Email.Replace(".", "\u200B" + ".").Replace("@", "\u200B" + "@"))</td>
+              <td class="col-eyear">@std.EnrollmentYear</td>
+              <td class="col-stdid">@std.StudentId</td>
+              <td class="col-grade">
+                <input type="number" name="grades[@i]" class="grade-input" data-status-id="status-@i" min="0" max="20"
+                  step="0.01" value="@gradeVal" autocomplete="off" />
+                <input type="hidden" name="studentUserIds[@i]" value="@std.Id" />
+              </td>
+              <td class="col-status">
+                <span id="status-@i" class="@statusClass">@statusText</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      }
+    </table>
+
+    <div class="form-actions">
+      <a asp-controller="InstructorDashboard" asp-action="Index" asp-route-h="@currentHash"
+        class="btn-cancel">انصراف</a>
+      <button type="submit" class="btn-submit">تایید</button>
+    </div>
+  </form>
+</main>
+
+<div class="empty-popup @(students == null || !students.Any() ? "will-show" : "")">
+  <p>موردی جهت نمایش وجود ندارد</p>
+</div>
+
+@if (hasFooter)
+{
+  <footer class="dashboard-footer admin">
+    <p>متن فوتر</p>
+  </footer>
+}
+
+@section Scripts {
+  <script src="~/js/Shared/tooltip.js"></script>
+  <script>
+    document.querySelectorAll('.grade-input').forEach(function (input) {
+      input.addEventListener('input', function () {
+        let rawValue = this.value.trim();
+
+        if (rawValue.includes('.')) {
+          const parts = rawValue.split('.');
+          if (parts[1].length > 2) {
+            this.value = parts[0] + '.' + parts[1].slice(0, 2);
+            rawValue = this.value;
+          }
+        }
+
+        const value = parseFloat(rawValue);
+        const statusId = this.dataset.statusId;
+        const statusEl = document.getElementById(statusId);
+
+        if (!rawValue) {
+          statusEl.textContent = 'ثبت نشده';
+          statusEl.className = 'text-danger';
+          return;
+        }
+
+        const validFormat = /^\d{1,2}(\.\d{1,2})?$/.test(rawValue);
+        if (!isNaN(value) && value >= 0 && value <= 20 && validFormat) {
+          statusEl.textContent = 'در انتظار تایید';
+          statusEl.className = 'text-warning';
+        } else {
+          statusEl.textContent = 'ورودی نامعتبر';
+          statusEl.className = 'text-danger';
+        }
+      });
+    });
+
+    // جلوگیری از ارسال فرم در صورت نمره نامعتبر
+    document.getElementById('grade-submit-form').addEventListener('submit', function (e) {
+      let isValid = true;
+      const inputs = document.querySelectorAll('.grade-input');
+
+      inputs.forEach(function (input) {
+        const rawValue = input.value.trim();
+        const value = parseFloat(rawValue);
+        const validFormat = /^\d{1,2}(\.\d{1,2})?$/.test(rawValue);
+        if (rawValue && (!validFormat || isNaN(value) || value < 0 || value > 20)) {
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        e.preventDefault();
+        alert('لطفاً نمره‌ها را به‌درستی وارد کنید');
+      }
+    });
+  </script>
+}
+
+}

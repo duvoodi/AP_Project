@@ -8,7 +8,8 @@
     var hasFooter = false;
 }
 
-<link rel="stylesheet" href="~/css/InstructorDashboard/ClassManagement/class-management.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/InstructorDashboard/ClassManagement/class-management.css"
+    asp-append-version="true" />
 
 <main class="dashboard-main instructor @(hasFooter ? "has-footer" : "has-not-footer")">
     <table class="class-table">
@@ -53,12 +54,12 @@
                             </td>
                         }
                         else if (string.IsNullOrWhiteSpace(classroom.Building) &&
-                            classroom.RoomNumber == 0 &&
-                            classroom.Capacity == 0)
+                        classroom.RoomNumber == 0 &&
+                        classroom.Capacity == 0)
                         {
-                        <td class="col-building" colspan="3">
-                            کلاس این درس به زودی مشخص می‌شود
-                        </td>
+                            <td class="col-building" colspan="3">
+                                کلاس این درس به زودی مشخص می‌شود
+                            </td>
                         }
                         else
                         {
@@ -72,7 +73,9 @@
                         <td class="col-schedule">
                             @if (timeSlot != null)
                             {
-                                <span>@timeSlot.Day</span><br />
+                                <span>@timeSlot.Day</span>
+                    
+                                <br />
                                 <span>@timeSlot.StartTime.ToString(@"hh\:mm") - @timeSlot.EndTime.ToString(@"hh\:mm")</span>
                             }
                             else
@@ -81,9 +84,7 @@
                             }
                         </td>
                         <td class="col-details">
-                            <button class="text-link view-course-btn"
-                                data-course-id="@(section.CourseId)"
-                                data-tooltip="مشاهده"
+                            <button class="text-link view-course-btn" data-course-id="@(section.CourseId)" data-tooltip="مشاهده"
                                 data-tooltip-align="center">
                                 مشاهده
                             </button>
@@ -92,24 +93,27 @@
                             @* لیست یا تعداد دانشجویان اینجا قرار می‌گیرد *@
                         </td>
                         <td class="col-classid">
-                            <button class="text-link copy-id-button" data-id="@classIdStr" data-tooltip="@classIdStr" data-tooltip-align="center">
+                            <button class="text-link copy-id-button" data-id="@classIdStr" data-tooltip="@classIdStr"
+                                data-tooltip-align="center">
                                 کپی
                             </button>
                         </td>
                         <td class="col-courseid">
-                            <button class="text-link copy-id-button" data-id="@courseIdStr" data-tooltip="@courseIdStr" data-tooltip-align="center">
+                            <button class="text-link copy-id-button" data-id="@courseIdStr" data-tooltip="@courseIdStr"
+                                data-tooltip-align="center">
                                 کپی
                             </button>
                         </td>
 
                         <td class="col-actions">
                             <div class="actions-wrapper">
-                                <a asp-controller="ClassManagement" asp-action="EditClass"
-                                   asp-route-id="@classroom.Id" class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
+                                <a asp-controller="InstructorClassManagement" asp-action="EditGrades" asp-route-h="@currentHash" asp-route-id="@(section.Id)"
+                                    class="btn-action btn-edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <a asp-controller="ClassroomManagement" asp-action="DeleteClassroom"
-                                   asp-route-id="@classroom.Id" class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
+                                    asp-route-id="@classroom.Id" class="btn-action btn-delete" data-tooltip="حذف"
+                                    data-tooltip-align="center">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
                             </div>
@@ -142,51 +146,48 @@
 
     <script>
         // هندل کردن دکمه‌های کپی
-    document.querySelectorAll('.copy-id-button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-id');
-        navigator.clipboard.writeText(id).then(() => {
-          tooltip.textContent = 'کپی شد';
-          tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
-          tooltip.classList.add('align-center', 'show');
+        document.querySelectorAll('.copy-id-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                navigator.clipboard.writeText(id).then(() => {
+                    tooltip.textContent = 'کپی شد';
+                    tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
+                    tooltip.classList.add('align-center', 'show');
 
-          const r = btn.getBoundingClientRect();
-          tooltip.style.top = (r.bottom + 6) + 'px';
-          tooltip.style.left = (r.left + r.width / 2) + 'px';
+                    const r = btn.getBoundingClientRect();
+                    tooltip.style.top = (r.bottom + 6) + 'px';
+                    tooltip.style.left = (r.left + r.width / 2) + 'px';
+                });
+            });
         });
-      });
-    });
 
-        document.addEventListener('click', function(e) {
-  if (e.target.classList.contains('view-course-btn')) {
-    const courseId = e.target.getAttribute('data-course-id');
-    openCoursePopup(courseId);
-  }
-});
-
-
-function openCoursePopup(courseId) {
-    fetch(`/InstructorClassManagement/GetCourseInfo?courseId=${courseId}`)
-        .then(res => res.text())
-        .then(html => {
-            const container = document.getElementById("course-popup-container");
-            container.innerHTML = html;
-
-            // بعد از اینکه html لود شد، دکمه btn-popup که داخلش هست رو پیدا کن
-            const popupBtn = container.querySelector(".btn-popup");
-            if (popupBtn) {
-                popupBtn.click(); // تریگر کردن پاپ‌آپ!
-            } else {
-                console.warn("btn-popup not found in loaded content");
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('view-course-btn')) {
+                const courseId = e.target.getAttribute('data-course-id');
+                openCoursePopup(courseId);
             }
-        })
-        .catch(err => {
-            console.error("خطا در دریافت مشخصات درس:", err);
         });
-}
+
+
+        function openCoursePopup(courseId) {
+            fetch(`/InstructorClassManagement/GetCourseInfo?courseId=${courseId}`)
+                .then(res => res.text())
+                .then(html => {
+                    const container = document.getElementById("course-popup-container");
+                    container.innerHTML = html;
+
+                    // بعد از اینکه html لود شد، دکمه btn-popup که داخلش هست رو پیدا کن
+                    const popupBtn = container.querySelector(".btn-popup");
+                    if (popupBtn) {
+                        popupBtn.click(); // تریگر کردن پاپ‌آپ!
+                    } else {
+                        console.warn("btn-popup not found in loaded content");
+                    }
+                })
+                .catch(err => {
+                    console.error("خطا در دریافت مشخصات درس:", err);
+                });
+        }
 
     </script>
 }
-
-
-
