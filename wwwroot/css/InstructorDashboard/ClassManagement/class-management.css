@@ -22,6 +22,7 @@ table, button, td, th {
   background-color: #00b0f0;
   font-weight: 600;
   padding: 12px 8px;
+  border-radius: 10px;
   text-align: center;
   position: sticky;
   top: 0;
