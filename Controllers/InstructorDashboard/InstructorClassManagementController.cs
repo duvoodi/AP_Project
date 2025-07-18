@@ -110,9 +110,24 @@ namespace AP_Project.Controllers
 
             await _db.SaveChangesAsync();
 
-            return RedirectToAction("Index", "InstructorDashboard", new { h });
+            return RedirectToAction("Index", "InstructorClassManagement", new { h });
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetStudentList(Guid sectionId)
+        {
+            var students = _db.Takes
+                .Where(t => t.SectionId == sectionId)
+                .Include(t => t.Student)
+                .Select(t => t.Student)
+                .OrderBy(s => s.FirstName)
+                .ThenBy(s => s.LastName)
+                .ThenBy(s => s.StudentId)
+                .ToList();
+
+            return PartialView("~/Views/InstructorDashboard/ClassManagement/StudentListPopup.cshtml", students);
+        }
 
     }
 }

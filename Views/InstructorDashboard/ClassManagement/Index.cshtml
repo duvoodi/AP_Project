@@ -90,7 +90,10 @@
                             </button>
                         </td>
                         <td class="col-students">
-                            @* لیست یا تعداد دانشجویان اینجا قرار می‌گیرد *@
+                            <button class="text-link view-students-btn" data-section-id="@(section.Id)" data-tooltip="مشاهده"
+                                data-tooltip-align="center">
+                                مشاهده
+                            </button>
                         </td>
                         <td class="col-classid">
                             <button class="text-link copy-id-button" data-id="@classIdStr" data-tooltip="@classIdStr"
@@ -131,6 +134,9 @@
 
 <!-- پاپ‌آپ مشخصات درس -->
 <div id="course-popup-container"></div>
+
+<div id="student-popup-container"></div>
+
 
 @if (hasFooter)
 {
@@ -188,6 +194,33 @@
                     console.error("خطا در دریافت مشخصات درس:", err);
                 });
         }
+
+        document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('view-students-btn')) {
+        const sectionId = e.target.getAttribute('data-section-id');
+        openStudentsPopup(sectionId);
+    }
+});
+
+function openStudentsPopup(sectionId) {
+    fetch(`/InstructorClassManagement/GetStudentList?sectionId=${sectionId}`)
+        .then(res => res.text())
+        .then(html => {
+            const container = document.getElementById("student-popup-container");
+            container.innerHTML = html;
+
+            const popupBtn = container.querySelector(".btn-popup");
+            if (popupBtn) {
+                popupBtn.click(); // باز کردن پاپ‌آپ
+            } else {
+                console.warn("btn-popup برای لیست دانشجویان پیدا نشد");
+            }
+        })
+        .catch(err => {
+            console.error("خطا در دریافت لیست دانشجویان:", err);
+        });
+}
+
 
     </script>
 }

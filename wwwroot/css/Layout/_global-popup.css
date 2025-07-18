@@ -27,6 +27,8 @@
 .global-popup-box {
   position: relative;
   width: 90%;
+  max-height: 70vh;  /* یا هر ارتفاع دلخواه */
+  overflow-y: auto;
   max-width: 550px; 
   padding: 17px 21px; 
   background-color: #fff;
@@ -309,4 +311,16 @@
 
 .popup-slide-in {
   animation: slideIn 0.3s ease forwards;
+}
+
+.popup-student-code-tag {
+  background-color: #eef6ff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #333;
+  display: inline-block;
+  border: 1px solid #cdddee;
+  margin-inline-start: 12px;
 }

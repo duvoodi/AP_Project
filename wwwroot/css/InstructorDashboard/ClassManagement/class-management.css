@@ -6,6 +6,7 @@ table, button, td, th {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  border-radius: 10px;
   background-color: #ccdfef;
   font-size: 15px;
   margin-top: 2rem;
@@ -22,7 +23,6 @@ table, button, td, th {
   background-color: #00b0f0;
   font-weight: 600;
   padding: 12px 8px;
-  border-radius: 10px;
   text-align: center;
   position: sticky;
   top: 0;

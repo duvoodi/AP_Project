@@ -182,7 +182,14 @@ const GlobalPopup = (function () {
           const tag = createSafeElement('div', '', 'popup-course-code-tag');
           tag.innerText = `کد درس: ${value}`;
           itemContent.appendChild(tag);
-        } else {
+        }
+        else if (field === 'StudentCode') {
+          const tag = createSafeElement('div', '', 'popup-student-code-tag');
+          tag.innerText = value; 
+          itemContent.appendChild(tag);
+        }
+
+        else {
           const span = createSafeElement('span', `${displayName}: ${value}`);
           itemContent.appendChild(span);
         }
