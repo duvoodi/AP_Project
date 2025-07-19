@@ -1,0 +1,170 @@
+@model AP_Project.Models.Users.Instructor
+
+@{
+    ViewData["ActiveTab"] = "Student";
+    ViewData["Title"] = "حذف دانشجو";
+    Layout = "_LayoutInstructor";
+    var students = ViewBag.Students as List<AP_Project.Models.Users.Student>;
+    var takes = ViewBag.Takes as List<AP_Project.Models.Courses.Takes>;
+    var sectionId = (Guid)ViewBag.SectionId;
+    var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+}
+
+<link rel="stylesheet" href="~/css/InstructorDashboard/ClassManagement/delete-student.css" asp-append-version="true" />
+
+<main class="dashboard-main admin @(students == null || !students.Any() ? "has-not-footer" : "has-footer")">
+    <div class="titlebar"></div>
+    <div class="action-title-tab delete">حذف دانشجو</div>
+
+    @if (students != null && students.Any())
+    {
+        <form id="deleteStudentsForm" method="post" asp-controller="InstructorClassManagement" asp-action="DeleteStudents"
+            asp-route-h="@currentHash" novalidate>
+            <input type="hidden" name="sectionId" value="@sectionId" />
+            <table class="student-table">
+                <thead>
+                    <tr>
+                        <th class="col-index">ردیف</th>
+                        <th class="col-fname">نام</th>
+                        <th class="col-lname">نام خانوادگی</th>
+                        <th class="col-email">ایمیل</th>
+                        <th class="col-eyear">سال ورودی</th>
+                        <th class="col-stdid">کد دانشجویی</th>
+                        <th class="col-grade">نمره</th>
+                        <th class="col-status">وضعیت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < students.Count; i++)
+                    {
+                        var std = students[i];
+                        var take = takes.FirstOrDefault(t => t.StudentUserId == std.Id && t.SectionId == sectionId);
+                        var grade = take?.Grade;
+                        <tr>
+                            <td class="col-index">@(i + 1)</td>
+                            <td class="col-fname">@std.FirstName</td>
+                            <td class="col-lname">@std.LastName</td>
+                            <td class="col-email">@Html.Raw(std.Email.Replace(".", "\u200B" + ".").Replace("@", "\u200B" + "@"))
+                            </td>
+                            <td class="col-eyear">@std.EnrollmentYear</td>
+                            <td class="col-stdid">@std.StudentId</td>
+                            <td class="col-grade">@grade</td>
+                            <td class="col-status">
+                                <div class="status-toggle" data-id="@std.Id">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" name="studentIdsToDelete[]" value="@std.Id"
+                                            class="delete-checkbox" onchange="handleStatusChange('@std.Id')" />
+                                        <span class="custom-checkmark"></span>
+                                    </label>
+                                    <span class="status-text">حذف دانشجو</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="form-actions">
+                <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-h="@currentHash"
+                    class="btn-cancel">انصراف</a>
+                <button type="submit" class="btn-submit">تایید</button>
+            </div>
+        </form>
+    }
+
+</main>
+
+<div class="empty-popup @(students == null || !students.Any() ? "will-show" : "")">
+    <p>موردی جهت نمایش وجود ندارد</p>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/Shared/globalPopup.js" asp-append-version="true"></script>
+
+    <script>
+        const studentListIsEmpty = @((students == null || !students.Any()).ToString().ToLower());
+        if (studentListIsEmpty) {
+            setTimeout(function () {
+                window.location.href = '@Url.Action("Index", "InstructorClassManagement")';
+            }, 5000);
+        } else {
+            function handleStatusChange(id) {
+                const container = document.querySelector(`.status-toggle[data-id='${id}']`);
+                const checkbox = container.querySelector('.delete-checkbox');
+                const statusText = container.querySelector('.status-text');
+
+                if (checkbox.checked) {
+                    statusText.textContent = 'در انتظار حذف';
+                    statusText.classList.add('pending', 'blinking');
+                } else {
+                    statusText.textContent = 'حذف دانشجو';
+                    statusText.classList.remove('pending', 'blinking');
+                }
+            }
+
+            document.getElementById('deleteStudentsForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const checkedBoxes = this.querySelectorAll('input.delete-checkbox:checked');
+                if (checkedBoxes.length === 0) {
+                    alert('لطفاً حداقل یک دانشجو را برای حذف انتخاب کنید.');
+                    return;
+                }
+
+                const selectedCount = checkedBoxes.length;
+                const message = selectedCount === 1
+                    ? "دانشجوی انتخاب‌شده حذف شود؟"
+                    : "دانشجویان انتخاب‌شده حذف شوند؟";
+
+                GlobalPopup.show({
+                    PopupTitle: "تأیید حذف",
+                    SimpleMessage: message,
+                    CanCloseManually: true,
+                    CloseOnBackdropClick: false,
+                    BlockScroll: true,
+                    ShowActionButtons: true,
+                    GreenButtonText: "انصراف",
+                    OnGreenClickJs: "GlobalPopup.hide()",
+                    RedButtonText: "حذف",
+                    OnRedClickJs: "confirmDeleteStudents()",
+                    iconType: "warning"
+                });
+            });
+
+            function confirmDeleteStudents() {
+                GlobalPopup.hide();
+                const form = document.getElementById('deleteStudentsForm');
+                const formData = new FormData(form);
+
+                const selectedCount = form.querySelectorAll('input.delete-checkbox:checked').length;
+                const message = selectedCount === 1
+                    ? "دانشجوی انتخاب‌شده با موفقیت حذف شد."
+                    : "دانشجویان انتخاب‌شده با موفقیت حذف شدند.";
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        GlobalPopup.show({
+                            PopupTitle: "حذف موفق",
+                            SimpleMessage: message,
+                            CanCloseManually: false,
+                            CloseOnBackdropClick: false,
+                            BlockScroll: true,
+                            iconType: "success",
+                            RedirectUrl: '@Url.Action("Index", "InstructorClassManagement", new { h = currentHash })',
+                            RedirectDelayMs: 3000
+                        });
+                    } else {
+                        alert("خطا در حذف دانشجویان، لطفاً دوباره تلاش کنید.");
+                    }
+                }).catch(() => {
+                    alert("خطا در ارتباط با سرور.");
+                });
+            }
+        }
+    </script>
+}

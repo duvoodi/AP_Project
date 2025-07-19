@@ -111,11 +111,11 @@
                         <td class="col-actions">
                             <div class="actions-wrapper">
                                 <a asp-controller="InstructorClassManagement" asp-action="EditGrades" asp-route-h="@currentHash" asp-route-id="@(section.Id)"
-                                    class="btn-action btn-edit">
+                                    class="btn-action btn-edit" data-tooltip="ویرایش نمرات">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a asp-controller="ClassroomManagement" asp-action="DeleteClassroom"
-                                    asp-route-id="@classroom.Id" class="btn-action btn-delete" data-tooltip="حذف"
+                                <a asp-controller="InstructorClassManagement" asp-action="DeleteStudents" asp-route-h="@currentHash"
+                                    asp-route-sectionId="@(section.Id)" class="btn-action btn-delete" data-tooltip="حذف دانشجو"
                                     data-tooltip-align="center">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>

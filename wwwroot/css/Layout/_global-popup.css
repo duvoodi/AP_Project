@@ -101,9 +101,11 @@
   font-size: 16px;
   line-height: 1.6;
   border-radius: 8px;
-  background-color: #f8f9fa;
-  border-left: 4px solid #0d6efd;
+  background-color: #e4edf7;     /* آبی خیلی ملایم */
+  border-left: 4px solid #5b7fa6; /* آبی ملایم و متین */
 }
+
+
 
 .popup-simple-message.success {
   padding: 10px 15px;
