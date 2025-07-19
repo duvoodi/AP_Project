@@ -129,5 +129,74 @@ namespace AP_Project.Controllers
             return PartialView("~/Views/InstructorDashboard/ClassManagement/StudentListPopup.cshtml", students);
         }
 
+        // GET: نمایش صفحه حذف دانشجو برای یک سِکشِن خاص
+        [HttpGet]
+        public async Task<IActionResult> DeleteStudents(Guid sectionId, string h)
+        {
+            var section = await _db.Sections
+                .Include(s => s.Course)
+                    .ThenInclude(c => c.CourseCode)
+                .Include(s => s.Takes)
+                    .ThenInclude(t => t.Student)
+                .Include(s => s.Teaches)
+                    .ThenInclude(t => t.Instructor)
+                .FirstOrDefaultAsync(s => s.Id == sectionId);
+
+            if (section == null)
+            {
+                return NotFound();
+            }
+
+            // آماده‌سازی داده‌ها برای View
+            ViewBag.Section = section;
+            ViewBag.Students = section.Takes
+                .Select(t => t.Student)
+                .OrderBy(s => s.LastName)
+                .ThenBy(s => s.FirstName)
+                .ToList();
+            ViewBag.Takes = section.Takes.ToList();
+            ViewBag.SectionId = section.Id;
+            ViewBag.H = h;
+
+            return View("~/Views/InstructorDashboard/ClassManagement/DeleteStudent.cshtml");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteStudents(Guid sectionId, List<Guid> studentIdsToDelete, string h)
+        {
+            if (studentIdsToDelete == null || studentIdsToDelete.Count == 0)
+            {
+                return RedirectToAction("DeleteStudents", new { sectionId, h });
+            }
+
+            var takesToRemove = await _db.Takes
+                .Where(t => t.SectionId == sectionId && studentIdsToDelete.Contains(t.StudentUserId))
+                .ToListAsync();
+
+            _db.Takes.RemoveRange(takesToRemove);
+
+            var studentsToRemove = await _db.Users.OfType<Student>()
+                .Where(s => studentIdsToDelete.Contains(s.Id))
+                .ToListAsync();
+
+            _db.Users.RemoveRange(studentsToRemove);
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction("Index", new { h });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteConfirmed([FromBody] List<Guid> ids)
+        {
+            var students = _db.Students.Where(s => ids.Contains(s.Id)).ToList();
+            _db.Students.RemoveRange(students);
+            _db.SaveChanges();
+            return Ok();
+        }
+
+
+
     }
 }

@@ -12,7 +12,7 @@
 
 <link rel="stylesheet" href="~/css/InstructorDashboard/ClassManagement/set-grade.css" asp-append-version="true" />
 
-<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main instructor @(hasFooter ? "has-footer" : "has-not-footer")">
   <div class="titlebar"></div>
   <div class="action-title-tab edit">
     ثبت نمره
@@ -22,21 +22,23 @@
     asp-route-h="@currentHash" novalidate>
     <input type="hidden" name="sectionId" value="@sectionId" />
 
-    <table class="student-table">
-      <thead>
-        <tr>
-          <th class="col-index">ردیف</th>
-          <th class="col-fname">نام</th>
-          <th class="col-lname">نام خانوادگی</th>
-          <th class="col-email">ایمیل</th>
-          <th class="col-eyear">سال ورودی</th>
-          <th class="col-stdid">کد دانشجویی</th>
-          <th class="col-grade">نمره</th>
-          <th class="col-status">وضعیت</th>
-        </tr>
-      </thead>
-      @if (students != null && students.Any())
-      {
+    @if (students != null && students.Any())
+    {
+
+      <table class="student-table">
+        <thead>
+          <tr>
+            <th class="col-index">ردیف</th>
+            <th class="col-fname">نام</th>
+            <th class="col-lname">نام خانوادگی</th>
+            <th class="col-email">ایمیل</th>
+            <th class="col-eyear">سال ورودی</th>
+            <th class="col-stdid">کد دانشجویی</th>
+            <th class="col-grade">نمره</th>
+            <th class="col-status">وضعیت</th>
+          </tr>
+        </thead>
+
         <tbody>
           @for (int i = 0; i < students.Count; i++)
           {
@@ -76,14 +78,16 @@
             </tr>
           }
         </tbody>
-      }
-    </table>
+        }
+      </table>
 
-    <div class="form-actions">
-      <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-h="@currentHash"
-        class="btn-cancel">انصراف</a>
-      <button type="submit" class="btn-submit">تایید</button>
-    </div>
+      <div class="form-actions">
+        <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-h="@currentHash"
+          class="btn-cancel">انصراف</a>
+        <button type="submit" class="btn-submit">تایید</button>
+      </div>
+    }
+
   </form>
 </main>
 
@@ -93,67 +97,78 @@
 
 @if (hasFooter)
 {
-  <footer class="dashboard-footer admin">
+  <footer class="dashboard-footer instructor">
     <p>متن فوتر</p>
   </footer>
 }
 
+
 @section Scripts {
   <script src="~/js/Shared/tooltip.js"></script>
   <script>
-    document.querySelectorAll('.grade-input').forEach(function (input) {
-      input.addEventListener('input', function () {
-        let rawValue = this.value.trim();
-
-        if (rawValue.includes('.')) {
-          const parts = rawValue.split('.');
-          if (parts[1].length > 2) {
-            this.value = parts[0] + '.' + parts[1].slice(0, 2);
-            rawValue = this.value;
-          }
-        }
-
-        const value = parseFloat(rawValue);
-        const statusId = this.dataset.statusId;
-        const statusEl = document.getElementById(statusId);
-
-        if (!rawValue) {
-          statusEl.textContent = 'ثبت نشده';
-          statusEl.className = 'text-danger';
-          return;
-        }
-
-        const validFormat = /^\d{1,2}(\.\d{1,2})?$/.test(rawValue);
-        if (!isNaN(value) && value >= 0 && value <= 20 && validFormat) {
-          statusEl.textContent = 'در انتظار تایید';
-          statusEl.className = 'text-warning';
-        } else {
-          statusEl.textContent = 'ورودی نامعتبر';
-          statusEl.className = 'text-danger';
-        }
-      });
-    });
-
-    // جلوگیری از ارسال فرم در صورت نمره نامعتبر
-    document.getElementById('grade-submit-form').addEventListener('submit', function (e) {
-      let isValid = true;
-      const inputs = document.querySelectorAll('.grade-input');
-
-      inputs.forEach(function (input) {
-        const rawValue = input.value.trim();
-        const value = parseFloat(rawValue);
-        const validFormat = /^\d{1,2}(\.\d{1,2})?$/.test(rawValue);
-        if (rawValue && (!validFormat || isNaN(value) || value < 0 || value > 20)) {
-          isValid = false;
-        }
-      });
-
-      if (!isValid) {
-        e.preventDefault();
-        alert('لطفاً نمره‌ها را به‌درستی وارد کنید');
+    document.addEventListener("DOMContentLoaded", function () {
+      // اگر لیست دانشجو خالی بود، بعد 5 ثانیه ریدایرکت شود
+      const studentListIsEmpty = @((students == null || !students.Any()).ToString().ToLower());
+      if (studentListIsEmpty) {
+        setTimeout(function () {
+          window.location.href = '@Url.Action("Index", "InstructorClassManagement")';
+        }, 5000);
+        return; // بقیه اسکریپت اجرا نشود
       }
+
+      // کنترل نمره‌ها و تغییر وضعیت
+      document.querySelectorAll('.grade-input').forEach(function (input) {
+        input.addEventListener('input', function () {
+          let rawValue = this.value.trim();
+
+          if (rawValue.includes('.')) {
+            const parts = rawValue.split('.');
+            if (parts[1].length > 2) {
+              this.value = parts[0] + '.' + parts[1].slice(0, 2);
+              rawValue = this.value;
+            }
+          }
+
+          const value = parseFloat(rawValue);
+          const statusId = this.dataset.statusId;
+          const statusEl = document.getElementById(statusId);
+
+          if (!rawValue) {
+            statusEl.textContent = 'ثبت نشده';
+            statusEl.className = 'text-danger';
+            return;
+          }
+
+          const validFormat = /^\d{1,2}(\.\d{1,2})?$/.test(rawValue);
+          if (!isNaN(value) && value >= 0 && value <= 20 && validFormat) {
+            statusEl.textContent = 'در انتظار تایید';
+            statusEl.className = 'text-warning';
+          } else {
+            statusEl.textContent = 'ورودی نامعتبر';
+            statusEl.className = 'text-danger';
+          }
+        });
+      });
+
+      // جلوگیری از ارسال فرم اگر نمره نامعتبر است
+      document.getElementById('grade-submit-form').addEventListener('submit', function (e) {
+        let isValid = true;
+        const inputs = document.querySelectorAll('.grade-input');
+
+        inputs.forEach(function (input) {
+          const rawValue = input.value.trim();
+          const value = parseFloat(rawValue);
+          const validFormat = /^\d{1,2}(\.\d{1,2})?$/.test(rawValue);
+          if (rawValue && (!validFormat || isNaN(value) || value < 0 || value > 20)) {
+            isValid = false;
+          }
+        });
+
+        if (!isValid) {
+          e.preventDefault();
+          alert('لطفاً نمره‌ها را به‌درستی وارد کنید');
+        }
+      });
     });
   </script>
-}
-
 }
