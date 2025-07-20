@@ -27,6 +27,8 @@
 .global-popup-box {
   position: relative;
   width: 90%;
+  max-height: 70vh;  /* یا هر ارتفاع دلخواه */
+  overflow-y: auto;
   max-width: 550px; 
   padding: 17px 21px; 
   background-color: #fff;
@@ -99,9 +101,11 @@
   font-size: 16px;
   line-height: 1.6;
   border-radius: 8px;
-  background-color: #f8f9fa;
-  border-left: 4px solid #0d6efd;
+  background-color: #e4edf7;     /* آبی خیلی ملایم */
+  border-left: 4px solid #5b7fa6; /* آبی ملایم و متین */
 }
+
+
 
 .popup-simple-message.success {
   padding: 10px 15px;
@@ -309,4 +313,16 @@
 
 .popup-slide-in {
   animation: slideIn 0.3s ease forwards;
+}
+
+.popup-student-code-tag {
+  background-color: #eef6ff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #333;
+  display: inline-block;
+  border: 1px solid #cdddee;
+  margin-inline-start: 12px;
 }
