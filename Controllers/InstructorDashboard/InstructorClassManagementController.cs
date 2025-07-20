@@ -26,6 +26,12 @@ namespace AP_Project.Controllers
                 .Include(c => c.Sections)
                     .ThenInclude(s => s.Teaches)
                         .ThenInclude(t => t.Instructor)
+                        .OrderBy(s => s.Building)
+                        .ThenBy(s => s.RoomNumber)
+                        .ThenBy(s => s.Capacity)
+                        .ThenBy(s => s.Sections.FirstOrDefault().Course.CourseCode.Title)
+                        .ThenBy(s => s.Sections.FirstOrDefault().Teaches != null && s.Sections.FirstOrDefault().Teaches.Instructor != null
+                        ? s.Sections.FirstOrDefault().Teaches.Instructor.LastName : string.Empty)
                 .ToList();
 
             ViewBag.Classrooms = classrooms;
@@ -62,7 +68,7 @@ namespace AP_Project.Controllers
                     .ThenInclude(t => t.Student)
                 .Include(s => s.Teaches)
                     .ThenInclude(t => t.Instructor)
-                .FirstOrDefault(s => s.Id == id);
+                .FirstOrDefault(s => s.Id == id);         
 
             if (section == null)
             {
