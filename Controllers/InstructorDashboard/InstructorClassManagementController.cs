@@ -68,7 +68,7 @@ namespace AP_Project.Controllers
                     .ThenInclude(t => t.Student)
                 .Include(s => s.Teaches)
                     .ThenInclude(t => t.Instructor)
-                .FirstOrDefault(s => s.Id == id);         
+                .FirstOrDefault(s => s.Id == id);
 
             if (section == null)
             {
@@ -99,18 +99,22 @@ namespace AP_Project.Controllers
                 var gradeStr = grades[i]?.Trim();
                 var studentId = studentUserIds[i];
 
-                if (!double.TryParse(gradeStr, out var gradeValue))
-                    continue;
-
-                // محدودیت نمره بین 0 تا 20
-                gradeValue = Math.Max(0, Math.Min(20, gradeValue));
-
                 var take = await _db.Takes
                     .FirstOrDefaultAsync(t => t.StudentUserId == studentId && t.SectionId == sectionId);
 
                 if (take != null)
                 {
-                    take.Grade = gradeValue.ToString("0.00");
+                    if (string.IsNullOrWhiteSpace(gradeStr))
+                    {
+                        take.Grade = ""; // حذف مقدار قبلی با رشته خالی
+                        continue;
+                    }
+
+                    if (double.TryParse(gradeStr, out var gradeValue))
+                    {
+                        gradeValue = Math.Max(0, Math.Min(20, gradeValue));
+                        take.Grade = gradeValue.ToString("0.00");
+                    }
                 }
             }
 
@@ -118,6 +122,7 @@ namespace AP_Project.Controllers
 
             return RedirectToAction("Index", "InstructorClassManagement", new { h });
         }
+
 
 
         [HttpGet]

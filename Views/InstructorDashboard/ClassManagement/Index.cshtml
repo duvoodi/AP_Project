@@ -186,6 +186,7 @@
                     const popupBtn = container.querySelector(".btn-popup");
                     if (popupBtn) {
                         popupBtn.click(); // تریگر کردن پاپ‌آپ!
+                        popupBtn.remove();
                     } else {
                         console.warn("btn-popup not found in loaded content");
                     }
@@ -212,6 +213,7 @@ function openStudentsPopup(sectionId) {
             const popupBtn = container.querySelector(".btn-popup");
             if (popupBtn) {
                 popupBtn.click(); // باز کردن پاپ‌آپ
+                popupBtn.remove();
             } else {
                 console.warn("btn-popup برای لیست دانشجویان پیدا نشد");
             }

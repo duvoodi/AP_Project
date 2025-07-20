@@ -8,11 +8,13 @@
     var takes = ViewBag.Takes as List<AP_Project.Models.Courses.Takes>;
     var sectionId = (Guid)ViewBag.SectionId;
     var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+
+    var hasFooter = students != null && students.Any();
 }
 
 <link rel="stylesheet" href="~/css/InstructorDashboard/ClassManagement/delete-student.css" asp-append-version="true" />
 
-<main class="dashboard-main admin @(students == null || !students.Any() ? "has-not-footer" : "has-footer")">
+<main class="dashboard-main instructor @(hasFooter ? "has-footer" : "has-not-footer")">
     <div class="titlebar"></div>
     <div class="action-title-tab delete">حذف دانشجو</div>
 
@@ -48,7 +50,16 @@
                             </td>
                             <td class="col-eyear">@std.EnrollmentYear</td>
                             <td class="col-stdid">@std.StudentId</td>
-                            <td class="col-grade">@grade</td>
+                            <td class="col-grade">
+                                @if (string.IsNullOrWhiteSpace(grade))
+                                {
+                                    <span class= "grade-empty">ثبت نشده</span>
+                                }
+                                else
+                                {
+                                    <span>@grade</span>
+                                }
+                            </td>
                             <td class="col-status">
                                 <div class="status-toggle" data-id="@std.Id">
                                     <label class="checkbox-container">
@@ -71,23 +82,26 @@
             </div>
         </form>
     }
-
 </main>
 
-<div class="empty-popup @(students == null || !students.Any() ? "will-show" : "")">
+<div class="empty-popup @(hasFooter ? "" : "will-show")">
     <p>موردی جهت نمایش وجود ندارد</p>
 </div>
-
-
 
 @section Scripts {
     <script src="~/js/Shared/globalPopup.js" asp-append-version="true"></script>
 
     <script>
+        const currentHash = '@currentHash';
         const studentListIsEmpty = @((students == null || !students.Any()).ToString().ToLower());
+
         if (studentListIsEmpty) {
             setTimeout(function () {
-                window.location.href = '@Url.Action("Index", "InstructorClassManagement")';
+                let url = '@Url.Action("Index", "InstructorClassManagement")';
+                if (currentHash) {
+                    url += '?h=' + encodeURIComponent(currentHash);
+                }
+                window.location.href = url;
             }, 5000);
         } else {
             function handleStatusChange(id) {
@@ -148,6 +162,11 @@
                     body: formData
                 }).then(response => {
                     if (response.ok) {
+                        let redirectUrl = '@Url.Action("Index", "InstructorClassManagement")';
+                        if (currentHash) {
+                            redirectUrl += '?h=' + encodeURIComponent(currentHash);
+                        }
+
                         GlobalPopup.show({
                             PopupTitle: "حذف موفق",
                             SimpleMessage: message,
@@ -155,7 +174,7 @@
                             CloseOnBackdropClick: false,
                             BlockScroll: true,
                             iconType: "success",
-                            RedirectUrl: '@Url.Action("Index", "InstructorClassManagement", new { h = currentHash })',
+                            RedirectUrl: redirectUrl,
                             RedirectDelayMs: 3000
                         });
                     } else {

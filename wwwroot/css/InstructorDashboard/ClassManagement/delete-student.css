@@ -199,6 +199,17 @@ body, html, input, textarea, select, button {
 }
 
 /* ============================
+   GRADE - EMPTY TEXT STYLE
+============================ */
+.grade-empty {
+  color: #e53935;      
+  font-size: 0.9rem;     
+  font-weight: 500;
+  font-style: italic;
+}
+
+
+/* ============================
    SUBMIT BUTTON
    ============================ */
 
@@ -265,3 +276,4 @@ body, html, input, textarea, select, button {
 .empty-popup.will-show {
   display: block;
 }
+
