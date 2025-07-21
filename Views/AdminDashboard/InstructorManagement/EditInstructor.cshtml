@@ -116,7 +116,7 @@
   <script>
     // ولیدیت فیلد ها هنگام خروج از فیلد با نمایش ارور ترو
     // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
-    document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+    document.querySelectorAll('input[id], textarea[id]').forEach(input => {
       input.addEventListener('blur', function () {
         validateField(this.id, true, true) // ورودی آخر الو امپتی آپشنال فیلدز این ادیت هست که در صفحه ادیت مجاز هست
       });

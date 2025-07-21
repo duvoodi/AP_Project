@@ -11,21 +11,64 @@ namespace AP_Project.Helpers.FormUtils
             if (FormViewModel == null) return;
 
             var properties = typeof(TModel).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
             foreach (var prop in properties)
             {
-                if (prop.PropertyType == typeof(string) && prop.CanRead && prop.CanWrite)
+                if (!prop.CanRead || !prop.CanWrite)
+                    continue;
+
+                var propType = prop.PropertyType;
+
+                // برای string
+                if (propType == typeof(string))
                 {
                     var value = (string)prop.GetValue(FormViewModel);
                     if (value == null)
+                    {
+                        var state = ModelState[prop.Name];
+                        if (state != null)
                         {
-                            var state = ModelState[prop.Name];
-                            if (state != null)
-                            {
-                                state.Errors.Clear();
-                                state.ValidationState = ModelValidationState.Valid;
-                            }
-                            prop.SetValue(FormViewModel, "");
+                            state.Errors.Clear();
+                            state.ValidationState = ModelValidationState.Valid;
                         }
+                        prop.SetValue(FormViewModel, "");
+                    }
+                }
+                // برای Guid و Guid? 
+                else if (propType == typeof(Guid) || propType == typeof(Guid?))
+                {
+                    var state = ModelState[prop.Name];
+                    if (state != null && state.Errors.Count > 0)
+                    {
+                        // مقدار فعلی را چک کن
+                        var currentValue = prop.GetValue(FormViewModel);
+                        bool isEmpty = currentValue == null || currentValue.Equals(Guid.Empty);
+
+                        // اگر مقدار ناصحیح است، مقدار پیشفرض ست کن و خطاها را پاک کن
+                        if (isEmpty)
+                        {
+                            state.Errors.Clear();
+                            state.ValidationState = ModelValidationState.Valid;
+                            prop.SetValue(FormViewModel, Guid.Empty);
+                        }
+                    }
+                }
+                // برای int و int? 
+                else if (propType == typeof(int) || propType == typeof(int?))
+                {
+                    var state = ModelState[prop.Name];
+                    if (state != null && state.Errors.Count > 0)
+                    {
+                        var currentValue = prop.GetValue(FormViewModel);
+                        bool isDefault = currentValue == null || currentValue.Equals(default(int));
+
+                        if (isDefault)
+                        {
+                            state.Errors.Clear();
+                            state.ValidationState = ModelValidationState.Valid;
+                            prop.SetValue(FormViewModel, default(int));
+                        }
+                    }
                 }
             }
         }
@@ -50,7 +93,7 @@ namespace AP_Project.Helpers.FormUtils
             if (!modelState.TryGetValue(propertyName, out var entry))
             {
                 // اگر هنوز کلیدی وجود نداره، مستقیماً ارور رو اضافه کن
-                modelState.AddModelError(propertyName, message);
+                modelState.ReplaceModelError(propertyName, message);
                 return;
             }
 
