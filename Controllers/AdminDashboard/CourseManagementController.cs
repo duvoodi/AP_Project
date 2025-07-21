@@ -36,7 +36,7 @@ namespace AP_Project.Controllers
                     .ThenInclude(p => p.PrerequisiteCourseCode)
                 .OrderBy(s => s.Course.CourseCode.Code)                            // 1. کد درس
                 .ThenBy(s => s.Course.Unit)                                        // 2. تعداد واحد
-                .ThenBy(s => s.Year * 10 + s.Semester)                             // 3. نیم‌سال به صورت Year*10 + Semester
+                .ThenBy(s => ((s.Year ?? 0) * 10) + (s.Semester ?? 0))             // 3. نیم‌سال به صورت Year*10 + Semester
                 .ThenBy(s =>                                                       // 4. اسم استاد یا رشته خالی
                     s.Teaches != null && s.Teaches.Instructor != null
                     ? s.Teaches.Instructor.FirstName
@@ -47,7 +47,7 @@ namespace AP_Project.Controllers
                     ? s.Teaches.Instructor.LastName
                     : string.Empty
                 )
-                .ThenBy(s => s.TimeSlotId)                                         // 6. شناسه‌ی تایم‌اسلات
+                .ThenBy(s => s.TimeSlotId ?? 0)                                    // 6. شناسه‌ی تایم‌اسلات
                 .ToList();
 
             ViewBag.Sections = sections;
