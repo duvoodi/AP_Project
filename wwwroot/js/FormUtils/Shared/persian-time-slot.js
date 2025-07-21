@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log('[PersianDayConverter]', message, data || '');
     }
   }
-
+  
   // فارسی‌سازی روزها در سلول‌های جدول
   function convertTableCells() {
     const cells = document.querySelectorAll('.col-schedule');
@@ -41,5 +41,43 @@ document.addEventListener('DOMContentLoaded', function () {
     debugLog(`Converted ${convertedCount} table cells`);
   }
 
+  // فارسی‌سازی روزها در المنت‌های انتخابی
+  function convertAllSelectOptions() {
+    const allSelects = document.querySelectorAll('select[id]');
+    let totalConverted = 0;
+
+    allSelects.forEach(select => {
+      let selectConverted = 0;
+
+      Array.from(select.options).forEach(option => {
+        const originalText = option.text;
+        let modifiedText = originalText;
+
+        Object.entries(dayMap).forEach(([en, fa]) => {
+          if (modifiedText.includes(en)) {
+            modifiedText = modifiedText.replace(en, fa);
+          }
+        });
+
+        if (modifiedText !== originalText) {
+          option.text = modifiedText;
+          selectConverted++;
+          totalConverted++;
+          debugLog(`Converted in select #${select.id}`, {
+            from: originalText,
+            to: modifiedText
+          });
+        }
+      });
+
+      if (selectConverted > 0) {
+        debugLog(`Converted ${selectConverted} option(s) in #${select.id}`);
+      }
+    });
+
+    debugLog(`Total converted options across all selects: ${totalConverted}`);
+  }
+
   convertTableCells();
+  convertAllSelectOptions();
 });
