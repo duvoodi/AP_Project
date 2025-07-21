@@ -9,7 +9,7 @@
         public DateTime FinalExamDate { get; set; }
 
         public CourseCode CourseCode { get; set; }
-        public ICollection<Section> Sections { get; set; }
-        public ICollection<Prerequisite> Prerequisites { get; set; }
+        public ICollection<Section> Sections { get; set; } = new List<Section>();
+        public ICollection<Prerequisite> Prerequisites { get; set; } = new List<Prerequisite>();
     }
 }
