@@ -78,6 +78,31 @@ document.addEventListener('DOMContentLoaded', function () {
     debugLog(`Total converted options across all selects: ${totalConverted}`);
   }
 
+  // فارسی سازی روز ورودی ریدانلی
+  function convertReadonlyInputs() {
+    const inputs = document.querySelectorAll('input[readonly]');
+
+    inputs.forEach(input => {
+      let original = input.value;
+      let converted = original;
+
+      Object.entries(dayMap).forEach(([en, fa]) => {
+        if (converted.includes(en)) {
+          converted = converted.replace(en, fa);
+        }
+      });
+
+      if (converted !== original) {
+        input.value = converted;
+        debugLog('Converted readonly input', {
+          from: original,
+          to: converted
+        });
+      }
+    });
+  }
+
   convertTableCells();
   convertAllSelectOptions();
+  convertReadonlyInputs();
 });
