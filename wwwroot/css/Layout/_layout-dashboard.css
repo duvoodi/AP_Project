@@ -195,7 +195,7 @@ body::-webkit-scrollbar {
   padding: 0px 25px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  z-index: 9998;
+  z-index: 9998;  /* هدر 9999 پاپ آپ 9998 */
   font-size: 18px;
   opacity: 0;
   transition: opacity 0.4s ease-in-out;

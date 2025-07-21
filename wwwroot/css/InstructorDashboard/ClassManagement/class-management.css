@@ -1,0 +1,153 @@
+table, button, td, th {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+.class-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  background-color: #ccdfef;
+  font-size: 15px;
+  margin-top: 2rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.class-table thead tr {
+  font-size: 15px;
+}
+
+.class-table thead th {
+  color: white;
+  background-color: #00b0f0;
+  font-weight: 600;
+  padding: 12px 8px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.class-table th,
+.class-table td {
+  border: 1px solid white;
+  padding: 10px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.class-table tbody tr {
+  background-color: #f1f9ff;
+  color: #000;
+  transition: background-color 0.2s ease;
+}
+
+.class-table tbody tr:hover {
+  background-color: #d9f0ff;
+}
+
+.class-table td[class*="col-building"][colspan="3"] {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+  background-color: #f5f8fb;
+  padding: 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+
+.col-index {
+  width: 5%;
+  min-width: 40px;
+}
+
+.col-building {
+  width: 10%;
+}
+
+.col-roomnumber {
+  width: 8%;
+}
+
+.col-capacity {
+  width: 8%;
+}
+
+.col-title {
+  width: 18%;
+}
+
+.col-courseid {
+  width: 10%;
+}
+
+.col-schedule {
+  width: 12%;
+}
+
+.col-details {
+  width: 12%;
+}
+
+.col-students {
+  width: 12%;
+}
+
+.col-classid {
+  width: 10%;
+}
+
+.col-actions {
+  width: 5%;
+}
+
+/* دکمه‌های داخل جدول */
+.actions-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 19px;
+  padding: 0;
+}
+
+.btn-edit i {
+  color: rgb(255, 166, 0);
+  transition: scale 0.1s ease;
+}
+
+.btn-delete i {
+  color: #eb1c31;
+  transition: scale 0.1s ease;
+}
+
+.btn-action:hover i {
+  scale: 1.2;
+}
+
+.text-link {
+  background: none;
+  border: none;
+  color: #0645AD;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.25s ease;
+}
+
+.text-link:hover {
+  color: #ce0e84;
+}
+
+.copy-id-button {
+  font-size: 13px;
+  font-weight: 500;
+}

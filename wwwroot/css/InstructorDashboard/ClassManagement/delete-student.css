@@ -1,0 +1,279 @@
+/* ============================
+   FONT
+============================ */
+body, html, input, textarea, select, button {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* ============================
+   TITLE BAR + TAB
+============================ */
+.titlebar {
+  margin: 20px 0 30px;
+  padding: 0 30px;
+}
+
+.action-title-tab {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: calc(100% - 40px);
+  height: 54px;
+  padding: 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 24px;
+  margin: 0 auto 0;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.action-title-tab.delete {
+  background-color: #ff8a80;
+  color: #a32626;
+}
+
+/* ============================
+   STUDENT TABLE
+============================ */
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ccdfef;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-top: 20px;
+}
+
+.student-table thead tr {
+  background-color: #1d3557;
+  color: white;
+}
+
+.student-table th,
+.student-table td {
+  border: 1px solid #e9ecef;
+  padding: 12px 8px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 16px;
+}
+
+.student-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-weight: 700;
+  background-color: #00b0f0;
+  color: white;
+}
+
+/* ============================
+   TABLE COLUMN WIDTHS
+============================ */
+.col-index {
+  width: 40px;
+}
+
+.col-eyear {
+  width: 7%;
+}
+
+.col-stdid {
+  width: 10%;
+}
+
+.col-email {
+  width: 20%;
+}
+
+.col-grade {
+  width: 8%;
+}
+
+.col-status {
+  width: 12%;
+}
+
+/* --- Checkbox زیبا --- */
+.checkbox-container {
+    position: relative;
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    margin-left: 10px;
+}
+
+.checkbox-container input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.custom-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 22px;
+    width: 22px;
+    background-color: #eee;
+    border-radius: 4px;
+    border: 2px solid #ccc;
+    transition: all 0.2s ease;
+}
+
+
+/* ============================
+   STATUS TAGS
+============================ */
+
+.checkbox-container input:checked ~ .custom-checkmark {
+    background-color: #ff4d4d;
+    border-color: #ff4d4d;
+}
+
+.custom-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container input:checked ~ .custom-checkmark:after {
+    display: block;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* --- متن وضعیت --- */
+.status-text {
+    font-size: 0.85rem;
+    color: #555;
+    vertical-align: middle;
+    transition: color 0.2s ease;
+}
+
+.status-text.pending {
+    color: #d63031;
+    font-weight: bold;
+}
+
+@keyframes soft-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.status-text.blinking {
+  animation: soft-blink 1.5s ease-in-out infinite;
+}
+
+
+
+
+/* ============================
+   GRADE INPUT
+============================ */
+.grade-input {
+  width: 80px;
+  padding: 6px;
+  border: 1.5px solid #b6d7f7;
+  border-radius: 10px;
+  background: #f7fbff;
+  text-align: center;
+  font-size: 16px;
+  color: #222;
+  box-sizing: border-box;
+  transition: border 0.2s, background 0.2s;
+}
+
+.grade-input:focus {
+  outline: none;
+  border-color: #00b0f0;
+  background: #e6f7ff;
+}
+
+/* ============================
+   GRADE - EMPTY TEXT STYLE
+============================ */
+.grade-empty {
+  color: #e53935;      
+  font-size: 0.9rem;     
+  font-weight: 500;
+  font-style: italic;
+}
+
+
+/* ============================
+   SUBMIT BUTTON
+   ============================ */
+
+.form-actions {
+  display: flex;
+  justify-content: left; 
+  margin: 0 auto 0; 
+  gap: 20px;
+  z-index: 1000;
+  padding: 10px 0px;
+  border-radius: 10px;
+}
+.btn-submit,
+.btn-cancel {
+  width: 150px;      
+  height: 48px;      
+  padding: 0 0px;   
+  border-radius: 24px; /* کپسولی شدن با نصف ارتفاع */
+  font-size: 18px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  transition: background 0.25s, color 0.25s;
+}
+
+.btn-submit {
+  background-color: #84e291;
+  color: #265C26;
+}
+
+.btn-submit:hover,
+.btn-submit:focus {
+  background-color: #4dc44d;
+  color: #ffffff;
+}
+
+.btn-cancel {
+  background-color: #ff8a80;
+  color: #851b1b;
+}
+
+.btn-cancel:hover,
+.btn-cancel:focus {
+  background-color: #ff4545;
+  color: #ffffff;
+}
+
+/* ============================
+   EMPTY POPUP
+============================ */
+.empty-popup {
+  display: none;
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+  margin-top: 50px;
+}
+
+.empty-popup.will-show {
+  display: block;
+}
+

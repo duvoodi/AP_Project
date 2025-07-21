@@ -1,0 +1,202 @@
+/* ============================
+   FONT
+============================ */
+body, html, input, textarea, select, button {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* ============================
+   TITLE BAR + TAB
+============================ */
+.titlebar {
+  margin: 20px 0 30px;
+  padding: 0 30px;
+}
+
+.action-title-tab {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: calc(100% - 40px);
+  height: 54px;
+  padding: 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 24px;
+  margin: 0 auto 0;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.action-title-tab.edit {
+  background-color: #f5dc71;
+  color: #725810;
+}
+
+/* ============================
+   STUDENT TABLE
+============================ */
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ccdfef;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-top: 20px;
+}
+
+.student-table thead tr {
+  background-color: #1d3557;
+  color: white;
+}
+
+.student-table th,
+.student-table td {
+  border: 1px solid #e9ecef;
+  padding: 12px 8px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 16px;
+}
+
+.student-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-weight: 700;
+  background-color: #00b0f0;
+  color: white;
+}
+
+/* ============================
+   TABLE COLUMN WIDTHS
+============================ */
+.col-index {
+  width: 40px;
+}
+
+.col-eyear {
+  width: 7%;
+}
+
+.col-stdid {
+  width: 10%;
+}
+
+.col-email {
+  width: 20%;
+}
+
+.col-grade {
+  width: 8%;
+}
+
+.col-status {
+  width: 12%;
+}
+
+/* ============================
+   STATUS TAGS
+============================ */
+.text-danger {
+  color: #e63946;
+  font-weight: 600;
+}
+
+.text-warning {
+  color: #2c5176;
+  font-weight: 600;
+}
+
+/* ============================
+   GRADE INPUT
+============================ */
+.grade-input {
+  width: 80px;
+  padding: 6px;
+  border: 1.5px solid #b6d7f7;
+  border-radius: 10px;
+  background: #f7fbff;
+  text-align: center;
+  font-size: 16px;
+  color: #222;
+  box-sizing: border-box;
+  transition: border 0.2s, background 0.2s;
+}
+
+.grade-input:focus {
+  outline: none;
+  border-color: #00b0f0;
+  background: #e6f7ff;
+}
+
+/* ============================
+   SUBMIT BUTTON
+   ============================ */
+
+.form-actions {
+  display: flex;
+  justify-content: left; 
+  margin: 0 auto 0; 
+  gap: 20px;
+  z-index: 1000;
+  padding: 10px 0px;
+  border-radius: 10px;
+}
+.btn-submit,
+.btn-cancel {
+  width: 150px;      
+  height: 48px;      
+  padding: 0 0px;   
+  border-radius: 24px; /* کپسولی شدن با نصف ارتفاع */
+  font-size: 18px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  transition: background 0.25s, color 0.25s;
+}
+
+.btn-submit {
+  background-color: #84e291;
+  color: #265C26;
+}
+
+.btn-submit:hover,
+.btn-submit:focus {
+  background-color: #4dc44d;
+  color: #ffffff;
+}
+
+.btn-cancel {
+  background-color: #ff8a80;
+  color: #851b1b;
+}
+
+.btn-cancel:hover,
+.btn-cancel:focus {
+  background-color: #ff4545;
+  color: #ffffff;
+}
+
+/* ============================
+   EMPTY POPUP
+============================ */
+.empty-popup {
+  display: none;
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+  margin-top: 50px;
+}
+
+.empty-popup.will-show {
+  display: block;
+}
+
