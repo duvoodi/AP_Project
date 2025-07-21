@@ -6,7 +6,7 @@ table, button, td, th {
 }
 
 /* ============================
-   ADD INSTRUCTOR BUTTON
+   ADD BUTTON
    ============================ */
 .toolbar {
   position: sticky;
@@ -16,6 +16,7 @@ table, button, td, th {
   background: white;
   z-index: 3;
 }
+
 
 .btn-add-course {
   background-color: #84e291;
@@ -28,7 +29,22 @@ table, button, td, th {
   text-decoration: none !important;
   box-shadow: none !important;
   position: relative;
-  transition: background 0.25s ease;
+  transition: transform 0.25s, color 0.25s;
+}
+
+.btn-manage-course-codes {
+  background-color: #ffb169;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  margin-right: 10px; /* فاصله از دکمه بغلی */
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  position: relative;
+  transition: transform 0.25s, color 0.25s;
 }
 
 .btn-add-course .icon {
@@ -41,6 +57,20 @@ table, button, td, th {
   margin-bottom: -8px;
   margin-left: 8px;
   display: inline-block;
+  transform: rotate(270deg);
+}
+
+.btn-manage-course-codes .icon {
+  color: #b86b2c;
+  font-size: 30px;
+  font-weight: 600;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  margin-top: -10px;
+  margin-bottom: -8.5px;
+  margin-left: 8px;
+  display: inline-block;
+  transform: rotate(180deg);
 }
 
 .btn-add-course .text {
@@ -49,21 +79,44 @@ table, button, td, th {
   font-weight: 700;
 }
 
-.btn-add-course .icon,
-.btn-add-course .text {
-  transition: color 0.25s ease;
+.btn-manage-course-codes .text {
+  color: #85512e;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.btn-add-course:hover,
-.btn-add-course:focus {
-  background-color: #4dc44d;
+.btn-add-course .icon,
+.btn-add-course .text,
+.btn-manage-course-codes .icon,
+.btn-manage-course-codes .text {
+  transition: transform 0.25s, color 0.25s;
 }
 
 .btn-add-course:hover .icon,
 .btn-add-course:focus .icon,
 .btn-add-course:hover .text,
-.btn-add-course:focus .text {
+.btn-add-course:focus .text,
+.btn-manage-course-codes:hover .icon,
+.btn-manage-course-codes:focus .icon,
+.btn-manage-course-codes:hover .text,
+.btn-manage-course-codes:focus .text
+ {
   color: #ffffff;
+}
+
+.btn-add-course:hover,
+.btn-add-course:focus,
+.btn-manage-course-codes:hover,
+.btn-manage-course-codes:focus{
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.btn-add-course:hover .icon,
+.btn-add-course:focus .icon,
+.btn-manage-course-codes:hover .icon,
+.btn-manage-course-codes:focus .icon{
+  transform: rotate(540deg);
 }
 
 /* ============================
@@ -103,7 +156,7 @@ table, button, td, th {
   background-color: #00b0f0;
   font-weight: 600;
   position: sticky;
-  top: 180px; /* ارتفاع تول بار */
+  top: 181px; /* ارتفاع تول بار */
   border-top: 5px solid white;
   background-clip: padding-box;
   border-top: none;
@@ -113,61 +166,35 @@ table, button, td, th {
 /* ============================
    COLUMN WIDTHS
    ============================ */
-.col-index {
-  width: 40px;
-}
+.col-index { width: 30px; }
+.col-code { width: 6%; }
+.col-units { width: 6%; }
+.col-prereq { width: 6%; }
+.col-semester { width: 6%; }
 
-.col-title {
-  width: 10%;
+.col-title,
+.col-instructor,
+.col-description {
+  white-space: normal;
   word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
-.col-code {
-  width: 7%;
-}
+.col-schedule { width: 9%; }
+.col-examdate { width: 7%; }
+.col-description { width: 12%; word-wrap: break-word; }
+.col-courseid { width: 5%; }
+.col-actions { width: 6%; }
 
-.col-units {
-  width: 6%;
-}
+/* ============================
+   NO CONTENT STYLE
+   ============================ */
 
-.col-prereq {
-  width: 7%;
-}
-
-.col-semester {
-  width: 6%;
-}
-
-.col-instructor {
-  width: 10%;
-}
-
-.no-instructor {
+.no-content {
   color: #e21212;
   background-color: #f48181b7;
   font-weight: 600;
-}
-
-.col-schedule {
-  width: 12%;
-}
-
-.col-examdate {
-  width: 8%;
-}
-
-.col-description {
-  width: 12%;
-  word-wrap: break-word;
-}
-
-.col-courseid {
-  width: 7%;
-}
-
-.col-actions {
-  width: 7%;
-  margin: 0px;
 }
 
 /* ============================
@@ -219,14 +246,15 @@ table, button, td, th {
 
 .btn-edit i {
   color: rgb(255, 166, 0); /* نارنجی */
-  transition: scale 0.1s ease;
+  transition: transform 0.1s, color 0.25s;
 }
 
 .btn-delete i {
   color: #eb1c31; /* قرمز */
-  transition: scale 0.1s ease;
+  transition: transform 0.1s, color 0.25s;
 }
 
+/* افکت هاور */
 .btn-action:hover i {
-  scale: 1.2;
+  transform: scale(1.2);
 }

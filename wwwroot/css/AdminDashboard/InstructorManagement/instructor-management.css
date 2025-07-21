@@ -30,7 +30,7 @@ table, button, td, th {
   text-decoration: none !important;
   box-shadow: none !important;
   position: relative;
-  transition: background 0.25s ease;
+  transition: transform 0.25s, color 0.25s;
 }
 
 .btn-add-instructor .icon {
@@ -53,13 +53,9 @@ table, button, td, th {
 
 .btn-add-instructor .icon,
 .btn-add-instructor .text {
-  transition: color 0.25s ease;
+  transition: transform 0.25s, color 0.25s;
 }
 
-.btn-add-instructor:hover,
-.btn-add-instructor:focus {
-  background-color: #4dc44d;
-}
 .btn-add-instructor:hover .icon,
 .btn-add-instructor:focus .icon,
 .btn-add-instructor:hover .text,
@@ -67,6 +63,16 @@ table, button, td, th {
   color: #ffffff;
 }
 
+.btn-add-instructor:hover,
+.btn-add-instructor:focus{
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.btn-add-instructor:hover .icon,
+.btn-add-instructor:focus .icon{
+  transform: rotate(270deg);
+}
 
 /* ============================
    TABLE STYLES
@@ -106,7 +112,7 @@ table, button, td, th {
   background-color: #00b0f0;
   font-weight: 600;
   position: sticky;
-  top: 180px; /* ارتفاع تول بار */
+  top: 181px; /* ارتفاع تول بار */
   border-top: 5px solid white;
   background-clip: padding-box;
   border-top: none; /* تا کامل بچسبد به تول بار */
@@ -118,7 +124,7 @@ table, button, td, th {
    ============================ */
 
 .col-index {
-  width: 40px;
+  width: 30px;
 }
 
 .col-hyear {
@@ -208,15 +214,15 @@ COPY ID BUTTOON
 
 .btn-edit i {
   color: rgb(255, 166, 0); /* نارنجی */
-  transition: scale 0.1s ease;
+  transition: transform 0.1s, color 0.25s;
 }
 
 .btn-delete i {
   color: #eb1c31; /* قرمز */
-  transition: scale 0.1s ease;
+  transition: transform 0.1s, color 0.25s;
 }
 
 /* افکت هاور */
 .btn-action:hover i {
-  scale: 1.2;
+  transform: scale(1.2);
 }
