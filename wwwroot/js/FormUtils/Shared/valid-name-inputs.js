@@ -1,5 +1,5 @@
 // تنظیمات اینپوت های ولید نیم
-document.querySelectorAll('.valid-person-name').forEach(input => {
+document.querySelectorAll('.valid-name').forEach(input => {
   // جلوگیری از تایپ کاراکترهای غیر مجاز
   input.addEventListener('keydown', function (e) {
     const value = this.value;

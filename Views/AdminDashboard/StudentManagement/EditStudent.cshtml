@@ -209,7 +209,7 @@
         // ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
         // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
         this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
-          if (!validateField(input.id, true)) {
+          if (!validateField(input.id, true, true)) {
             hasError = true;
           }
         });

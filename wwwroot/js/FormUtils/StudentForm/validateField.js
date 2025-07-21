@@ -24,12 +24,10 @@ function validateConfirmPasswordWith_Password() {
   if (!pw || !cpw) return null;
 
   if (pw !== cpw) {
-    replaceError('ConfirmPassword', 'ورودی با رمز عبور مطابقت ندارد');
-    return false;
+    return { isValid: false, errorMessage: 'ورودی با رمز عبور مطابقت ندارد'};
   }
 
-  replaceError('ConfirmPassword', '');
-  return true;
+  return { isValid: true, errorMessage: ''};
 }
 
 
@@ -196,7 +194,10 @@ function validateField(inputId, showError, AllowOptionalFieldsInEdit = false) {
       return false;
     }
     const result = validateConfirmPasswordWith_Password();
-    if (result !== null) return result;
+    if (result !== null){
+        replaceError_IfAllowed(inputId, result.errorMessage);
+        return result.isValid;
+    }
     break;
 
   default:
