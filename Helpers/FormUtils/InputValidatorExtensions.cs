@@ -10,9 +10,40 @@ namespace AP_Project.Helpers.FormUtils
     {
 
         // تابع تشخیص ارور مکس لنگت
-        public static bool IsMaxLengthError(this string message)
+        public static string? MaxLengthError<TModel>(this TModel model, string propertyName)
         {
-            return Regex.IsMatch(message ?? string.Empty, @"^حداکثر (\d+) کاراکتر مجاز است$");
+            var propInfo = typeof(TModel).GetProperty(propertyName);
+            if (propInfo == null) 
+                return null;
+
+            // ۱) اگر AllowSliceMetaAttribute و AllowSlice==true داشته باشد، هیچ خطایی بازنمی‌گردانیم
+            var allowSliceMeta = propInfo
+                .GetCustomAttributes(typeof(AllowSliceMetaAttribute), false)
+                .OfType<AllowSliceMetaAttribute>()
+                .FirstOrDefault();
+            if (allowSliceMeta?.AllowSlice == true)
+                return null;
+
+            // ۲) اگر MaxLengthMetaAttribute نداشته باشد، نال برگردان
+            var maxLenMeta = propInfo
+                .GetCustomAttributes(typeof(MaxLengthMetaAttribute), false)
+                .OfType<MaxLengthMetaAttribute>()
+                .FirstOrDefault();
+            if (maxLenMeta == null) 
+                return null;
+
+            // ۳) مقدار فعلی پراپرتی را رشته‌‌ای کن
+            var value = propInfo.GetValue(model)?.ToString() ?? string.Empty;
+
+            // ۴) چک طول و در صورت تجاوز، پیام خطا را برگردان
+            int maxLength = maxLenMeta.MaxLength;
+            if (value.Length > maxLength)
+            {
+                return $"حداکثر {maxLength} کاراکتر مجاز است";
+            }
+
+            // ۵) در صورت عدم خطا
+            return null;
         }
 
         // چک ممکن بودن ورودی با مکس لنگت

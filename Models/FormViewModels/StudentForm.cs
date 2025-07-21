@@ -86,9 +86,10 @@ namespace AP_Project.FormViewModels.StudentForm
 
             // 2. چک مکس لنگت ارور
             // 2.1 اگرارور مکس لنگت  داره اولیت با اونه اول اون باید برطرف
-            if (existingError.IsMaxLengthError())
+            string maxLength_error = model.MaxLengthError(propertyName);
+            if (maxLength_error != null)
             {
-                // همون ارور را نگه میداریم
+                ReplaceError_IfAllowed(propertyName, maxLength_error);
                 return false;
             }
             // 2.2 اگز بدون ارور و اسلایسی هست نباید برای کاربر بیشتر زدن ممکن باشه
