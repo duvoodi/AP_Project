@@ -58,22 +58,20 @@
 
       <div class="form-actions">
         <a type="button" asp-controller="InstructorManagement" asp-action="Index" asp-route-h="@currentHash"
-          class="btn-cancel">انصراف</a>
-        <button type="submit" class="btn-submit btn-delete">تایید</button>
+          class="btn-cancel blur-on-leave">انصراف</a>
+        <button type="submit" class="btn-submit blur-on-leave">تایید</button>
       </div>
     </form>
   </div>
 </main>
 @section Scripts {
   <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/Shared/blur-on-leave.js"></script>
   <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
   <script>
     // بعد زدن کلید تایید
     document.getElementById('delete-instructor-form').addEventListener('submit', function (e) {
       e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
-
-      const submitBtn = this.querySelector('.btn-submit');
-      submitBtn.blur(); // خارج شدن  سابمیت از حالت فشرده‌شده
 
         // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
       replaceError("GeneralError", '');
