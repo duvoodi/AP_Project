@@ -113,61 +113,35 @@ table, button, td, th {
 /* ============================
    COLUMN WIDTHS
    ============================ */
-.col-index {
-  width: 40px;
-}
+.col-index { width: 30px; }
+.col-code { width: 6%; }
+.col-units { width: 6%; }
+.col-prereq { width: 6%; }
+.col-semester { width: 6%; }
 
-.col-title {
-  width: 10%;
+.col-title,
+.col-instructor,
+.col-description {
+  white-space: normal;
   word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
-.col-code {
-  width: 7%;
-}
+.col-schedule { width: 9%; }
+.col-examdate { width: 7%; }
+.col-description { width: 12%; word-wrap: break-word; }
+.col-courseid { width: 5%; }
+.col-actions { width: 6%; }
 
-.col-units {
-  width: 6%;
-}
+/* ============================
+   NO CONTENT STYLE
+   ============================ */
 
-.col-prereq {
-  width: 7%;
-}
-
-.col-semester {
-  width: 6%;
-}
-
-.col-instructor {
-  width: 10%;
-}
-
-.no-instructor {
+.no-content {
   color: #e21212;
   background-color: #f48181b7;
   font-weight: 600;
-}
-
-.col-schedule {
-  width: 12%;
-}
-
-.col-examdate {
-  width: 8%;
-}
-
-.col-description {
-  width: 12%;
-  word-wrap: break-word;
-}
-
-.col-courseid {
-  width: 7%;
-}
-
-.col-actions {
-  width: 7%;
-  margin: 0px;
 }
 
 /* ============================
