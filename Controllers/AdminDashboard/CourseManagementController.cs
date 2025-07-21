@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using AP_Project.Data;
 using AP_Project.Models.Users;
-using Microsoft.AspNetCore.Http;
-using AP_Project.Helpers.FormUtils;
 using System.Globalization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using AP_Project.Helpers.FormUtils;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using AP_Project.Models.Courses;
+using System.Linq;
+using AP_Project.Helpers;
+using AP_Project.FormViewModels;
 
 namespace AP_Project.Controllers
 {
@@ -21,7 +23,9 @@ namespace AP_Project.Controllers
         {
             var admin = CurrentAdmin;
 
+            // بارگذاری سکشن‌هایی که کورس دارند
             var sections = _db.Sections
+                .Where(s => s.Course != null)
                 .Include(s => s.Course)
                     .ThenInclude(c => c.CourseCode)
                 .Include(s => s.Teaches)
@@ -29,26 +33,25 @@ namespace AP_Project.Controllers
                 .Include(s => s.TimeSlot)
                 .Include(s => s.Course.Prerequisites)
                     .ThenInclude(p => p.PrerequisiteCourseCode)
+                .OrderBy(s => s.Course.CourseCode.Code)                            // 1. کد درس
+                .ThenBy(s => s.Course.Unit)                                        // 2. تعداد واحد
+                .ThenBy(s => s.Year * 10 + s.Semester)                             // 3. نیم‌سال به صورت Year*10 + Semester
+                .ThenBy(s =>                                                       // 4. اسم استاد یا رشته خالی
+                    s.Teaches != null && s.Teaches.Instructor != null
+                    ? s.Teaches.Instructor.FirstName
+                    : string.Empty
+                )
+                .ThenBy(s =>                                                       // 5. فامیلی استاد یا رشته خالی
+                    s.Teaches != null && s.Teaches.Instructor != null
+                    ? s.Teaches.Instructor.LastName
+                    : string.Empty
+                )
+                .ThenBy(s => s.TimeSlotId)                                         // 6. شناسه‌ی تایم‌اسلات
                 .ToList();
 
-            bool anyWithoutInstructor = sections.Any(s => s.Teaches == null || s.Teaches.Instructor == null);
-            ViewBag.AnyWithoutInstructor = anyWithoutInstructor;
             ViewBag.Sections = sections;
-
             return View("~/Views/AdminDashboard/CourseManagement/Index.cshtml", admin);
         }
 
-        [HttpGet]
-        public IActionResult AddCourseIndex()
-        {
-            // کلاس پایه سشن را برای هر اکشن چک میکند
-            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
-            var admin = CurrentAdmin;
-
-            var pc = new PersianCalendar();
-            int currentPersianYear = pc.GetYear(DateTime.Now);
-            ViewData["currentPersianYear"] = currentPersianYear;
-            return View("~/Views/AdminDashboard/CourseManagement/AddCourse.cshtml", admin);
-        }
     }
 }
