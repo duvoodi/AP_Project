@@ -28,8 +28,7 @@ using (var scope = app.Services.CreateScope())
             instructorCount : 10,
             studentCount : 100,
             classroomCount : 20,
-            courseCodeCount : 10,
-            sectionCount : 30);
+            courseCodeCount : 10);
 }
 */
 
@@ -80,9 +79,12 @@ namespace AP_Project.Data
             int instructorCount = 10,
             int studentCount = 100,
             int classroomCount = 20,
-            int courseCodeCount = 10,
-            int sectionCount = 30)
+            int courseCodeCount = 10)
         {
+            // محاسبه تعداد سکشن مناسب
+            // برای هر ده دانشجو یک سکشن و حداقل به تعداد دروس و حداکثر به تعداد سه برابر آن
+            int sectionCount = Math.Clamp(studentCount / 10, courseCodeCount, courseCodeCount * 3); 
+
             // اگر یوزر در جدول هست کاربر متوقف میشود
             // فقط در صورتی که جدول را با کد اول فایل خالی کرده باشیم داده ساختگی اضافه میشود
             if (context.Users.Any())
@@ -189,7 +191,7 @@ namespace AP_Project.Data
             // 5. Classrooms
             var classrooms = Enumerable.Range(1, classroomCount).Select(i => new Classroom
             {
-                Building = $"کلاس {i}",
+                Building = $"ساختمان {i}",
                 RoomNumber = rand.Next(100, 500),
                 Capacity = rand.Next(20, 100)
             }).ToList();
@@ -201,7 +203,7 @@ namespace AP_Project.Data
             var codes = Enumerable.Range(1, courseCodeCount).Select(i => new CourseCode
             {
                 Code = 800 + i,
-                Title = $"درس {800 + i}"
+                Title = $"درس {NumberToPersianWords.ConvertToWords(800 + i)}"
             }).ToList();
             context.CourseCodes.AddRange(codes);
             context.SaveChanges();
@@ -211,7 +213,7 @@ namespace AP_Project.Data
             {
                 CodeId = cc.Id,
                 Unit = rand.Next(1, 4),
-                Description = $"توضیحات {cc.Title}",
+                Description = rand.Next(0, 2) == 0 ? $"توضیحات {cc.Title}": "",
                 FinalExamDate = GenerateRandomExamDate(rand) // تابع جدید برای تولید تاریخ تصادفی
             }).ToList();
 
@@ -293,28 +295,50 @@ namespace AP_Project.Data
                 });
             }
 
+            // جلوگیری از سکشن‌های تکراری با کلاس و زمان تکراری در همان ترم و سال
+            sections = sections
+                .GroupBy(s => new { s.Year, s.Semester, s.ClassroomId, s.TimeSlotId })
+                .Select(g => g.First())
+                .ToList();
+
             // سپس با حلقه while ادامه بده تا به تعداد کلی sectionCount برسیم
-            while (sections.Count < sectionCount)
+            int attempts = 0; 
+            int failedAttempts = 0; // بیشتر از ماکسیمم تعداد سکشن یکتا نمیتونه تولبد کند و حلقه بی پایان برای همین اتمپت گذاشتیم بعد 100 تلاش ناموفق حلقه متوقف بشه
+            while (sections.Count < sectionCount && failedAttempts < 100)
             {
                 var course = courses[rand.Next(courses.Count)];
                 int semester = GetSemesterFromDate(course.FinalExamDate);
-                if (semester == 0) continue;
+                if (semester == 0)
+                {
+                    failedAttempts++;
+                    continue;
+                }
 
-                sections.Add(new Section
+                var newSection = new Section
                 {
                     CourseId = course.Id,
                     Year = 1404,
                     Semester = semester,
                     ClassroomId = classrooms[rand.Next(classrooms.Count)].Id,
                     TimeSlotId = allSlots[rand.Next(allSlots.Count)].Id
-                });
-            }
+                };
 
-            // جلوگیری از سکشن‌های تکراری با کلاس و زمان تکراری در همان ترم و سال
-            sections = sections
-                .GroupBy(s => new { s.Year, s.Semester, s.ClassroomId, s.TimeSlotId })
-                .Select(g => g.First())
-                .ToList();
+                // بررسی جلوگیری از تکرار با کلاس، زمان، ترم و سال مشابه
+                bool isDuplicate = sections.Any(s =>
+                    s.Year == newSection.Year &&
+                    s.Semester == newSection.Semester &&
+                    s.ClassroomId == newSection.ClassroomId &&
+                    s.TimeSlotId == newSection.TimeSlotId);
+
+                if (isDuplicate)
+                {
+                    failedAttempts++;
+                    continue;
+                }
+
+                sections.Add(newSection);
+                failedAttempts = 0; // موفق بودیم، تلاش‌های ناموفق ریست می‌شود
+            }
 
             context.Sections.AddRange(sections);
             context.SaveChanges();
