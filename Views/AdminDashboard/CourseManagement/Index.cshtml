@@ -14,8 +14,8 @@
 
 <main class="dashboard-main admin">
   <div class="toolbar">
-    <a asp-controller="CourseManagement" asp-action="AddCourseIndex"
-      asp-route-h="@currentHash" class="btn-add-course">
+    <a asp-controller="CourseManagement" asp-action="AddCourse"
+       asp-route-h="@currentHash" class="btn-add-course">
       <span class="icon">&#43;</span>
       <span class="text">افزودن درس</span>
     </a>
@@ -24,10 +24,10 @@
     <thead>
       <tr>
         <th class="col-index">ردیف</th>
-        <th class="col-title">عنوان درس</th>
         <th class="col-code">کد درس</th>
         <th class="col-units">تعداد واحد</th>
-        <th class="col-prereq">کد پیش‌نیاز</th>
+        <th class="col-prereq">دروس پیش‌نیاز</th>
+        <th class="col-title">عنوان درس</th>
         <th class="col-semester">نیم‌سال</th>
         <th class="col-instructor">نام استاد</th>
         <th class="col-schedule">زمان برگزاری</th>
@@ -35,9 +35,7 @@
         <th class="col-description">توضیحات</th>
         <th class="col-courseid">آی‌دی درس</th>
         @if (sections != null && sections.Any())
-        {
-          <th class="col-actions"></th>
-        }
+        {<th class="col-actions"></th>}
       </tr>
     </thead>
 
@@ -50,28 +48,24 @@
           var course = s.Course;
           var instructor = s.Teaches?.Instructor;
           var timeSlot = s.TimeSlot;
-          var prereq = course?.Prerequisites?.FirstOrDefault()?.PrerequisiteCourseCode?.Code.ToString() ?? "-";
-
+          var prereq = (course?.Prerequisites != null && course.Prerequisites.Any())
+            ? string.Join(" ", course.Prerequisites
+                      .Where(p => p.PrerequisiteCourseCode != null)
+                      .Select(p => p.PrerequisiteCourseCode.Code.ToString()))
+            : "-";
           <tr>
             <td class="col-index">@((i + 1))</td>
-            <td class="col-title">@course.CourseCode.Title</td>
             <td class="col-code">@course.CourseCode.Code</td>
             <td class="col-units">@course.Unit</td>
             <td class="col-prereq">@prereq</td>
+            <td class="col-title">@course.CourseCode.Title</td>
             <td class="col-semester">@($"{s.Year}{s.Semester}")</td>
-            <td class="col-instructor @(instructor == null ? "no-instructor" : "")">
+            <td class="col-instructor @(instructor == null ? "no-content" : "")">
               @(instructor != null ? $"{instructor.FirstName} {instructor.LastName}" : "استاد ندارد")
             </td>
             <td class="col-schedule">
-              @if (timeSlot != null)
-              {
-                <span>@timeSlot.Day</span><br />
-                <span>@timeSlot.StartTime.ToString(@"hh\:mm") - @timeSlot.EndTime.ToString(@"hh\:mm")</span>
-              }
-              else
-              {
-                <span>-</span>
-              }
+              <span>@timeSlot?.Day</span><br>
+              <span>@timeSlot?.StartTime.ToString(@"hh\:mm") - @timeSlot?.EndTime.ToString(@"hh\:mm")</span>
             </td>
             <td class="col-examdate">
               @(course?.FinalExamDate != default(DateTime)
@@ -79,8 +73,7 @@
                 : "-")
             </td>
             <td class="col-description">@(string.IsNullOrWhiteSpace(course?.Description) ? "-" : course.Description)</td>
-
-            <!-- نمایش آیدی سکشن -->
+            
             <td class="col-courseid">
               <button class="text-link copy-id-button"
                 data-id="@s.Id"
@@ -90,15 +83,14 @@
               </button>
             </td>
 
-            <!-- دکمه‌ها با آیدی سکشن -->
             <td class="col-actions">
               <div class="actions-wrapper">
-                <a asp-controller="CourseManagement" asp-action="EditSection"
+                <a asp-controller="CourseManagement" asp-action="EditCourse"
                 asp-route-id="@s.Id" asp-route-h="@currentHash"
                 class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
                   <i class="fas fa-edit"></i>
                 </a>
-                <a asp-controller="CourseManagement" asp-action="DeleteSection"
+                <a asp-controller="CourseManagement" asp-action="DeleteCourse"
                 asp-route-id="@s.Id" asp-route-h="@currentHash"
                 class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
                   <i class="fas fa-trash-alt"></i>
@@ -132,23 +124,18 @@
   <script src="~/js/FormUtils/Shared/persian-time-slot.js"></script>
   <script src="~/js/Shared/tooltip.js"></script>
   <script>
-    document.querySelectorAll('.copy-id-button').forEach(btn => {
+  // دکمه‌های کپی
+  document.querySelectorAll('.copy-id-button').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
         navigator.clipboard.writeText(id).then(() => {
-          const tooltip = document.querySelector('.custom-tooltip');
-          if (tooltip) {
-            tooltip.textContent = 'کپی شد!';
-            tooltip.classList.add('show');
-            const r = btn.getBoundingClientRect();
-            tooltip.style.top = (r.top - 30) + 'px';
-            tooltip.style.left = (r.left + r.width / 2 - tooltip.offsetWidth / 2) + 'px';
-            setTimeout(() => {
-              tooltip.classList.remove('show');
-            }, 2000);
-          }
-        }).catch(err => {
-          console.error('خطا در کپی:', err);
+        tooltip.textContent = 'کپی شد';
+        tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
+        tooltip.classList.add('align-center', 'show');
+
+        const r = btn.getBoundingClientRect();
+        tooltip.style.top = (r.bottom + 6) + 'px';
+        tooltip.style.left = (r.left + r.width / 2) + 'px';
         });
       });
     });
