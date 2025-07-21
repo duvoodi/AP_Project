@@ -5,7 +5,7 @@
   Layout = "_LayoutStudent";
 
   var takes = ViewBag.Takes as List<AP_Project.Models.Courses.Takes>;
-  var firstsection = Model.Takes.FirstOrDefault()?.Section;
+  var firstsection = takes?.FirstOrDefault()?.Section;
   int? year = firstsection?.Year;
   int? semester = firstsection?.Semester;
   var pc = new System.Globalization.PersianCalendar();
@@ -166,25 +166,25 @@
         },
         body: JSON.stringify({ sectionId })
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          GlobalPopup.show({
-            PopupTitle: "حذف موفق",
-            SimpleMessage: "درس مورد نظر با موفقیت حذف شد.",
-            CanCloseManually: false,
-            CloseOnBackdropClick: false,
-            BlockScroll: true,
-            iconType: "success",
-          });
-          setTimeout(() => location.reload(), 1000);
-        } else {
-          alert(data.message || "خطا در حذف درس، لطفاً دوباره تلاش کنید.");
-        }
-      })
-      .catch(() => {
-        alert("خطا در ارتباط با سرور.");
-      });
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            GlobalPopup.show({
+              PopupTitle: "حذف موفق",
+              SimpleMessage: "درس مورد نظر با موفقیت حذف شد.",
+              CanCloseManually: false,
+              CloseOnBackdropClick: false,
+              BlockScroll: true,
+              iconType: "success",
+            });
+            setTimeout(() => location.reload(), 1000);
+          } else {
+            alert(data.message || "خطا در حذف درس، لطفاً دوباره تلاش کنید.");
+          }
+        })
+        .catch(() => {
+          alert("خطا در ارتباط با سرور.");
+        });
     }
 
     function getCsrfToken() {

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AP_Project.Data;
 using AP_Project.Models.Users;
+using AP_Project.Models.Courses;
 
 namespace AP_Project.Controllers
 {
@@ -18,12 +19,11 @@ namespace AP_Project.Controllers
 
             if (student == null)
             {
-                // اگر دانشجو لاگین نکرده بود
                 return RedirectToAction("Login", "Account");
             }
 
-            // بارگذاری Takes شامل Section، Course، TimeSlot، Classroom و Teaches و Instructor
-            var takes = _db.Takes
+            // گرفتن همه Takes دانشجو به همراه اطلاعات کامل
+            var allTakes = _db.Takes
                 .Include(t => t.Section)
                     .ThenInclude(s => s.Course)
                         .ThenInclude(c => c.CourseCode)
@@ -33,20 +33,36 @@ namespace AP_Project.Controllers
                     .ThenInclude(s => s.Classroom)
                 .Include(t => t.Section)
                     .ThenInclude(s => s.Teaches)
-                        .ThenInclude(teach => teach.Instructor)
+                        .ThenInclude(teaches => teaches.Instructor)
                 .Where(t => t.StudentUserId == student.Id)
-                .OrderBy(t => t.Section.Semester)
-                .ThenBy(t => t.Section.Course.CourseCode.Title)
+                .ToList();
+
+            // پیدا کردن جدیدترین ترم از بین Takes
+            var latestTerm = allTakes
+                .Where(t => t.Section != null)
+                .OrderByDescending(t => t.Section.Year)
+                .ThenByDescending(t => t.Section.Semester)
+                .FirstOrDefault()?.Section;
+
+            if (latestTerm == null)
+            {
+                ViewBag.Takes = new List<Takes>();
+                return View("~/Views/StudentDashboard/CoursesList.cshtml", student);
+            }
+
+            // فقط دروس آخرین ترم
+            var currentTermTakes = allTakes
+                .Where(t => t.Section.Year == latestTerm.Year && t.Section.Semester == latestTerm.Semester)
+                .OrderBy(t => t.Section.Course.CourseCode.Title)
                 .ThenBy(t => t.Section.TimeSlot.Day)
                 .ThenBy(t => t.Section.TimeSlot.StartTime)
                 .ToList();
 
-
-            // مقداردهی به ViewBag برای استفاده در ویو
-            ViewBag.Takes = takes;
+            ViewBag.Takes = currentTermTakes;
 
             return View("~/Views/StudentDashboard/CoursesList.cshtml", student);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> DropCourse([FromBody] DropCourseRequest request)
