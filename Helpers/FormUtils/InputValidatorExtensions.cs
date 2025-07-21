@@ -146,6 +146,29 @@ namespace AP_Project.Helpers.FormUtils
             return password.IsPossibleToUser_Password();
         }
 
+        // ولید پرشین دیت
+        public static bool IsPossibleToUser_Date(this string str)
+        {
+            if (string.IsNullOrEmpty(str)) return true;
+            return Regex.IsMatch(str, @"^[0-9/]*$");
+        }
+
+        public static bool IsValidPersianDate(this string value)
+        {
+            return PersianCalendarUtils.IsValidPersianDate(value);
+        }
+
+
+        public static bool IsValidSemesterDate(this string value, out string errorMessage)
+        {
+            return PersianCalendarUtils.IsValidSemesterDate(value, out errorMessage);
+        }
+
+        public static bool IsValidExamDateWithSemester(this string value, string semester, out string errorMessage)
+        {
+            return PersianCalendarUtils.IsValidExamDateWithSemester(value, semester, out errorMessage);
+        }
+
         // ولید پرسن نیم
         public static bool IsPossibleToUser_PersonName(this string value)
         {
@@ -154,11 +177,27 @@ namespace AP_Project.Helpers.FormUtils
             if (Regex.IsMatch(value, " {2,}")) return false;
             return Regex.IsMatch(value, "^[\u0600-\u06FF ]*$");
         }
-
+        
         public static bool IsValidPersonName(this string value)
         {
             if (string.IsNullOrEmpty(value)) return false;
             return value.IsPossibleToUser_PersonName();
+        }
+
+        // ولید تکست
+        public static bool IsPossibleToUser_Text(this string value)
+        {
+            if (string.IsNullOrEmpty(value)) return true;
+            if (value.StartsWith(' ') || Regex.IsMatch(value, @" {2,}")) return false;
+
+            // فقط کاراکترهای مجاز: فارسی، انگلیسی، اعداد، فاصله، و علائم نگارشی مجاز
+            return Regex.IsMatch(value, @"^[\u0600-\u06FFa-zA-Z0-9 ؛،.,!?؟()\[\]{}\-_–—]*$");
+        }
+
+        public static bool IsValidText(this string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return false;
+            return value.IsPossibleToUser_Text();
         }
 
         // ولید یوزرنیم

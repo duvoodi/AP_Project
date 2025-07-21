@@ -23,6 +23,18 @@ html, body {
   background-color: #ffffff;
 }
 
+/* حذف نوار اسکرول عمودی در بادی با حفظ عملکرد */
+body {
+  overflow-y: scroll; /* فعال‌سازی اسکرول عمودی */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+
 /* ============================
    HEADER (Shared)
    ============================ */
@@ -38,7 +50,7 @@ html, body {
   justify-content: space-between;
   box-sizing: border-box;
   border-bottom: 0px solid #ddd;
-  z-index: 8888; /* گلوبال پاپ آپ 9999 هدر 8888 تول تیپ 8887 پاپ آپ 8886 فوتر 7777 */
+  z-index: 9999; /* هدر 9999 پاپ آپ 9998 */
 }
 
 /* ----------------------------
@@ -79,25 +91,33 @@ html, body {
   padding-top: 12px;
 }
 
-/* لینک‌ها */
 .dashboard-header .header-actions .nav-links a {
   font-family: 'Vazirmatn', sans-serif;
   font-size: 19px;
   font-weight: 700;
-  opacity: 0.92;
+  opacity: 0.8;
   color: #094e8f;
   background: #fff;
   padding: 5px 10px;
   margin-left: 6px;
   border-radius: 4px;
   text-decoration: none;
+
+  transition: color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
 }
 
-.dashboard-header .header-actions .nav-links a.active,
+.dashboard-header .header-actions .nav-links a.active {
+  background-color: #fff;
+  color: #178ae7;
+  text-decoration: none;
+  opacity: 1;
+}
+
 .dashboard-header .header-actions .nav-links a:hover {
   background-color: #fff;
-  color: #00B0F0;
+  color: #696fbe;
   text-decoration: none;
+  opacity: 1;
 }
 
 .dashboard-header .header-actions .nav-links a.active {

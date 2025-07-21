@@ -8,6 +8,6 @@ namespace AP_Project.Models.Users
         public decimal Salary { get; set; }
         public int HireYear { get; set; }
 
-        public ICollection<Teaches> Teaches { get; set; }
+        public ICollection<Teaches> Teaches { get; set; } = new List<Teaches>();
     }
 }
