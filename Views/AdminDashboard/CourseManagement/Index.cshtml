@@ -1,20 +1,18 @@
 @model AP_Project.Models.Users.Admin
 @using System.Globalization
 @{
-    ViewData["ActiveTab"] = "Course";
-    ViewData["Title"] = "داشبورد ادمین";
-    Layout = "_LayoutAdmin";
+  ViewData["ActiveTab"] = "Course";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
 
-    var sections = ViewBag.Sections as List<AP_Project.Models.Courses.Section>;
-    var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-    var hasFooter = false;
-    var pc = new PersianCalendar();
+  var sections = ViewBag.Sections as List<AP_Project.Models.Courses.Section>;
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var pc = new PersianCalendar();
 }
 
-<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/AdminDashboard/CourseManagement/course-management.css" asp-append-version="true" />
 
-<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main admin">
     <div class="toolbar">
         <a asp-controller="CourseManagement" asp-action="AddCourseIndex"
            asp-route-h="@currentHash" class="btn-add-course">
@@ -115,23 +113,19 @@
     </table>
 </main>
 
-<div class="empty-popup @(sections == null || !sections.Any() ? "will-show" : "")">
-    <p>موردی جهت نمایش وجود ندارد</p>
-</div>
-
-@if (ViewBag.AnyWithoutInstructor == true)
-{
-    <div class="error-popup visible">
-        <p>بعضی درس‌ها استاد ندارند، لطفاً استادشان را مشخص یا آن درس را حذف کنید.</p>
+@section Popup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
+  @if (sections == null && !sections.Any())
+  {
+    <div class="footer-popup empty will-show">
+      <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+    </div>  
+  }
+  else if (sections.Any(s => s.Teaches == null || s.Teaches.Instructor == null))
+  {
+    <div class="footer-popup error will-show">
+      <p><i class="fas fa-exclamation-triangle" style="margin-left: 8px;"></i>بعضی درس‌ها استاد ندارند، لطفاً استادشان را مشخص کرده و یا آن درس را حذف کنید.</p>
     </div>
-}
-
-
-@if (hasFooter)
-{
-    <footer class="dashboard-footer admin">
-        <p>متن فوتر</p>
-    </footer>
+  }
 }
 
 @section Scripts {

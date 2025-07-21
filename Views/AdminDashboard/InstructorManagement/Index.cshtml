@@ -5,15 +5,12 @@
   Layout = "_LayoutAdmin";
   var instructors = ViewBag.Instructors as List<AP_Project.Models.Users.Instructor>;
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  var hasFooter = false;
 }
 
-<!-- مجموعه فونت آوسوم -->
-<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
 <!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-management.css" asp-append-version="true" />
 
-<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main admin">
   <div class="toolbar">
     <a asp-controller="InstructorManagement" asp-action="AddInstructorIndex" asp-route-h="@currentHash"
       class="btn-add-instructor">
@@ -76,16 +73,10 @@
   </table>
 </main>
 
-<!-- باید خارج مین باشد چون مین همیشه ارتفاع صفحه را پر نمیکند -->
-<div class="empty-popup @(instructors == null || !instructors.Any() ? "will-show" : "")">
-  <p>موردی جهت نمایش وجود ندارد</p>
-</div>
-
-@if (hasFooter)
-{
-  <footer class="dashboard-footer admin">
-    <p>متن فوتر</p>
-  </footer>
+@section Popup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
+  <div class="footer-popup empty@(instructors == null || !instructors.Any() ? "will-show" : "")">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+  </div>
 }
 
 @section Scripts {

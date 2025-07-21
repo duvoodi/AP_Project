@@ -8,7 +8,7 @@
 <!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/Login/login.css" asp-append-version="true" />
 
-<div class="login-container @(ViewData["NoAnimationIn"] as bool? == true ? "no-animation-in" : "")">
+<div class="login-container">
   <h2>صفحه ورود</h2>
   <form asp-controller="Login" asp-action="Index" method="post" id="login-form">
     @Html.AntiForgeryToken()

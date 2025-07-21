@@ -7,14 +7,10 @@
   var form = (AP_Project.FormViewModels.InstructorForm.InstructorFormViewModel)ViewData["Form"];
 }
 
-<!-- مجموعه فونت آوسوم -->
-<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
-<link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-form-actions.css"
-  asp-append-version="true" />
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-form-actions.css"asp-append-version="true" />
 
-  
-
-<main class="dashboard-main admin @(ViewData["NoAnimationIn"] as bool? == true ? "no-animation-in" : "")">
+<main class="dashboard-main admin">
   <div class="titlebar">
     <div class="action-title-tab delete">
       حذف استاد
