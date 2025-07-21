@@ -12,7 +12,7 @@ function checkDependentsOf(inputId) {
       for (const dep of dependents) {
         validateField(dep, false); // ارورهای وابسته فقط اگر خودشون مشکل داشته باشن نشون داده میشه
       } // وابسته های به پسورد باید بروز بشن بدون نمایش ارور اگر مقدار درست داشتند چک وابسته به پسوردشون فروخوانی و ارورش بروز 
-    } // مقدار غلط داشتند بدون نمایش ارور بیرون میره چون نایش ارور اون باید با بلور خودش باشه
+    } // مقدار غلط داشتند بدون نمایش ارور بیرون میره چون نایش ارور اون باید با بلر خودش باشه
   }
 }
 
@@ -24,12 +24,10 @@ function validateConfirmPasswordWith_Password() {
   if (!pw || !cpw) return null;
 
   if (pw !== cpw) {
-    replaceError('ConfirmPassword', 'ورودی با رمز عبور مطابقت ندارد');
-    return false;
+    return { isValid: false, errorMessage: 'ورودی با رمز عبور مطابقت ندارد'};
   }
 
-  replaceError('ConfirmPassword', '');
-  return true;
+  return { isValid: true, errorMessage: ''};
 }
 
 
@@ -196,7 +194,10 @@ function validateField(inputId, showError, AllowOptionalFieldsInEdit = false) {
       return false;
     }
     const result = validateConfirmPasswordWith_Password();
-    if (result !== null) return result;
+    if (result !== null){
+        replaceError_IfAllowed(inputId, result.errorMessage);
+        return result.isValid;
+    }
     break;
 
   default:

@@ -2,16 +2,14 @@
 @{
   ViewData["Title"] = "داشبورد دانشجو";
   Layout = "_LayoutStudent";
-  var hasFooter = true;
 }
 
-<main class="dashboard-main student @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main student">
     <!-- محتوای پیش‌فرض -->
 </main>
 
-@if (hasFooter)
-{
-  <footer class="dashboard-footer student">
-    <p>لطفا یکی از سربرگ‌ها را انتخاب کنید</p>
-  </footer>
+@section Popup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
+  <div class="footer-popup empty will-show">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>لطفا یکی از سربرگ‌ها را انتخاب کنید</p>
+  </div>
 }

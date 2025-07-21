@@ -3,17 +3,9 @@
   ViewData["Title"] = "داشبورد استاد";
   Layout = "_LayoutInstructor";
   ViewData["ActiveTab"] = "Class";
-  var hasFooter = false;
 }
 
-<main class="dashboard-main instructor @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main instructor">
   <h2 class="page-title">مدیریت کلاس‌ها</h2>
   <!-- محتوای مدیریت کلاس‌ها -->
 </main>
-
-@if (hasFooter)
-{
-  <footer class="dashboard-footer instructor">
-    <p>متن فوتر</p>
-  </footer>
-}
