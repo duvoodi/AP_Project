@@ -1,0 +1,57 @@
+@using Newtonsoft.Json
+@model IEnumerable<AP_Project.Models.Users.Student>
+
+@{
+    var popupOptions = new {
+        PopupTitle = "لیست دانشجویان",
+        CanCloseManually = true,
+        CloseOnBackdropClick = true,
+        BlockScroll = true,
+        iconType = "info"
+    };
+
+    // مدل پاپ‌آپ شامل لیستی از دانشجویان
+    var popupModel = new {
+        Students = Model.Select(s => new {
+            Id = s.Id,
+            FullName = $"{s.FirstName} {s.LastName}",
+            StudentCode = s.StudentId
+        }).ToArray()
+    };
+
+    // پیکربندی نمایش لیست
+    var popupConfig = new {
+        ShowListProps = true,
+        ListProps = new[] { "Students" },
+        SimplePropDisplayNames = new Dictionary<string, string> {
+            { "Students", "دانشجویان" }
+        },
+        ListPropFieldOrder = new Dictionary<string, string[]> {
+            { "Students", new[] { "FullName", "StudentCode" } }
+        },
+        ListPropItemDisplayNames = new Dictionary<string, Dictionary<string, string>> {
+            { "Students", new Dictionary<string, string> {
+                { "FullName", "نام" },
+                { "StudentCode", "کد دانشجویی" }
+            }}
+        },
+        // بدون چک‌باکس و حذف
+        ShowCheckboxes = new Dictionary<string, bool> {
+            { "Students", false }
+        },
+        ClientSideLists = new string[] { },
+        ClientSideDelete = new Dictionary<string, bool>(),
+        DeleteIdFields = new Dictionary<string, string>(),
+        BulkActionText = new Dictionary<string, string>(),
+        OnBulkActionJs = ""
+    };
+}
+
+<button class="btn-popup"
+        data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = popupOptions,
+            model = popupModel,
+            config = popupConfig
+        }))'>
+    لیست دانشجویان
+</button>

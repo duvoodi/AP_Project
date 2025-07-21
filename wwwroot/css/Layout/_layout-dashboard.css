@@ -38,7 +38,7 @@ html, body {
   justify-content: space-between;
   box-sizing: border-box;
   border-bottom: 0px solid #ddd;
-  z-index: 9999; /* هدر 9999 پاپ آپ 9998 فوتر 9997 */
+  z-index: 8888; /* گلوبال پاپ آپ 9999 هدر 8888 تول تیپ 8887 پاپ آپ 8886 فوتر 7777 */
 }
 
 /* ----------------------------
@@ -175,7 +175,7 @@ html, body {
   padding: 0px 25px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  z-index: 9998;
+  z-index: 9998;  /* هدر 9999 پاپ آپ 9998 */
   font-size: 18px;
   opacity: 0;
   transition: opacity 0.4s ease-in-out;

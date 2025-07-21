@@ -3,8 +3,6 @@
   Layout = "_LayoutLogin";
 }
 
-<!-- مجموعه فونت آوسوم -->
-<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
 <!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/Login/login.css" asp-append-version="true" />
 
@@ -50,6 +48,17 @@
 
 <partial name="_ValidationScriptsPartial" />
 @section Scripts {
+  <script> // قبل از هر چیزی اگر سشن فعال داشتیم بریم ریدایرکت تا کاربر مجبور به لاگین مجدد نباشد
+    setInterval(() => {
+      fetch('/Login/CheckSession?hashed=true', { cache: 'no-store' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.role === 'admin' || data.role === 'instructor' || data.role === 'student') {
+            window.location.href = `/Login/Redirect`;
+          }
+        });
+    }, 5000); // هر 5 ثانیه تا فشار به سرور نیاد
+  </script>
   <!-- اسکریپت های کمکی مورد نیاز این فرم -->
   <script src="~/js/Shared/blur-on-leave.js"></script>
   <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>

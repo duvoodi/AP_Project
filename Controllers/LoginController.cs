@@ -55,6 +55,12 @@ namespace AP_Project.Controllers
         }
 
         [HttpGet]
+        public IActionResult Redirect()
+        {
+            return View("~/Views/Login/redirect.cshtml");
+        }
+
+        [HttpGet]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
