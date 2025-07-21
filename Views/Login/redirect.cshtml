@@ -11,7 +11,7 @@
 </div>
 
 <script>
-  fetch('/Login/CheckSession?hashed=true')
+  fetch('/Login/CheckSession?withId=true')
     .then(res => res.json())
     .then(data => {
       if (data.role === 'none') {
