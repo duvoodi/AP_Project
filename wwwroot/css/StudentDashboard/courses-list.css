@@ -1,0 +1,141 @@
+table,
+button,
+td,
+th {
+    font-family: 'Vazirmatn', sans-serif !important;
+}
+
+.class-table {
+    width: 97%;
+    margin: 2rem auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    background-color: #ccdfef;
+    font-size: 15px;
+    margin-top: 1.9rem;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.class-table thead tr {
+    font-size: 15px;
+}
+
+.class-table thead th {
+    color: white;
+    background-color: #00b0f0;
+    font-weight: 600;
+    padding: 12px 8px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.class-table th,
+.class-table td {
+    border: 1px solid white;
+    padding: 10px 6px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.class-table tbody tr {
+    background-color: #f1f9ff;
+    color: #000;
+    transition: background-color 0.2s ease;
+}
+
+.class-table tbody tr:hover {
+    background-color: #d9f0ff;
+}
+
+
+.col-index {
+    width: 5%;
+    min-width: 40px;
+}
+
+.col-title {
+    width: 12%;
+}
+
+.col-units {
+    width: 7%;
+}
+
+.col-instructor {
+    width: 14%;
+}
+
+.col-location {
+    width: 16%;
+}
+
+.col-day {
+    width: 9%;
+}
+
+.col-time {
+    width: 10%;
+}
+
+.col-exam {
+    width: 9%;
+}
+
+.col-action {
+    width: 8%;
+}
+
+
+
+/* ============================
+   DELETE BUTTON IMPROVEMENTS (NEW STYLE)
+   ============================ */
+.text-link {
+    color: #d11a2a;
+    /* Red color for delete */
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: inline-block;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+
+.text-link:hover {
+    color: white;
+    background-color: #d11a2a;
+    /* Darker red on hover */
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(209, 26, 42, 0.2);
+}
+
+/* ============================
+   REST OF THE ORIGINAL STYLES
+   ============================ */
+.action-title-tab {
+    background-color: #84e291;
+    color: #265C26;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 11px 20px;
+    border-radius: 25px;
+    display: inline-block;
+    margin-top: 20px;
+    margin-right: 20px;
+}
+
+.class-table tbody tr:hover {
+    background-color: #b8d4eb;
+}
+
+.pending-info {
+    color: #666;
+    font-weight: 400;
+    opacity: 0.85;
+}

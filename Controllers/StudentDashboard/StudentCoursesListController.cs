@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using AP_Project.Data;
 using AP_Project.Models.Users;
-using Microsoft.AspNetCore.Http;
 
 namespace AP_Project.Controllers
 {
@@ -14,11 +14,72 @@ namespace AP_Project.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // کلاس پایه سشن را برای هر اکشن چک میکند
-            // اگر درست نبود ریدایرکت به لاگین و گرنه شی سشن را میدهد
             var student = CurrentStudent;
+
+            if (student == null)
+            {
+                // اگر دانشجو لاگین نکرده بود
+                return RedirectToAction("Login", "Account");
+            }
+
+            // بارگذاری Takes شامل Section، Course، TimeSlot، Classroom و Teaches و Instructor
+            var takes = _db.Takes
+                .Include(t => t.Section)
+                    .ThenInclude(s => s.Course)
+                        .ThenInclude(c => c.CourseCode)
+                .Include(t => t.Section)
+                    .ThenInclude(s => s.TimeSlot)
+                .Include(t => t.Section)
+                    .ThenInclude(s => s.Classroom)
+                .Include(t => t.Section)
+                    .ThenInclude(s => s.Teaches)
+                        .ThenInclude(teach => teach.Instructor)
+                .Where(t => t.StudentUserId == student.Id)
+                .OrderBy(t => t.Section.Semester)
+                .ThenBy(t => t.Section.Course.CourseCode.Title)
+                .ThenBy(t => t.Section.TimeSlot.Day)
+                .ThenBy(t => t.Section.TimeSlot.StartTime)
+                .ToList();
+
+
+            // مقداردهی به ViewBag برای استفاده در ویو
+            ViewBag.Takes = takes;
 
             return View("~/Views/StudentDashboard/CoursesList.cshtml", student);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DropCourse([FromBody] DropCourseRequest request)
+        {
+            var studentId = CurrentStudent.Id;
+
+            var takes = await _db.Takes
+                .Where(t => t.Student.Id == studentId && t.SectionId == request.SectionId)
+                .FirstOrDefaultAsync();
+
+            if (takes == null)
+            {
+                return Json(new { success = false, message = "درس پیدا نشد یا شما به آن دسترسی ندارید." });
+            }
+
+            _db.Takes.Remove(takes);
+
+            try
+            {
+                await _db.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "خطا در حذف درس." });
+            }
+        }
+
+        public class DropCourseRequest
+        {
+            public Guid SectionId { get; set; }
+        }
+
+
     }
 }
