@@ -293,6 +293,181 @@ namespace AP_Project.Controllers
                 return View("~/Views/AdminDashboard/ClassManagement/AddClass.cshtml", admin);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> EditClass(Guid id)
+        {
+            var admin = CurrentAdmin;
+
+            // بررسی جی یو آی دی گرفته شده از روت آی دی
+            var section = await _db.Sections.FirstOrDefaultAsync(s => s.Id == id);
+            if (section == null || section.ClassroomId == null)
+                return NotFound();
+            var classroom = await _db.Classrooms.FirstOrDefaultAsync(c => c.Id == section.ClassroomId);
+            if (classroom == null)
+                return NotFound();
+
+            ViewData["Classroom"] = _db.Classrooms.OrderBy(cr => cr.Building).ThenBy(cr => cr.RoomNumber).ThenBy(cr => cr.Capacity).ToList();
+            ViewData["Sections"] = GetUnassignedSectionList(id);
+            ViewData["Students"] = _db.Students.OrderBy(i => i.LastName).ThenBy(i => i.FirstName).ToList();
+            var form = new ClassFormViewModel
+            {
+                SectionId = section.Id,
+                ClassLocationId = section.ClassroomId.Value,
+                StudentIds = await _db.Takes
+                    .Where(t => t.SectionId == id)
+                    .Select(t => t.StudentUserId)
+                    .ToListAsync()
+            };
+            ViewData["Form"] = form;
+
+            return View("~/Views/AdminDashboard/ClassManagement/EditClass.cshtml", admin);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditClass(Guid id, ClassFormViewModel classForm)
+        {
+            var admin = CurrentAdmin;
+            ModelState.ReplaceModelError("GeneralError", "");
+            ModelState.NullFieldsToValidEmpty(classForm);
+
+
+            // بررسی جی یو آی دی گرفته شده از روت آی دی
+            var routesection = await _db.Sections.FirstOrDefaultAsync(s => s.Id == id);
+            if (routesection == null || routesection.ClassroomId == null)
+                return NotFound();
+            var classroom = await _db.Classrooms.FirstOrDefaultAsync(c => c.Id == routesection.ClassroomId);
+            if (classroom == null)
+                return NotFound();
+
+            // بررسی جی یو آی دی های گرفته شده از فرم
+
+            var classExists = await _db.Classrooms.AnyAsync(cr => cr.Id == classForm.ClassLocationId);
+            if (!classExists)
+            {
+                ModelState.AppendModelError("GeneralError", "محل برگزاری انتخاب شده یافت نشد!");
+            }
+            var section = await _db.Sections.FirstOrDefaultAsync(s => s.Id == classForm.SectionId);
+            if (section == null)
+            {
+                ModelState.AppendModelError("GeneralError", "درس انتخاب شده یافت نشد!");
+            }
+            if (classForm.StudentIds != null && classForm.StudentIds.Any())
+            {
+                var existingStudents = await _db.Students
+                    .Where(s => classForm.StudentIds.Contains(s.Id))
+                    .Select(s => s.Id)
+                    .ToListAsync();
+
+                var missingStudents = classForm.StudentIds.Except(existingStudents).ToList();
+                if (missingStudents.Any())
+                {
+                    ModelState.AppendModelError("GeneralError", "برخی از دانشجوهای انتخاب شده یافت نشدند!");
+                }
+
+                classForm.StudentIds = classForm.StudentIds.Distinct().ToList(); // حذف موارد تکراری لیست
+
+                // بررسی ظرفیت کلاس فقط وقتی کلاس و دانشجوها معتبر بودند
+                if (classExists)
+                {
+                    var capacity = await _db.Classrooms
+                        .Where(cr => cr.Id == classForm.ClassLocationId)
+                        .Select(cr => cr.Capacity)
+                        .FirstOrDefaultAsync();
+
+                    if (classForm.StudentIds.Count > capacity)
+                    {
+                        ModelState.AppendModelError("StudentIds", "تعداد دانشجویان بیش از ظرفیت کلاس انتخاب شده است");
+                    }
+                }
+            }
+
+            // اعتبارسنجی فیلدها
+            foreach (var prop in typeof(ClassFormViewModel).GetProperties())
+            {
+                ModelState.ValidateField(classForm, prop.Name, true);
+            }
+
+            // بررسی تداخل زمانی اگر همه چیز ها مرتب بودند 
+            if (ModelState.IsValid)
+            {
+                var currentSection = await _db.Sections
+                    .Where(s => s.Id == classForm.SectionId)
+                    .Select(s => new { s.Year, s.Semester, s.TimeSlotId, s.ClassroomId })
+                    .FirstOrDefaultAsync();
+
+                if (currentSection != null && classForm.ClassLocationId != Guid.Empty)
+                {
+                    bool classConflict = await _db.Sections
+                        .AnyAsync(s =>
+                            s.Year == currentSection.Year &&
+                            s.Semester == currentSection.Semester &&
+                            s.TimeSlotId == currentSection.TimeSlotId &&
+                            s.ClassroomId == classForm.ClassLocationId &&
+                            s.Id != id // با سکشنی که داریم ادیت میکنیم تداخل نگیره
+                        );
+
+                    if (classConflict)
+                        ModelState.AppendModelError("GeneralError", "در این زمان و مکان، کلاس دیگری قبلاً ثبت شده است.");
+                }
+            }
+
+            // برگشت در صورت خطا
+            if (!ModelState.IsValid)
+            {
+                ViewData["Classroom"] = _db.Classrooms.OrderBy(cr => cr.Building).ThenBy(cr => cr.RoomNumber).ThenBy(cr => cr.Capacity).ToList();
+                ViewData["Sections"] = GetUnassignedSectionList(id);
+                ViewData["Students"] = _db.Students.OrderBy(i => i.LastName).ThenBy(i => i.FirstName).ToList();
+                ViewData["Form"] = classForm;
+                return View("~/Views/AdminDashboard/ClassManagement/EditClass.cshtml", admin);
+            }
+
+            // ذخیره‌سازی
+            try
+            {
+                // آزادسازی سکشن قبلی از کلاس
+                var oldSection = await _db.Sections.FirstOrDefaultAsync(s => s.Id == id);
+                if (oldSection != null)
+                {
+                    oldSection.ClassroomId = null;
+                    _db.Sections.Update(oldSection);
+                }
+
+                // اختصاص کلاس جدید
+                section.ClassroomId = classForm.ClassLocationId;
+                _db.Sections.Update(section);
+
+                // حذف Takes قبلی
+                var oldTakes = _db.Takes.Where(t => t.SectionId == section.Id);
+                _db.Takes.RemoveRange(oldTakes);
+
+                // افزودن Takes جدید
+                foreach (var studentId in classForm.StudentIds)
+                {
+                    _db.Takes.Add(new Takes
+                    {
+                        StudentUserId = studentId,
+                        SectionId = section.Id,
+                        Grade = ""
+                    });
+                }
+
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام ذخیره اطلاعات رخ داد! لطفاً دوباره تلاش کنید...");
+                ViewData["Classroom"] = _db.Classrooms.OrderBy(cr => cr.Building).ThenBy(cr => cr.RoomNumber).ThenBy(cr => cr.Capacity).ToList();
+                ViewData["Sections"] = GetUnassignedSectionList(id);
+                ViewData["Students"] = _db.Students.OrderBy(i => i.LastName).ThenBy(i => i.FirstName).ToList();
+                ViewData["Form"] = classForm;
+
+                return View("~/Views/AdminDashboard/ClassManagement/EditClass.cshtml", admin);
+            }
+        }
     }
 }
 
