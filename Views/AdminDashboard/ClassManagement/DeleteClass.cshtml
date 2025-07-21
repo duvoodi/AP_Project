@@ -1,0 +1,139 @@
+@using AP_Project.Models.Users
+@using AP_Project.Models.Classrooms
+@using AP_Project.Models.Courses
+@using Newtonsoft.Json
+@model AP_Project.Models.Users.Admin
+
+@{
+  ViewData["ActiveTab"] = "Class";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  
+  // Get class ID from route
+  var classId = Guid.Parse(ViewContext.RouteData.Values["id"]?.ToString() ?? Guid.Empty.ToString());
+  bool hasStudents = ViewData["HasStudents"] as bool? ?? false;
+
+  var form = ViewData["Form"] as AP_Project.FormViewModels.ClassForm.ClassFormViewModel;
+  var selectedClassroom = ViewData["selectedClassroom"] as Classroom;
+  var selectedSection =ViewData["selectedSection"] is ValueTuple<Guid, string> tuple ? tuple : default;
+  var students = ViewData["Students"] as List<Student> ?? new();
+}
+
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/ClassManagement/class-form-actions.css" asp-append-version="true" />
+
+<main class="dashboard-main admin">
+  <div class="titlebar">
+    <div class="action-title-tab delete">
+      حذف کلاس
+    </div>
+  </div>
+  <div class="form-container">
+    <form asp-controller="ClassManagement" asp-action="DeleteClass" asp-route-h="@currentHash" method="post" id="delete-class-form">
+      @Html.AntiForgeryToken()
+
+      <div class="error-row">
+        <div class="error-group">
+          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group wide">
+          <label>کلاس</label>
+          <input class="form-control" 
+                value="@(selectedClassroom != null ? 
+                    $"ساختمان: {selectedClassroom.Building} - شماره: {selectedClassroom.RoomNumber} - ظرفیت: {selectedClassroom.Capacity}" : "")" 
+                readonly />
+          <input type="hidden" name="ClassLocationId" value="@(form?.ClassLocationId.ToString() ?? "")" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group wide">
+          <label>درس</label>
+          <input class="form-control" value="@(selectedSection.Item2)" readonly/>
+          <input type="hidden" name="SectionId" value="@(form?.SectionId.ToString() ?? "")" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group wide">
+          <label>لیست دانشجویان</label>
+          <div id="students-list" class="students-list readonly-list @(form?.StudentIds?.Any() == true ? "visible" : "")">
+            @foreach (var studentId in form?.StudentIds ?? Enumerable.Empty<Guid>())
+            {
+                var student = students.FirstOrDefault(s => s.Id == studentId);
+                if (student != null)
+                {
+                    <div class="student-tag readonly-tag">
+                        <div class="student-info">
+                            <span class="student-name">@student.StudentId - @student.FirstName @student.LastName</span>
+                        </div>
+                        <input type="hidden" name="StudentIds" value="@studentId" />
+                    </div>
+                }
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a asp-controller="ClassManagement" asp-action="Index" asp-route-h="@currentHash" class="btn-cancel">انصراف</a>
+            <button type="submit" class="btn-submit blur-on-leave" formaction="@Url.Action("DeleteClass", new { h = currentHash, id = classId })">تایید</button>
+            </div>
+    </form>
+  </div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/Shared/blur-on-leave.js"></script>
+  <script src="~/js/FormUtils/Shared/persian-time-slot.js"></script>
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const inputs = document.querySelectorAll('input.form-control[readonly]');
+
+      inputs.forEach(input => {
+        const txt = input.value.trim();
+
+        let html = txt;
+
+        if (txt === 'این درس حذف ایمن شده') {
+          html = '<span class="alert">این درس حذف ایمن شده</span>';
+        } else {
+          // 1. جایگزینی موقتی "ندارداختیاری"
+          html = html.replace(/ندارداختیاری/g, 'TEMP_REPLACE');
+          // 2. رنگی کردن بقیه "ندارد"
+          html = html.replace(/ندارد/g, '<span class="alert">ندارد</span>');
+          // 3. بازگردانی "ندارداختیاری"
+          html = html.replace(/TEMP_REPLACE/g, 'ندارد');
+        }
+
+        // اگر چیزی برای تغییر داشت، جایگزینش کنیم
+        if (html !== txt) {
+          // ساختن div بجای input
+          // چون اینپوت نمیتون اسپن داخلش قرار بگیره
+          const div = document.createElement('div');
+          div.className = 'form-control readonly';
+          div.innerHTML = html;
+
+          // جایگزین کردن در DOM
+          input.insertAdjacentElement('afterend', div);
+          input.style.display = 'none';
+        }
+      });
+    });
+    document.getElementById('delete-class-form').addEventListener('submit', function(e) {
+      e.preventDefault(); // جلوی ارسال فرم را بگیر
+      // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
+      replaceError("GeneralError", '');
+      setTimeout(() => { // این بخش کد 800 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+        this.submit();
+      }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
+    });
+  </script>
+}
