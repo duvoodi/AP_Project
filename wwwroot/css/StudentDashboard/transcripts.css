@@ -1,0 +1,172 @@
+/* فونت و پایه */
+table,
+button,
+td,
+th {
+    font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* جدول */
+.class-table {
+    width: 97%;
+    margin: 1.6rem auto; 
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    background-color: #ccdfef;
+    font-size: 15px;
+    margin-top: 1.8rem;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.class-table thead tr {
+    font-size: 15px;
+}
+
+.class-table thead th {
+    color: white;
+    background-color: #00b0f0;
+    font-weight: 600;
+    padding: 12px 8px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.class-table th,
+.class-table td {
+    border: 1px solid white;
+    padding: 10px 6px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.class-table tbody tr {
+    background-color: #f1f9ff;
+    color: #000;
+    transition: background-color 0.2s ease;
+}
+
+.class-table tbody tr:hover {
+    background-color: #b8d4eb;
+}
+
+/* ستون‌ها */
+.col-index {
+    width: 5%;
+    min-width: 40px;
+}
+
+.col-title {
+    width: 12%;
+}
+
+.col-units {
+    width: 7%;
+}
+
+.col-instructor {
+    width: 14%;
+}
+
+.col-location {
+    width: 16%;
+}
+
+.col-day {
+    width: 9%;
+}
+
+.col-time {
+    width: 10%;
+}
+
+.col-exam {
+    width: 9%;
+}
+
+.col-action {
+    width: 8%;
+}
+
+/* لینک حذف (دکمه‌ها) */
+.text-link {
+    color: #d11a2a;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: inline-block;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+
+.text-link:hover {
+    color: white;
+    background-color: #d11a2a;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(209, 26, 42, 0.2);
+}
+
+/* تب عنوان بالای جدول */
+.action-title-tab {
+    background-color: #f5dc71;
+    color: #725810;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 11px 20px;
+    border-radius: 23px;
+    display: inline-block;
+    margin-top: 20px;
+    margin-right: 20px;
+}
+
+/* پیام وضعیت */
+.pending-info {
+    color: #666;
+    font-weight: 400;
+    opacity: 0.85;
+}
+
+/* نمره پایین */
+.low-grade {
+    background-color: #fbeaea; 
+    color: #a94442;             
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* باکس معدل کل */
+.average-grade-box {
+    max-width: 320px;
+    margin: 25px auto;
+    padding: 18px 20px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #e9efff, #dbe6ff);
+    color: #34495e;
+    font-weight: 700;
+    font-size: 1.6rem;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(44, 62, 80, 0.1);
+    user-select: none;
+    letter-spacing: 0.04em;
+    transition: all 0.3s ease-in-out;
+    border: 1px solid #c9d6e6;
+}
+
+.average-grade-box:hover {
+    background: linear-gradient(135deg, #dce6ff, #cfdcff);
+    box-shadow: 0 8px 26px rgba(44, 62, 80, 0.15);
+}
+
+.average-grade-box strong {
+    margin-left: 10px;
+    color: #2c66c3; 
+    font-size: 1.6rem;
+}
+

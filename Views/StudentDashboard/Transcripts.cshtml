@@ -1,19 +1,165 @@
 @model AP_Project.Models.Users.Student
 @{
+  ViewData["ActiveTab"] = "Student";
   ViewData["Title"] = "داشبورد دانشجو";
   Layout = "_LayoutStudent";
-  ViewData["ActiveTab"] = "Transcripts";
-  var hasFooter = false;
+
+  var takes = ViewBag.Takes as List<AP_Project.Models.Courses.Takes>;
+  var firstsection = takes?.FirstOrDefault()?.Section;
+  int? year = firstsection?.Year;
+  int? semester = firstsection?.Semester;
+  var pc = new System.Globalization.PersianCalendar();
+
+  string semesterDisplayCode = null;
+  if (year.HasValue && semester.HasValue)
+  {
+    semesterDisplayCode = $"{year.Value % 1000}{semester.Value}";
+  }
 }
 
-<main class="dashboard-main student @(hasFooter ? "has-footer" : "has-not-footer")">
-  <h2 class="page-title">ریز نمرات</h2>
-  <!-- محتوای ریز نمرات -->
+<link rel="stylesheet" href="~/css/StudentDashboard/transcripts.css" asp-append-version="true" />
+
+<form id="antiForgeryForm">
+  @Html.AntiForgeryToken()
+</form>
+
+<main class="dashboard-main student">
+  <div class="titlebar"></div>
+
+  @if (takes != null && takes.Any())
+  {
+    <div class="action-title-tab">
+      ریزنمرات نیمسال @semesterDisplayCode
+    </div>
+
+    <table class="class-table">
+      <thead>
+        <tr>
+          <th class="col-index">ردیف</th>
+          <th class="col-title">درس</th>
+          <th class="col-units">تعداد واحد</th>
+          <th class="col-instructor">نام استاد</th>
+          <th class="col-location">کلاس</th>
+          <th class="col-htime">ساعت برگزاری</th>
+          <th class="col-dtime">روز برگزاری</th>
+          <th class="col-exam">تاریخ امتحان</th>
+          <th class="col-grade">نمره</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (int i = 0; i < takes.Count; i++)
+        {
+          var take = takes[i];
+          var section = take.Section;
+          var course = section?.Course;
+          var timeSlot = section?.TimeSlot;
+          var classroom = section?.Classroom;
+
+          if (section?.Course != null)
+          {
+            <tr>
+              <td class="col-index">@(i + 1)</td>
+              <td class="col-title">@(course?.CourseCode?.Title ?? "-")</td>
+              <td class="col-units">@(course?.Unit.ToString() ?? "-")</td>
+
+              <td class="col-instructor">
+                @if (section?.Teaches?.Instructor != null)
+                {
+                  @($"{section.Teaches.Instructor.FirstName} {section.Teaches.Instructor.LastName}")
+                }
+                else
+                {
+                  <span class="pending-info">استاد این درس به زودی مشخص می‌شود</span>
+                }
+              </td>
+
+              <td class="col-location">
+                @if (classroom != null)
+                {
+                  @($"{classroom.Building} - {classroom.RoomNumber}")
+                }
+                else
+                {
+                  <span class="pending-info">مکان کلاس به‌زودی مشخص می‌شود</span>
+                }
+              </td>
+
+              <td class="col-htime">@(timeSlot?.Day ?? "-")</td>
+              <td class="col-dtime">
+                @if (timeSlot != null)
+                {
+                  <span>@timeSlot.StartTime.ToString(@"hh\:mm") - @timeSlot.EndTime.ToString(@"hh\:mm")</span>
+                }
+                else
+                {
+                  <span>-</span>
+                }
+              </td>
+              <td class="col-exam">
+                @if (course?.FinalExamDate != null)
+                {
+                  var exyear = pc.GetYear(course.FinalExamDate);
+                  var exmonth = pc.GetMonth(course.FinalExamDate).ToString("00");
+                  var exday = pc.GetDayOfMonth(course.FinalExamDate).ToString("00");
+                  @($"{exyear}/{exmonth}/{exday}")
+                }
+                else
+                {
+                  @("-")
+                }
+              </td>
+              <td class="col-grade">
+                @if (string.IsNullOrWhiteSpace(take.Grade))
+                {
+                  <span class="pending-info">ثبت نشده</span>
+                }
+                else
+                {
+                  var parsed = double.TryParse(take.Grade, out var grade);
+                  var gradeClass = parsed && grade < 10 ? "low-grade" : "";
+                  <span class="@gradeClass">@take.Grade</span>
+                }
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+
+    <div class="average-grade-box">
+      <span>معدل کل:</span>
+      @{
+        var allGradesEntered = takes.All(t => !string.IsNullOrWhiteSpace(t.Grade));
+        if (allGradesEntered)
+        {
+          double totalUnits = 0;
+          double weightedSum = 0;
+
+          foreach (var t in takes)
+          {
+            if (double.TryParse(t.Grade, out double g))
+            {
+              var unit = t.Section?.Course?.Unit ?? 0;
+              totalUnits += unit;
+              weightedSum += g * unit;
+            }
+          }
+
+          var avg = totalUnits > 0 ? Math.Round(weightedSum / totalUnits, 2) : 0;
+          <strong>@avg</strong>
+        }
+        else
+        {
+          <span>-</span>
+        }
+      }
+    </div>
+  }
+  else
+  {
+    <div class="empty-popup will-show">
+      <p>موردی جهت نمایش وجود ندارد</p>
+    </div>
+  }
 </main>
-
-@if (hasFooter)
-{
-  <footer class="dashboard-footer student">
-    <p>متن فوتر</p>
-  </footer>
-}
