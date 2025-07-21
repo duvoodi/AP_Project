@@ -22,6 +22,12 @@
     <form asp-controller="StudentManagement" asp-action="DeleteStudent" asp-route-h="@currentHash" method="post" id="delete-student-form">
       @Html.AntiForgeryToken()
 
+      <div class="error-row">
+        <div class="error-group" >
+          <span class="error-message general-error" id="GeneralError" >@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+      
       <div class="form-row">
         <div class="form-group">
           <label>نام</label>
@@ -38,19 +44,13 @@
       </div>
 
       <div class="form-row">
-        <div class="form-group">
+        <div class="form-group narrow">
           <label>کد دانشجویی</label>
           <input class="form-control" id="StudentId" name="StudentId" value="@form?.StudentId" readonly />
         </div>
-        <div class="form-group">
-          <label>سال استخدام</label>
+        <div class="form-group narrow">
+          <label>سال ورودی</label>
           <input class="form-control" id="EnrollmentYear" name="EnrollmentYear" value="@form?.EnrollmentYear" readonly />
-        </div>
-      </div>
-
-      <div class="error-row">
-        <div class="error-group">
-          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
         </div>
       </div>
 
@@ -75,9 +75,9 @@
 
         // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
       replaceError("GeneralError", '');
-      setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+      setTimeout(() => { // این بخش کد 850 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
         this.submit();
-      }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+      }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
     });
   </script>
 }

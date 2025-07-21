@@ -7,15 +7,19 @@ body, html, input, textarea, select, button {
 }
 
 /* ============================
-   FORM: TOP TAB
+   TITLE BAR
    ============================ */
 
 .titlebar {
-  margin: 20px 0 30px;
-  padding: 0 30px;
+  position: sticky;
+  top: 100px;
+  margin: 0;
+  padding: 20px 0 0;
+  background-color: white;
+  z-index: 3;
 }
+
 .action-title-tab {
-  
   display: flex;
   align-items: center;      
   justify-content: flex-start; 
@@ -46,7 +50,6 @@ body, html, input, textarea, select, button {
   color: #725810;
 }
 
-
 /* ============================
    FORM CONTAINER
    ============================ */
@@ -54,24 +57,23 @@ body, html, input, textarea, select, button {
 .form-container {
   width: 100%;
   margin: 0 auto;
-  padding: 0 60px;
+  padding: 0 50px;
   box-sizing: border-box;
   background: #fff;
 }
-
 
 /* ============================
    FORM ROWS
    ============================ */
 
 .form-row {
-  height: 100px; /* ارتفاع ثابت برای ردیف */
+  min-height: 110px; /* مین هایت */
   overflow: visible;
-  align-items: flex-start; 
   display: flex;
+  align-items: flex-start; 
   flex-wrap: wrap;
-  gap: 5%; /* فاصله بین ستون‌ها */
-  margin-bottom: 30px; /* فاصله ثابت بین ردیف‌ها */
+  gap: 2%; /* فاصله بین ستون‌ها */
+  margin: 0;
   justify-content: center;
 }
 
@@ -80,13 +82,19 @@ body, html, input, textarea, select, button {
    ============================ */
 
 .form-group {
-  width: 30%;
+  padding-bottom: 22px; /* فضای رزرو شده برای خطا */
+  position: relative; /* برای موقعیت دهی مطلق خطاها */
   height: 100%; /* پر کردن کل ارتفاع row */
   display: flex;
+  flex: 1 1 0;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center !important;
   gap: 0px; /* فاصله بین لیبل و فرم کنترل */
+}
+
+.form-group.narrow {
+  flex: 0 0 30%;
 }
 
 /* ============================
@@ -103,23 +111,21 @@ body, html, input, textarea, select, button {
   margin-bottom: 6px;
 }
 
-
-
 /* ============================
    FORM CONTROLS
    ============================ */
 
 .form-control {
   width: 100%; /* پر کردن عرض فرم گروپ */
-  height: 48px; /* ارتفاع ثابت */
-  padding: 12px 16px; 
+  height: 45px; /* ارتفاع ثابت */
+  padding: 5px 16px; 
   border: 1.5px solid #b6d7f7;
   border-radius: 10px;
   font-size: 16px;
   background: #f7fbff;
   color: #222;
   box-sizing: border-box;
-  transition: border .2s, background .2s;;
+  transition: border .2s, background .2s;
 }
 
 .form-control:focus {
@@ -199,12 +205,22 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 /* ============================
    ERROR MESSAGES
    ============================ */
-   
+
+.form-group .error-message {
+  align-self: flex-end;
+  text-align: right;
+}
+
 .error-message {
+  position: absolute; /* موقعیت دهی مطلق خطاها در فضای رزرو شده */
+  top: 75px;
+  left: 0;
+  display: inline-flex;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 18px;
   color: #e74c3c;
   font-size: 13px;
-  min-height: 18px;
-  margin-top: 4px;
   white-space: pre-wrap;
   word-wrap: break-word;
   opacity: 0;
@@ -224,11 +240,12 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #fceefd;  /* پس‌زمینه صورتی-بنفش روشن */
-  color: #722872;             /* متن ارغوانی تیره */
-  border: 1px solid #e9c7f0;  /* حاشیه بنفش روشن */
-  margin: 50px auto 40px;
-  padding: 0 24px;
+  background-color: #fceefd;
+  color: #722872;
+  border: 1px solid #e9c7f0;
+  top: 0;
+  margin: 7px auto 28px;
+  padding: 8px 16px;
   border-radius: 6px;
   font-size: 16px;
   font-weight: 600;
@@ -236,21 +253,19 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   line-height: 1.6;
   width: 80%; /* همیشه ۸۰٪ عرض صفحه */
   box-sizing: border-box;
-  
   overflow: hidden;
+
   max-height: 0;
   transform: scaleY(0.9);
   opacity: 0;
   transition:
-    max-height 0.25s ease,
-    padding 0.25s ease,
-    transform 0.25s ease,
-    opacity 0.25s ease;
+    max-height 0.8s ease-in-out,
+    transform 0.8s ease-in-out,
+    opacity 0.8s ease-in-out;
 }
 
-/* فعال‌سازی انیمیشن */
 .general-error.visible {
-  padding: 16px 24px;
+  max-height: 160px;
   transform: scaleY(1);
   opacity: 1;
 }
@@ -261,19 +276,20 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 
 .form-actions {
   display: flex;
-  justify-content: left; 
-  margin: 0 auto 0; 
+  justify-content: left;
+  margin: 0 auto 0;
   gap: 20px;
   z-index: 1000;
   padding: 10px 0px;
   border-radius: 10px;
 }
+
 .btn-submit,
 .btn-cancel {
-  width: 150px;      
-  height: 48px;      
-  padding: 0 0px;   
-  border-radius: 24px; /* کپسولی شدن با نصف ارتفاع */
+  width: 150px;
+  height: 45px;
+  padding: 0 0px;
+  border-radius: 24px;
   font-size: 18px;
   font-weight: 600;
   display: inline-flex;
@@ -283,7 +299,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   text-decoration: none !important;
   box-shadow: none !important;
   border: none !important;
-  transition: background 0.25s, color 0.25s;
+  transition: transform 0.25s, color 0.25s;
 }
 
 .btn-submit {
@@ -293,7 +309,6 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 
 .btn-submit:hover,
 .btn-submit:focus {
-  background-color: #4dc44d;
   color: #ffffff;
 }
 
@@ -302,8 +317,15 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   color: #851b1b;
 }
 
+.btn-submit:hover,
+.btn-submit:focus,
 .btn-cancel:hover,
 .btn-cancel:focus {
-  background-color: #ff4545;
   color: #ffffff;
+}
+
+.btn-submit:hover,
+.btn-cancel:hover{
+  opacity: 0.9;
+  transform: scale(1.05);
 }

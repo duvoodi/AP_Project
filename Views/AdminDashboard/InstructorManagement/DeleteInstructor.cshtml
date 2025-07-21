@@ -20,6 +20,12 @@
     <form asp-controller="InstructorManagement" asp-action="DeleteInstructor" asp-route-h="@currentHash" method="post" id="delete-instructor-form">
       @Html.AntiForgeryToken()
 
+      <div class="error-row">
+        <div class="error-group" >
+          <span class="error-message general-error" id="GeneralError" >@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+      
       <div class="form-row">
         <div class="form-group">
           <label>نام</label>
@@ -50,12 +56,6 @@
         </div>
       </div>
 
-      <div class="error-row">
-        <div class="error-group">
-          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
-        </div>
-      </div>
-
       <div class="form-actions">
         <a type="button" asp-controller="InstructorManagement" asp-action="Index" asp-route-h="@currentHash"
           class="btn-cancel">انصراف</a>
@@ -77,9 +77,9 @@
 
         // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
       replaceError("GeneralError", '');
-      setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+      setTimeout(() => { // این بخش کد 850 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
         this.submit();
-      }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+      }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
     });
   </script>
 }
