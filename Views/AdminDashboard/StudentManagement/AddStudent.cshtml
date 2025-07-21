@@ -10,7 +10,7 @@
 <!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/AdminDashboard/StudentManagement/student-form-actions.css" asp-append-version="true" />
 
-<main class="dashboard-main admin @(ViewData["NoAnimationIn"] as bool? == true ? "no-animation-in" : "") ">
+<main class="dashboard-main admin">
   <div class="titlebar">
     <div class="action-title-tab add">
       افزودن دانشجو
@@ -21,6 +21,12 @@
       id="add-student-form">
       @Html.AntiForgeryToken()
 
+      <div class="error-row">
+        <div class="error-group" >
+          <span class="error-message general-error" id="GeneralError" >@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+      
       <div class="form-row">
         <div class="form-group">
           <label>نام</label>
@@ -42,13 +48,13 @@
       </div>
 
       <div class="form-row">
-        <div class="form-group">
+        <div class="form-group narrow">
           <label>کد دانشجویی</label>
           <input class="form-control" id="StudentId" name="StudentId" value="@form?.StudentId" readonly
             placeholder="منتظر سال ورودی معتبر ..." />
           <span class="error-message">@Html.ValidationMessage("StudentId")</span>
         </div>
-        <div class="form-group">
+        <div class="form-group narrow">
           <label>سال ورودی</label>
           <input class="form-control valid-numeric" id="EnrollmentYear" name="EnrollmentYear"
             value="@form?.EnrollmentYear" data-maxlength="4" data-allow-slice="true" />
@@ -57,7 +63,7 @@
       </div>
 
       <div class="form-row">
-        <div class="form-group">
+        <div class="form-group narrow">
           <label>رمز عبور</label>
           <div class="password-wrapper">
             <input type="password" class="form-control valid-password" id="Password" name="Password"
@@ -68,7 +74,7 @@
           </div>
           <span class="error-message">@Html.ValidationMessage("Password")</span>
         </div>
-        <div class="form-group">
+        <div class="form-group narrow">
           <label>تکرار رمز عبور</label>
           <div class="password-wrapper">
             <input type="password" class="form-control valid-password" id="ConfirmPassword" name="ConfirmPassword"
@@ -81,16 +87,10 @@
         </div>
       </div>
 
-      <div class="error-row">
-        <div class="error-group">
-          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
-        </div>
-      </div>
-
       <div class="form-actions">
         <a type="button" asp-controller="StudentManagement" asp-action="Index" asp-route-h="@currentHash"
-          class="btn-cancel">انصراف</a>
-        <button type="submit" class="btn-submit">تایید</button>
+          class="btn-cancel blur-on-leave">انصراف</a>
+        <button type="submit" class="btn-submit blur-on-leave">تایید</button>
       </div>
     </form>
   </div>
@@ -103,6 +103,7 @@
     const currentPersianYear = parseInt('@ViewData["currentPersianYear"]');
   </script>
   <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/Shared/blur-on-leave.js"></script>
   <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
   <script src="~/js/Shared/debounce.js"></script>
   <script src="~/js/FormUtils/Shared/valid-person-name-inputs.js"></script>
@@ -122,7 +123,7 @@
     });
 
     // مقدار دهی و ولیدیت فیلد ها ریدانلی
-    // چک فیلد های رید آنلی چون توسط کاربر نوشته نشده و ایونت بلور ایجاد نمیکند
+    // چک فیلد های رید آنلی چون توسط کاربر نوشته نشده و ایونت بلر ایجاد نمیکند
 
     // دریافت کد دانشجویی به صورت زنده هنگام ورود سال استخدام
     let lastFetchedEnrollmentYear = @(form != null && !string.IsNullOrEmpty(form.StudentId) ? form.EnrollmentYear : "null"); // نگهداری آخرین سالی که براش فچ انجام شده
@@ -190,9 +191,6 @@
     document.getElementById('add-student-form').addEventListener('submit', function (e) {
       e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
 
-      const submitBtn = this.querySelector('.btn-submit');
-      submitBtn.blur(); // خارج شدن  سابمیت از حالت فشرده‌شده
-
       // حذف ارور های قبلی برای انیمیشن رفتن ارور ها قبلی و آماده شدن برای آمدن ارور های جدید ادامه
       const errorMessages = document.querySelectorAll('.error-message');
       errorMessages.forEach(errorSpan => {
@@ -204,7 +202,6 @@
           }
         }
       });
-
       setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر بالا اجرا تا خالی کردن ارور ها رندر گرفته بشه
 
         let hasError = false;
@@ -221,9 +218,9 @@
         if (!hasError) {
           // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
           replaceError("GeneralError", '');
-          setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+          setTimeout(() => { // این بخش کد 850 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
             this.submit();
-          }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+          }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
         }
       }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
     });

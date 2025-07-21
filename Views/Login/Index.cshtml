@@ -6,7 +6,7 @@
 <!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/Login/login.css" asp-append-version="true" />
 
-<div class="login-container @(ViewData["NoAnimationIn"] as bool? == true ? "no-animation-in" : "")">
+<div class="login-container">
   <h2>صفحه ورود</h2>
   <form asp-controller="Login" asp-action="Index" method="post" id="login-form">
     @Html.AntiForgeryToken()
@@ -29,7 +29,7 @@
       <span class="error-message">@Html.ValidationMessage("Password")</span>
     </div>
 
-    <button type="submit" class="btn-submit">
+    <button type="submit" class="btn-submit blur-on-leave">
       ورود
     </button>
 
@@ -60,6 +60,7 @@
     }, 5000); // هر 5 ثانیه تا فشار به سرور نیاد
   </script>
   <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/Shared/blur-on-leave.js"></script>
   <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
   <script src="~/js/FormUtils/Shared/valid-username-inputs.js"></script>
   <script src="~/js/FormUtils/Shared/valid-password-inputs.js"></script>
@@ -96,9 +97,7 @@
           }
         }
       });
-
-      // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا خالی کردن ارور ها رندر گرفته بشه
-      setTimeout(() => {
+      setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا خالی کردن ارور ها رندر گرفته بشه
         let hasError = false;
 
         // ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
@@ -113,10 +112,10 @@
         if (!hasError) {
           // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
           replaceError("GeneralError", '');
-          setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+          setTimeout(() => { // این بخش کد 850 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
             form.removeEventListener('submit', formSubmitHandler); // جلوگیری از حلقه بی‌پایان
             form.requestSubmit ? form.requestSubmit() : form.submit();
-          }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+          }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
         } else {
           formSubmitting = false; // اگر خطا داشت فلگ بسته تا بتوان سابمیت جدید زد
         }

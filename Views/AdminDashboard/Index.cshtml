@@ -2,16 +2,14 @@
 @{
   ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
-  var hasFooter = true;
 }
 
-<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main admin">
     <!-- محتوای پیش‌فرض -->
 </main>
 
-@if (hasFooter)
-{
-  <footer class="dashboard-footer admin">
-    <p>لطفا یکی از سربرگ‌ها را انتخاب کنید</p>
-  </footer>
+@section FooterPopup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
+  <div class="footer-popup empty will-show">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>لطفا یکی از سربرگ‌ها را انتخاب کنید</p>
+  </div>
 }
