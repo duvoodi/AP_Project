@@ -1,0 +1,253 @@
+/* ============================
+   FONT
+   ============================ */
+
+table,
+button,
+td,
+th {
+    font-family: 'Vazirmatn', sans-serif !important;
+}
+
+.student-summary-grid {
+  display: grid;
+  max-width: 1170px;
+  margin: 1rem auto;
+  background: #f5f7fa;
+  border-radius: 8px;
+  border: 1px solid #d7dde4;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+  font-size: 14px;
+  color: #444;
+  padding: 12px 16px;
+  gap: 12px 24px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(30px, auto);
+  
+}
+
+.student-summary-grid > div {
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #555;
+}
+
+.student-summary-grid > div strong {
+  min-width: 120px;
+  font-weight: 600;
+  color: #555;
+}
+
+/* ============================
+   TABLE STYLES
+   ============================ */
+
+.semester-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    background-color: #ccdfef;
+    font-size: 15px;
+    margin-top: 1.6rem;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 95%;
+}
+
+.semester-table thead tr {
+    font-size: 15px;
+}
+
+.semester-table thead th {
+    color: white;
+    background-color: #00b0f0;
+    font-weight: 600;
+    padding: 12px 8px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.semester-table th,
+.semester-table td {
+    border: 1px solid white;
+    padding: 10px 6px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.semester-table tbody tr {
+    background-color: #f1f9ff;
+    color: #000;
+    transition: background-color 0.2s ease;
+}
+
+.semester-table tbody tr:hover {
+    background-color: #d9f0ff;
+}
+
+/* ============================
+   COLUMN WIDTHS (Optional)
+   ============================ */
+
+.col-index {
+    width: 60px;
+}
+
+.col-semester {
+    width: 140px;
+}
+
+.col-units,
+.col-passed-units,
+.col-ungraded-units {
+    width: 110px;
+}
+
+.col-probation {
+    width: 100px;
+}
+
+.col-term-average {
+    width: 100px;
+}
+
+.col-action {
+    width: 100px;
+}
+
+/* ============================
+   LINKS
+   ============================ */
+
+.text-link {
+    background: none;
+    border: none;
+    color: #0645AD;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.25s ease;
+}
+
+.text-link:hover {
+    color: #ce0e84;
+}
+
+/* ============================
+   EMPTY STATE
+   ============================ */
+
+.empty-popup {
+    background-color: #ffe6e6;
+    border: 1px dashed #d9534f;
+    color: #d9534f;
+    text-align: center;
+    padding: 20px;
+    margin: 30px auto;
+    border-radius: 12px;
+    width: 80%;
+    font-size: 16px;
+    font-family: 'Vazirmatn', sans-serif;
+}
+
+.will-show {
+    animation: fadeIn 0.4s ease-in-out forwards;
+}
+
+.form-actions {
+    display: flex;
+    position: sticky;
+    bottom: 0;
+    justify-content: left;
+    margin: 125px 30px auto;
+    gap: 20px;
+    z-index: 1000;
+    padding: 10px 0px;
+    border-radius: 10px;
+}
+
+.btn-submit {
+    width: 150px;
+    height: 48px;
+    padding: 0;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    transition: background 0.25s, color 0.25s;
+
+    background-color: #5c6bc0;
+    color: #ffffff;
+}
+
+.btn-submit:hover,
+.btn-submit:focus {
+    background-color: #3f51b5;
+    color: #ffffff;
+}
+
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .form-actions {
+        display: none !important;
+    }
+
+    #printable-area,
+    #printable-area * {
+        visibility: visible;
+    }
+
+    #printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    .print-button {
+        display: none;
+    }
+
+    header,
+    footer,
+    nav,
+    .sidebar {
+        display: none !important;
+    }
+}
+
+/* ============================
+   ANIMATIONS
+   ============================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

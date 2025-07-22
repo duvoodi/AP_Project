@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using AP_Project.Data;
 using AP_Project.Models.Users;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using AP_Project.Models.Courses;
 
@@ -12,8 +11,9 @@ namespace AP_Project.Controllers
         public TranscriptsController(AppDbContext db) : base(db)
         {
         }
+
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(int? year = null, int? semester = null, string h = "")
         {
             var student = CurrentStudent;
 
@@ -22,7 +22,7 @@ namespace AP_Project.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // دریافت همه سکشن‌هایی که دانشجو شرکت کرده
+            // همه Takes دانشجو رو بارگذاری کن با اطلاعات لازم
             var allTakes = _db.Takes
                 .Include(t => t.Section)
                     .ThenInclude(s => s.Course)
@@ -37,28 +37,48 @@ namespace AP_Project.Controllers
                 .Where(t => t.StudentUserId == student.Id)
                 .ToList();
 
-            // گرفتن جدیدترین ترم
-            var latestTerm = allTakes
-                .Where(t => t.Section != null)
-                .OrderByDescending(t => t.Section.Year)
-                .ThenByDescending(t => t.Section.Semester)
-                .FirstOrDefault()?.Section;
+            Section? targetTerm = null;
 
-            if (latestTerm == null)
+            if (year.HasValue && semester.HasValue)
+            {
+                // ترم مشخص شده توسط کاربر
+                targetTerm = allTakes
+                    .Where(t => t.Section != null)
+                    .Select(t => t.Section)
+                    .FirstOrDefault(s => s.Year == year.Value && s.Semester == semester.Value);
+            }
+
+            if (targetTerm == null)
+            {
+                // اگر ترم خاصی داده نشده یا پیدا نشد، جدیدترین ترم را بگیر
+                targetTerm = allTakes
+                    .Where(t => t.Section != null)
+                    .OrderByDescending(t => t.Section.Year)
+                    .ThenByDescending(t => t.Section.Semester)
+                    .Select(t => t.Section)
+                    .FirstOrDefault();
+            }
+
+            if (targetTerm == null)
             {
                 ViewBag.Takes = new List<Takes>();
                 return View("~/Views/StudentDashboard/Transcripts.cshtml", student);
             }
 
-            // فقط سکشن‌های آخرین ترم رو نگه داریم
+            // فقط سکشن‌های ترم هدف را نگه دار
             var currentTermTakes = allTakes
-                .Where(t => t.Section.Year == latestTerm.Year && t.Section.Semester == latestTerm.Semester)
-                .OrderBy(t => t.Section.Course.CourseCode.Title)
+                .Where(t => t.Section != null && t.Section.Year == targetTerm.Year && t.Section.Semester == targetTerm.Semester)
+                .OrderBy(t => t.Section?.Course?.CourseCode.Title)
                 .ToList();
 
+
             ViewBag.Takes = currentTermTakes;
+            ViewBag.HasTerm = targetTerm != null;
+            ViewBag.IsSpecificTerm = year.HasValue && semester.HasValue;
+            ViewBag.CurrentHash = h;
+
+
             return View("~/Views/StudentDashboard/Transcripts.cshtml", student);
         }
-
     }
 }
