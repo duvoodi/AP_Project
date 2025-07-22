@@ -1,0 +1,589 @@
+/* ============================
+   FONT
+   ============================ */
+
+body,
+html,
+input,
+textarea,
+select,
+button {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* ============================
+   TITLE BAR
+   ============================ */
+
+.titlebar {
+  position: sticky;
+  top: 100px;
+  margin: 0;
+  padding: 20px 0 0;
+  background-color: white;
+  z-index: 3;
+}
+
+.action-title-tab {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: calc(100% - 40px);
+  height: 54px;
+  padding: 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: none;
+  border: none;
+  border-radius: 27px;
+  /* نصف ارتفاع برای کپسول */
+  margin: 0 auto;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.action-title-tab.add {
+  background-color: #84e291;
+  color: #265C26;
+}
+
+.action-title-tab.delete {
+  background-color: #ff8a80;
+  color: #a32626;
+}
+
+.action-title-tab.edit {
+  background-color: #f5dc71;
+  color: #725810;
+}
+
+/* ============================
+   FORM CONTAINER
+   ============================ */
+
+.form-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 50px;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+/* ============================
+   FORM ROWS
+   ============================ */
+
+.form-row {
+  min-height: 110px; /* مین هایت */
+  overflow: visible;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 2%; /* فاصله بین ستون‌ها */
+  margin: 0;
+  justify-content: center;
+}
+
+/* ============================
+   FORM GROUPS
+   ============================ */
+
+.form-group {
+  padding-bottom: 22px; /* فضای رزرو شده برای خطا */
+  position: relative; /* برای موقعیت دهی مطلق خطاها */
+  height: 100%; /* پر کردن کل ارتفاع row */
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center !important;
+  gap: 0px; /* فاصله بین لیبل و فرم کنترل */
+}
+
+/* فرم‌گروه‌های خاص */
+.form-group.tiny {
+  flex: 0 0 15%;
+}
+
+.form-group.ExamDate {
+  flex: 0 0 20%;
+}
+
+.form-group.TimeSlot {
+  flex: 0 0 27%;
+}
+
+.form-group.wide {
+  flex: 0 0 100%;
+}
+
+/* ============================
+   LABELS
+   ============================ */
+
+.form-group label {
+  height: 24px; /* ارتفاع ثابت */
+  line-height: 24px;
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #156082;
+  margin-bottom: 6px;
+}
+
+/* ============================
+   FORM CONTROLS
+   ============================ */
+
+.form-control {
+  width: 100%; /* پر کردن عرض فرم گروپ */
+  height: 45px; /* ارتفاع ثابت */
+  padding: 5px 16px;
+  border: 1.5px solid #b6d7f7;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #f7fbff;
+  color: #222;
+  box-sizing: border-box;
+  transition: border .2s, background .2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border: 1.5px solid #00b0f0;
+  background: #e6f7ff;
+}
+
+/* ============================
+   READONLY
+   ============================ */
+
+.form-control[readonly] {
+  background: #f3f3f3;
+  color: #888;
+  border-color: #ddd;
+  cursor: not-allowed;
+}
+
+.prerequisite-tag.readonly-tag {
+  background-color: #f3f3f3;  
+  color: #888;
+  border: 1.5px solid #ddd;
+  cursor: not-allowed;
+}
+
+
+/* ============================
+   PLACEHOLDER STYLES
+   ============================ */
+
+.form-control::placeholder {
+  color: #888;
+  text-align: left;
+  opacity: 0.7;
+}
+
+.form-control::placeholder,
+.form-control::placeholder {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+/* ============================
+   PREREQUISITES SECTION
+   ============================ */
+
+.prerequisites-container {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  overflow: hidden;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.prerequisite-select-warper {
+    width: 500px;
+}
+
+.prerequisites-list {
+  /* حالت بسته */
+  height: 0;
+  padding: 0 8px;
+  opacity: 0;
+  transform: scaleY(0.9);
+
+  white-space: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: calc(100vw - 174px);
+  min-width: calc(960px - 174px);  /* نصف عرض صفحه اچ دی */
+  overflow-y: hidden; /* اسکرول‌بار مخفی */
+  overflow-x: hidden; /* اسکرول‌بار مخفی */
+  scroll-behavior: smooth;
+  cursor: grab; /* نشانگر دست */
+  user-select: none; /* جلوگیری از سلکت متن هنگام درگ */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  will-change: scroll-position;
+
+  transition:
+    height 0.3s ease,
+    padding-top 0.3s ease,
+    padding-bottom 0.3s ease,
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.prerequisites-list.active {
+  cursor: grabbing; /* وقتی در حال درگ است */
+}
+
+.prerequisites-list.visible {
+  height: 40px;
+  padding: 8px 8px;
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.prerequisite-tag {
+  background-color: #e3f2fd;
+  border-radius: 16px;
+  padding: 6px 12px;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  white-space: nowrap;
+  height: 32px;
+  line-height: 20px;
+  animation: fadeInTag 0.3s ease-in-out;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease,
+    margin 0.3s ease,
+    padding 0.3s ease,
+    width 0.3s ease;
+    overflow: hidden;
+}
+
+.prerequisite-tag.animation-out {
+  opacity: 0;
+  transform: translateY(6px);
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+@keyframes fadeInTag {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.prerequisite-tag button {
+  background: none;
+  border: none;
+  color: #f44336;
+  margin-right: 8px;
+  cursor: pointer;
+  font-size: 25px;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.25s ease;
+
+}
+
+.prerequisite-tag button:hover {
+  color: #444;
+}
+
+/* ============================
+   DROPDOWN ADD BUTTON
+   ============================ */
+
+.btn-add {
+  background-color: #f7fbff;
+  color: #15a0e0;
+  border: 1.5px solid #b6d7f7;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  width: 45px !important;
+  height: 45px !important;
+  flex-shrink: 0; /* مانع فشرده‌سازی دکمه در فلکس */
+  font-size: 30px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.25s ease,
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease
+}
+
+.btn-add:hover,
+.btn-add:focus {
+  background-color: #e1f5fe;
+  border-color: #00b0f0;
+  color: #0d8ecf;
+  transform: scale(1);
+}
+
+.btn-add:active {
+  transform: scale(0.9);
+}
+
+/* ============================
+   LIST ERROR
+   ============================ */
+
+.error-message.list-error {
+  width: auto;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+
+/* ============================
+   SELECT2 STYLES
+   ============================ */
+
+/* هماهنگ‌سازی Select2 با فرم‌های custom */
+.select2-container--default .select2-selection--single {
+  background-color: #f7fbff;
+  border: 1.5px solid #b6d7f7;
+  height: 45px;
+  border-radius: 10px;
+  padding: 5px 16px;
+  font-size: 16px;
+  font-family: 'Vazirmatn', sans-serif;
+  box-sizing: border-box;
+  transition: border .2s, background .2s;
+  display: flex;
+  direction: rtl !important;
+  text-align: right !important;
+  align-items: center;
+}
+
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default .select2-selection--single:hover {
+  border: 1.5px solid #00b0f0;
+  background: #e6f7ff;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #222;
+  line-height: normal;
+  padding-right: 0;
+  padding-left: 5px;
+  text-align: right;
+  direction: rtl;
+  white-space: nowrap;        /* یک‌خطی نگه‌داشتن متن */
+  overflow: hidden;           /* پنهان کردن متن اضافی */
+  text-overflow: ellipsis;    /* نمایش سه‌نقطه برای متن بریده‌شده */
+}
+
+.select2-container .select2-results__option {
+  text-align: right !important;
+  direction: rtl !important;
+  padding: 5px 12px !important;
+  line-height: 20px !important;
+  font-size: 14px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  left: 8px !important;
+  right: auto !important;
+}
+
+
+/* 1) غیرفعال‌سازی اسکرول کل dropdown */
+.select2-container--default .select2-dropdown {
+  overflow: hidden !important;
+}
+
+/* 2) فعال‌سازی اسکرول فقط در لیست آیتم‌ها */
+.select2-container--default .select2-results__options {
+  max-height: 150px !important;
+  /* ارتفاع دلخواه */
+  overflow-y: auto !important;
+  /* فقط اینجا اسکرول داشته باشد */
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+
+/* 3) پنهان کردن scrollbar کل dropdown (در صورت نمایش) */
+.select2-container--default .select2-dropdown::-webkit-scrollbar {
+  display: none !important;
+}
+
+.select2-container--default .select2-dropdown {
+  scrollbar-width: none !important;
+  /* Firefox */
+  -ms-overflow-style: none !important;
+  /* IE 10+ */
+}
+
+/* 4) چسباندن نوار جستجو به بالای لیست */
+.select2-container--default .select2-dropdown .select2-search {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  padding: 4px;
+}
+
+/* ============================
+   ERROR MESSAGES
+   ============================ */
+
+.form-group .error-message {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.error-message {
+  position: absolute;   /* موقعیت دهی مطلق خطاها در فضای رزرو شده */
+  top: 75px;
+  left: 0;
+  display: inline-flex;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 18px;
+  color: #e74c3c;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.error-message.visible {
+  opacity: 1;
+}
+
+.error-row {
+  height: auto;
+}
+
+.error-message.general-error {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fceefd;
+  color: #722872;
+  border: 1px solid #e9c7f0;
+  top: 0;
+  margin: 7px auto 28px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.6;
+  width: 80%;
+  /* همیشه ۸۰٪ عرض صفحه */
+  box-sizing: border-box;
+  overflow: hidden;
+  max-height: 0;
+  transform: scaleY(0.9);
+  opacity: 0;
+  transition:
+    max-height 0.8s ease-in-out,
+    transform 0.8s ease-in-out,
+    opacity 0.8s ease-in-out;
+}
+
+.general-error.visible {
+  max-height: 160px;
+  transform: scaleY(1);
+  opacity: 1;
+}
+
+/* ============================
+   SUBMIT BUTTON
+   ============================ */
+
+.form-actions {
+  display: flex;
+  justify-content: left;
+  margin: 0 auto 0;
+  gap: 20px;
+  z-index: 1000;
+  padding: 10px 0px;
+  border-radius: 10px;
+}
+
+.btn-safeDelete,
+.btn-fullDelete,
+.btn-submit,
+.btn-cancel {
+  width: 150px;
+  height: 45px;
+  padding: 0;
+  border-radius: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  transition: transform 0.25s, color 0.25s;
+}
+
+.btn-submit {
+  background-color: #84e291;
+  color: #265C26;
+}
+
+.btn-cancel {
+  background-color: #ff8a80;
+  color: #851b1b;
+}
+
+/* دکمه حذف ایمن */
+.btn-safeDelete {
+  background-color: #4f9eff;
+  color: #0d265b;
+}
+
+/* دکمه حذف کامل */
+.btn-fullDelete {
+  background-color: #a072e9;
+  color: #481466;
+}
+
+.btn-safeDelete:hover,
+.btn-safeDelete:focus,
+.btn-fullDelete:hover,
+.btn-fullDelete:focus,
+.btn-submit:hover,
+.btn-submit:focus,
+.btn-cancel:hover,
+.btn-cancel:focus {
+  color: #ffffff;
+}
+
+.btn-safeDelete:hover,
+.btn-fullDelete:hover,
+.btn-submit:hover,
+.btn-cancel:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}

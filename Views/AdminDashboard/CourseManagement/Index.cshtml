@@ -1,0 +1,148 @@
+@model AP_Project.Models.Users.Admin
+@using System.Globalization
+@{
+  ViewData["ActiveTab"] = "Course";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+
+  var sections = ViewBag.Sections as List<AP_Project.Models.Courses.Section>;
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var pc = new PersianCalendar();
+}
+
+<link rel="stylesheet" href="~/css/AdminDashboard/CourseManagement/course-management.css" asp-append-version="true" />
+
+<main class="dashboard-main admin">
+  <div class="toolbar">
+    <a asp-controller="CourseManagement" asp-action="AddCourse"
+       asp-route-h="@currentHash" class="btn-add-course">
+      <span class="icon">&#43;</span>
+      <span class="text">افزودن درس</span>
+    </a>
+    <a asp-controller="CourseCodesManagement" asp-action="ManageCourseCodesIndex" 
+    asp-route-h="@currentHash" class="btn-manage-course-codes">
+      <span class="icon">&#8227;</span>
+      <span class="text">مدیریت کد درس</span>
+    </a>
+  </div>
+  <table class="course-table">
+    <thead>
+      <tr>
+        <th class="col-index">ردیف</th>
+        <th class="col-code">کد درس</th>
+        <th class="col-units">تعداد واحد</th>
+        <th class="col-prereq">دروس پیش‌نیاز</th>
+        <th class="col-title">عنوان درس</th>
+        <th class="col-semester">نیم‌سال</th>
+        <th class="col-instructor">نام استاد</th>
+        <th class="col-schedule">زمان برگزاری</th>
+        <th class="col-examdate">تاریخ امتحان</th>
+        <th class="col-description">توضیحات</th>
+        <th class="col-courseid">آی‌دی درس</th>
+        @if (sections != null && sections.Any())
+        {<th class="col-actions"></th>}
+      </tr>
+    </thead>
+
+    @if (sections != null && sections.Any())
+    {
+      <tbody>
+        @for (int i = 0; i < sections.Count; i++)
+        {
+          var s = sections[i];
+          var course = s.Course;
+          var instructor = s.Teaches?.Instructor;
+          var timeSlot = s.TimeSlot;
+          var prereq = (course?.Prerequisites != null && course.Prerequisites.Any())
+            ? string.Join(" ", course.Prerequisites
+                      .Where(p => p.PrerequisiteCourseCode != null)
+                      .Select(p => p.PrerequisiteCourseCode.Code.ToString()))
+            : "-";
+          <tr>
+            <td class="col-index">@((i + 1))</td>
+            <td class="col-code">@course.CourseCode.Code</td>
+            <td class="col-units">@course.Unit</td>
+            <td class="col-prereq">@prereq</td>
+            <td class="col-title">@course.CourseCode.Title</td>
+            <td class="col-semester">@($"{s.Year}{s.Semester}")</td>
+            <td class="col-instructor @(instructor == null ? "no-content" : "")">
+              @(instructor != null ? $"{instructor.FirstName} {instructor.LastName}" : "استاد ندارد")
+            </td>
+            <td class="col-schedule">
+              <span>@timeSlot?.Day</span><br>
+              <span>@timeSlot?.StartTime.ToString(@"hh\:mm") - @timeSlot?.EndTime.ToString(@"hh\:mm")</span>
+            </td>
+            <td class="col-examdate">
+              @(course?.FinalExamDate != default(DateTime)
+                ? $"{pc.GetYear(course.FinalExamDate)}/{pc.GetMonth(course.FinalExamDate):00}/{pc.GetDayOfMonth(course.FinalExamDate):00}"
+                : "-")
+            </td>
+            <td class="col-description">@(string.IsNullOrWhiteSpace(course?.Description) ? "-" : course.Description)</td>
+            
+            <td class="col-courseid">
+              <button class="text-link copy-id-button"
+                data-id="@s.Id"
+                data-tooltip="@s.Id"
+                data-tooltip-align="center">
+                کپی
+              </button>
+            </td>
+
+            <td class="col-actions">
+              <div class="actions-wrapper">
+                <a asp-controller="CourseManagement" asp-action="EditCourse"
+                asp-route-id="@s.Id" asp-route-h="@currentHash"
+                class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a asp-controller="CourseManagement" asp-action="DeleteCourse"
+                asp-route-id="@s.Id" asp-route-h="@currentHash"
+                class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
+                  <i class="fas fa-trash-alt"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    }
+  </table>
+</main>
+
+@section FooterPopup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
+  @if (sections == null && !sections.Any())
+  {
+    <div class="footer-popup empty will-show">
+      <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+    </div>  
+  }
+  else if (sections.Any(s => s.Teaches == null || s.Teaches.Instructor == null))
+  {
+    <div class="footer-popup error will-show">
+      <p><i class="fas fa-exclamation-triangle" style="margin-left: 8px;"></i>بعضی درس‌ها استاد ندارند، لطفاً استادشان را مشخص کرده و یا آن درس را حذف کنید.</p>
+    </div>
+  }
+}
+
+@section Scripts {
+  <script src="~/js/Shared/tooltip.js"></script>
+  <script src="~/js/FormUtils/Shared/persian-time-slot.js"></script>
+  <script src="~/js/Shared/tooltip.js"></script>
+  <script>
+  // دکمه‌های کپی
+  document.querySelectorAll('.copy-id-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        navigator.clipboard.writeText(id).then(() => {
+        tooltip.textContent = 'کپی شد';
+        tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
+        tooltip.classList.add('align-center', 'show');
+
+        const r = btn.getBoundingClientRect();
+        tooltip.style.top = (r.bottom + 6) + 'px';
+        tooltip.style.left = (r.left + r.width / 2) + 'px';
+        });
+      });
+    });
+  </script>
+}

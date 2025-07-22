@@ -4,7 +4,6 @@
 }
 
 @section Styles {
-  <link rel="stylesheet" href="~/css/Layout/_layout-dashboard.css"  asp-append-version="true" />
   <link rel="stylesheet" href="~/css/Layout/_layout-student.css" asp-append-version="true" />
 }
 
@@ -14,3 +13,7 @@
 
 @RenderBody()
 @RenderSection("Scripts", required: false)
+
+@section FooterPopup{ <!-- انتقال پاپ آپ به لایه بالاتر -->
+  @RenderSection("FooterPopup", required: false)
+}

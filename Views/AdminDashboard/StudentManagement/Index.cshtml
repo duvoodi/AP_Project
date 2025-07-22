@@ -5,13 +5,12 @@
   Layout = "_LayoutAdmin";
   var students = ViewBag.Students as List<AP_Project.Models.Users.Student>;
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  var hasFooter = false;
 }
 
 <!-- استایل اختصاصی -->
 <link rel="stylesheet" href="~/css/AdminDashboard/StudentManagement/student-management.css" asp-append-version="true" />
 
-<main class="dashboard-main admin @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main admin">
   <div class="toolbar">
     <a asp-controller="StudentManagement" asp-action="AddStudentIndex" asp-route-h="@currentHash"
       class="btn-add-student">
@@ -30,7 +29,8 @@
         <th class="col-eyear">سال ورودی</th>
         <th class="col-stdid">کد دانشجویی</th>
         <th class="col-userid">آی‌دی کاربری</th>
-        <th class="col-actions"></th>
+        @if (students != null && students.Any())
+        {<th class="col-actions"></th>}
       </tr>
     </thead>
     @if (students != null && students.Any())
@@ -56,7 +56,7 @@
               <div class="actions-wrapper">
                 <a asp-controller="StudentManagement" asp-action="EditStudent" asp-route-id="@std.Id" asp-route-h="@currentHash"
                   class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
-                  <i class="fas fa-edit""></i>
+                  <i class="fas fa-edit"></i>
                 </a>
                 <a asp-controller="StudentManagement" asp-action="DeleteStudent" asp-route-id="@std.Id" asp-route-h="@currentHash"
                   class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
@@ -71,16 +71,10 @@
   </table>
 </main>
 
-<!-- باید خارج مین باشد چون مین همیشه ارتفاع صفحه را پر نمیکند -->
-<div class="empty-popup @(students == null || !students.Any() ? "will-show" : "")">
-  <p>موردی جهت نمایش وجود ندارد</p>
-</div>
-
-@if (hasFooter)
-{
-  <footer class="dashboard-footer admin">
-    <p>متن فوتر</p>
-  </footer>
+@section FooterPopup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
+  <div class="footer-popup empty @(students == null || !students.Any() ? "will-show" : "")">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+  </div>
 }
 
 @section Scripts {

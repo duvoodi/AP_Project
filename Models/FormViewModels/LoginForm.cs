@@ -45,13 +45,14 @@ namespace AP_Project.FormViewModels.LoginForm
             }
 
             // 2. چک مکس لنگت ارور
-            // 2.1 اگر ارور مکس لنگت داره اولویت با اونه، اول اون باید برطرف بشه
-            if (existingError.IsMaxLengthError())
+            // 2.1 اگرارور مکس لنگت  داره اولیت با اونه اول اون باید برطرف
+            string maxLength_error = model.MaxLengthError(propertyName);
+            if (maxLength_error != null)
             {
+                ReplaceError_IfAllowed(propertyName, maxLength_error);
                 return false;
             }
-
-            // 2.2 اگر بدون ارور و اسلایسی هست نباید برای کاربر بیشتر زدن ممکن باشه
+            // 2.2 اگز بدون ارور و اسلایسی هست نباید برای کاربر بیشتر زدن ممکن باشه
             if (!model.IsPossibleToUser_MaxLength(propertyName))
             {
                 propInfo?.SetValue(model, "");

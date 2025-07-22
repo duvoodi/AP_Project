@@ -1,0 +1,430 @@
+@using AP_Project.Models.Users
+@using AP_Project.Models.Classrooms
+@using AP_Project.Models.Courses
+@using Newtonsoft.Json
+@using System.Globalization
+@model AP_Project.Models.Users.Admin
+@{
+  ViewData["ActiveTab"] = "Course";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var instructors = ViewData["Instructors"] as List<Instructor>;
+  var timeSlots = ViewData["TimeSlots"] as List<TimeSlot>;
+  var courseCodes = ViewData["CourseCodes"] as List<CourseCode>;
+  var form = ViewData["Form"] as AP_Project.FormViewModels.CourseForm.CourseFormViewModel;
+  string finalDateStr = form?.FinalExamDate ?? "";
+  DateTime finalDate;
+  string finalDateShamsi = "";
+  if (DateTime.TryParse(finalDateStr, out finalDate))
+  {
+      var pc = new PersianCalendar();
+      finalDateShamsi = $"{pc.GetYear(finalDate):0000}/{pc.GetMonth(finalDate):00}/{pc.GetDayOfMonth(finalDate):00}";
+  }
+  else
+  {
+      finalDateShamsi = "";
+  }
+}
+
+<!-- سلکت دو برای دراپ دون -->
+<link href="/lib/select2/css/select2.min.css" rel="stylesheet" />
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/CourseManagement/course-form-actions.css" asp-append-version="true" />
+
+<main class="dashboard-main admin">
+  <div class="titlebar">
+    <div class="action-title-tab add">
+      افزودن درس
+    </div>
+  </div>
+  <div class="form-container">
+    <form asp-controller="CourseManagement" asp-action="AddCourse" asp-route-h="@currentHash" method="post" id="add-course-form">
+      @Html.AntiForgeryToken()
+
+      <div class="error-row">
+        <div class="error-group">
+          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+      
+      <!-- ردیف 1: کد درس و تعداد واحد و نیم‌سال-->
+      <div class="form-row">
+        <div class="form-group">
+          <label>انتخاب درس</label>
+          <select class="form-control wide" id="CourseCodeId" name="CourseCodeId">
+            <option value="">-- انتخاب کنید --</option>
+            @foreach (var code in courseCodes ?? new List<CourseCode>())
+            {
+                if (form?.CourseCodeId == code.Id)
+                {
+                    <option selected value="@code.Id">
+                        @code.Code – @code.Title
+                    </option>
+                }
+                else
+                {
+                    <option value="@code.Id">
+                        @code.Code – @code.Title
+                    </option>
+                }
+            }
+          </select>
+          <span class="error-message">@Html.ValidationMessage("CourseCodeId")</span>
+        </div>
+        <div class="form-group tiny">
+          <label>تعداد واحد</label>
+          <input class="form-control valid-numeric" id="Unit" name="Unit" value="@form?.Unit" data-maxlength="1" data-allow-slice="true" />
+          <span class="error-message">@Html.ValidationMessage("Unit")</span>
+        </div>
+        <div class="form-group tiny">
+          <label>نیم‌سال</label>
+          <input class="form-control valid-numeric" id="Semester" name="Semester" value="@form?.Semester" data-maxlength="5" data-allow-slice="true"/>
+          <span class="error-message">@Html.ValidationMessage("Semester")</span>
+        </div>
+      </div>
+
+      <!-- ردیف 2: دروس پیش‌نیاز -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>دروس پیش‌نیاز</label>
+          <div class="prerequisites-container">
+            <div class="prerequisite-select-warper">
+              <select id="prerequisite-select" class="form-control">
+                <option value="">-- انتخاب کنید --</option>
+                @foreach (var code in courseCodes ?? new List<CourseCode>())
+                {
+                  <option value="@code.Id">@code.Code - @code.Title</option>
+                }
+              </select>
+             </div>
+            <button type="button" id="add-prerequisite" class="btn-add blur-on-leave">+</button>
+            <span class="error-message list-error" id="list-error">@Html.ValidationMessage("PrerequisiteIds")</span>
+          </div>
+          <div id="prerequisites-list" class="prerequisites-list"><!-- محل قرار گیری --></div>
+        </div>
+      </div>
+
+      <!-- ردیف 3: مدرس و زمان برگزاری و تاریخ امتحان -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>انتخاب مدرس</label>
+          <select class="form-control" id="InstructorId" name="InstructorId">
+            <option value="">-- انتخاب کنید --</option>
+            @foreach (var instructor in instructors ?? new List<Instructor>())
+            {
+              <option value="@instructor.Id" selected="@(form?.InstructorId == instructor.Id)">
+                @instructor.InstructorId - @instructor.FirstName @instructor.LastName
+              </option>
+            }
+          </select>
+          <span class="error-message">@Html.ValidationMessage("InstructorId")</span>
+        </div>
+        <div class="form-group TimeSlot">
+          <label>زمان برگزاری</label>
+          <select class="form-control" id="TimeSlotId" name="TimeSlotId">
+            <option value="">-- انتخاب کنید --</option>
+            @foreach (var slot in timeSlots ?? new List<TimeSlot>())
+            {
+              <option value="@slot.Id" selected="@(form?.TimeSlotId == slot.Id)">
+                @slot.Day - @slot.StartTime.ToString(@"hh\:mm") تا @slot.EndTime.ToString(@"hh\:mm")
+              </option>
+            }
+          </select>
+          <span class="error-message">@Html.ValidationMessage("TimeSlotId")</span>
+        </div>
+        <div class="form-group ExamDate">
+          <label>تاریخ امتحان</label>
+          <input class="form-control valid-persian-date" 
+               id="FinalExamDate" 
+               name="FinalExamDate" 
+               value="@finalDateShamsi" 
+               placeholder="YYYY/MM/DD" 
+               data-format="yyyy/mm/dd"
+               pattern="\d{4}/\d{2}/\d{2}"
+               data-maxlength="10" />
+          <span class="error-message">@Html.ValidationMessage("FinalExamDate")</span>
+        </div>
+      </div>
+
+      <!-- ردیف 6: توضیحات -->
+      <div class="form-row">
+        <div class="form-group wide">
+          <label>توضیحات (اختیاری)</label>
+          <input class="form-control valid-text" id="Description" name="Description" value="@form?.Description" data-maxlength="160" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a type="button" asp-controller="CourseManagement" asp-action="Index" asp-route-h="@currentHash" class="btn-cancel">انصراف</a>
+        <button type="submit" class="btn-submit blur-on-leave">تایید</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+  <!-- دریافت متغیر های ارسال شده از کنترلر -->
+  <script>
+    // گرفتن پیش‌نیازها از سرور
+    const prerequisites = @Html.Raw(JsonConvert.SerializeObject(form?.PrerequisiteIds ?? new List<Guid>()));
+  </script>
+  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/Shared/blur-on-leave.js"></script>
+  <script src="~/js/FormUtils/Shared/persian-time-slot.js"></script>
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-numeric-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-text-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-persian-date-inputs.js"></script>
+  <!-- سلکت دو برای دراپ دون -->
+  <script src="~/lib/select2/js/select2.full.js"></script>
+  <script src="~/lib/select2/js/i18n/fa.js"></script>
+  <!-- تابع ولیدیت فیلد اختصاصی فیلد های این صفحه -->
+  <script src="~/js/FormUtils/CourseForm/validateField.js"></script>
+  <script>
+    // ولیدیت فیلد ها هنگام خروج از فیلد با نمایش ارور ترو
+    document.querySelectorAll('input[id], textarea[id]').forEach(input => {
+      input.addEventListener('blur', function () {
+        validateField(this.id, true);
+      });
+    });
+    $(document).ready(function () {
+      // بلر سلکت ها با کلوز در جی کوئری سلکت2
+      ['CourseCodeId', 'TimeSlotId'].forEach(id => {
+        $('#' + id).on('select2:close', function () {
+          validateField(id, true);
+
+          // چک اختصاصی کد های پیشنیاز با کد درس با تغییر کد درس
+          if (id === 'CourseCodeId') {
+            checkPrerequisitesWithCourseCode();
+          }
+        });
+      });
+    });
+
+    // چک اختصاصی کد های پیشنیاز با کد درس
+    function checkPrerequisitesWithCourseCode() {
+      const selectedCourseId = $('#CourseCodeId').val();
+      const validationResult = validateField('CourseCodeId', false);
+
+      if (selectedCourseId && prerequisites.includes(selectedCourseId)) {
+        if (validationResult) {
+          replaceError("list-error", "کد درس نمی‌تواند پیش‌نیاز خود باشد");
+          return false;
+        }
+      } else {
+        if (validationResult) {
+          replaceError("list-error", "");
+          return true;
+        }
+      }
+    }
+
+    // راه‌اندازی Select2
+    $(document).ready(function () {
+      $('#CourseCodeId').select2({
+        dropdownAutoWidth: true,
+        width: '100%',
+        dropdownCssClass: 'custom-select2-dropdown',
+        dropdownParent: $('#CourseCodeId').closest('.form-group')
+      });
+
+      $('#InstructorId').select2({
+        dropdownAutoWidth: true,
+        width: '100%',
+        dropdownCssClass: 'custom-select2-dropdown',
+        dropdownParent: $('#InstructorId').closest('.form-group')
+      });
+
+      $('#TimeSlotId').select2({
+        dropdownAutoWidth: true,
+        width: '100%',
+        dropdownCssClass: 'custom-select2-dropdown',
+        dropdownParent: $('#TimeSlotId').closest('.form-group')
+      });
+
+      $('#prerequisite-select').select2({
+        dropdownAutoWidth: true,
+        width: '100%',
+        dropdownCssClass: 'custom-select2-dropdown',
+        dropdownParent: $('#prerequisite-select').closest('.form-group')
+      });
+    });
+
+    // مقداردهی اولیه پیش‌نیازها از سرور
+    document.addEventListener('DOMContentLoaded', function() {
+      const container = document.getElementById('prerequisites-list');
+      let initialCount = 0;
+
+      prerequisites.forEach(id => {
+        const option = document.querySelector(`#prerequisite-select option[value="${id}"]`);
+        if (option) {
+          const tag = document.createElement('div');
+          tag.className = 'prerequisite-tag';
+          tag.innerHTML = `
+            ${option.text}
+            <button type="button" onclick="removePrerequisite('${id}')">×</button>
+            <input type="hidden" name="PrerequisiteIds" value="${id}" />
+          `;
+          container.appendChild(tag);
+          initialCount++;
+        }
+      });
+
+      // اگر از سرور داده داشتیم، لیست را ویزیبل کن
+      if (initialCount > 0) {
+        container.classList.add('visible');
+        checkPrerequisitesWithCourseCode(); // فراخوانی چک اختصاصی هنگام نمایان شدن داده ها از سرور
+      }
+    });
+
+    // افزودن پیش‌نیازها توسط کاربر
+    document.getElementById('add-prerequisite')?.addEventListener('click', function () {
+      const container = document.getElementById('prerequisites-list');
+      const select = document.getElementById('prerequisite-select');
+      const value = select.value;
+      const text = select.options[select.selectedIndex].text;
+
+      if (value && value !== "" && !document.querySelector(`input[name="PrerequisiteIds"][value="${value}"]`)) {
+        const tag = document.createElement('div');
+        tag.className = 'prerequisite-tag';
+        tag.innerHTML = `
+          ${text}
+          <button type="button" onclick="removePrerequisite('${value}')">×</button>
+          <input type="hidden" name="PrerequisiteIds" value="${value}" />
+        `;
+        container.appendChild(tag);
+        container.classList.add('visible');
+
+        // مخفی کردن گزینه از دراپ‌داون
+        const optionToHide = select.querySelector(`option[value="${value}"]`);
+        if (optionToHide) {
+          optionToHide.disabled = true;
+          $(select).trigger('change.select2'); // اطلاع به Select2 که وضعیت گزینه‌ها تغییر کرده
+        }
+
+        prerequisites.push(value); // به‌روز شدن لیست انتخاب شده
+        $('#prerequisite-select').select2('close');
+        checkPrerequisitesWithCourseCode(); // فراخوانی چک اختصاصی بعد افزودن تگ
+      }
+    });
+    // تابع حذف تگ پیش‌نیاز با شناسه‌ی مشخص
+    function removePrerequisite(id) {
+      const container = document.getElementById('prerequisites-list');
+      const tag = container.querySelector(`.prerequisite-tag input[value="${id}"]`)?.parentElement;
+      if (tag) {
+        // مشخص کردن مقدار واقعی عرض و جایگذاری بجای آتو برای انیمیت صحیح به صفر
+        const originalWidth = tag.offsetWidth + 'px';
+        tag.style.width = originalWidth;
+        // تریگر ری‌فلوی (مهم)
+        tag.offsetHeight;
+
+        // سپس شروع انیمیشن خروج
+        tag.classList.add('animation-out');
+        tag.style.width = '0px'; // به نرمی عرض را به صفر ببریم
+        setTimeout(() => {
+          // بعد از پایان انیمیشن، حذف از داکیمونت
+          tag.remove();
+
+          // نشان دادن دوباره گزینه در دراپ‌داون
+          const optionToShow = document.querySelector(`#prerequisite-select option[value="${id}"]`);
+          if (optionToShow) {
+            optionToShow.disabled = false;
+            $('#prerequisite-select').trigger('change.select2'); // اطلاع به Select2 که وضعیت گزینه‌ها تغییر کرده
+          }
+
+          // حذف از لیست انتخاب شده ها
+          const index = prerequisites.indexOf(id);
+          if (index !== -1) {
+            prerequisites.splice(index, 1);
+          }
+
+          checkPrerequisitesWithCourseCode(); // فراخوانی چک اختصاصی بعد حذف از انتخاب شده ها
+
+          // اگر هیچ تگی باقی نمانده
+          if (container.children.length === 0) {
+            requestAnimationFrame(() => {
+              container.classList.remove('visible');
+            });
+          }
+        }, 300); // دقیقا 300 میلی ثانیه تا بلافاصله با حذف تگ، لیست بسته شود 
+      }
+    }
+
+    // پیمایش افقی لیست پیشنیاز ها با درگ
+    const slider = document.getElementById('prerequisites-list');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true;
+      slider.classList.add('active');
+      startX = e.clientX;
+      scrollLeft = slider.scrollLeft;
+      slider.style.userSelect = 'none'; // جلوگیری از انتخاب متن
+    });
+
+    slider.addEventListener('mouseleave', () => {
+      isDown = false;
+      slider.classList.remove('active');
+      slider.style.userSelect = 'auto';
+    });
+
+    slider.addEventListener('mouseup', () => {
+      isDown = false;
+      slider.classList.remove('active');
+      slider.style.userSelect = 'auto';
+    });
+
+    slider.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+
+      const walk = e.clientX - startX;
+      slider.scrollLeft = scrollLeft - walk;
+    });
+
+    // اعتبارسنجی فرم‌ها
+    document.getElementById('add-course-form').addEventListener('submit', function (e) {
+      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
+
+      // حذف ارور های قبلی برای انیمیشن رفتن ارور ها قبلی و آماده شدن برای آمدن ارور های جدید ادامه
+      const errorMessages = document.querySelectorAll('.error-message');
+      errorMessages.forEach(errorSpan => {
+        const parentGroup = errorSpan.closest('.form-group, .error-group');
+        if (parentGroup) {
+          const firstWithId = parentGroup.querySelector('[id]');
+          if (firstWithId) {
+            replaceError(firstWithId.id, '')
+          }
+        }
+      });
+      setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر بالا اجرا تا خالی کردن ارور ها رندر گرفته بشه
+
+        let hasError = false;
+
+        // ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
+        // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+        this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+          if (!validateField(input.id, true)) {
+            hasError = true;
+          }
+        });
+
+        // چک اختصاصی کد های پیشنیاز با کد درس قبل ارسال
+        if(!checkPrerequisitesWithCourseCode()) hasError = true
+
+        // اگر خطایی نبود فرم ارسال شود
+        if (!hasError) {
+          // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
+          replaceError("GeneralError", '');
+          setTimeout(() => { // این بخش کد 800 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+            this.submit();
+          }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
+        }
+      }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+    });
+  </script>
+}
