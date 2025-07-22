@@ -43,7 +43,7 @@ html, body {
   justify-content: space-between;
   box-sizing: border-box;
   border-bottom: 0px solid #ddd;
-  z-index: 9998;  /* گلوبال پاپ آپ 9999 هدر 9998 فوتر پاپ آپ 9997 */
+  z-index: 9999;  /* هدر 9999 */
   overflow: hidden;
 }
 
