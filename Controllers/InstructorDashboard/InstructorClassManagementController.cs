@@ -97,7 +97,7 @@ namespace AP_Project.Controllers
             ViewBag.Takes = section.Takes.ToList();
             ViewBag.SectionId = section.Id;
 
-            return View("~/Views/InstructorDashboard/ClassManagement/SetGrade.cshtml");
+            return View("~/Views/InstructorDashboard/ClassManagement/SetGrade.cshtml", instructor);
         }
 
         [HttpPost]
@@ -190,7 +190,7 @@ namespace AP_Project.Controllers
             ViewBag.SectionId = section.Id;
             ViewBag.H = h;
 
-            return View("~/Views/InstructorDashboard/ClassManagement/DeleteStudent.cshtml");
+            return View("~/Views/InstructorDashboard/ClassManagement/DeleteStudent.cshtml", instructor);
         }
 
 
