@@ -97,30 +97,36 @@
 
   <div class="separator"></div>
 
-  <!-- فرم حذف کد درس -->
-  <div class="form-container">
-    <form asp-controller="CourseCodesManagement" asp-action="DeleteCourseCode" asp-route-h="@currentHash" method="post" class="course-code-form">
-      @Html.AntiForgeryToken()
-      <div class="form-row">
-        <div class="form-group">
-          <label>انتخاب درس</label>
-          <select class="form-control" name="DeleteId" id="DeleteId">
-            <option value="">-- انتخاب کنید --</option>
-            @foreach (var code in courseCodes)
-            {
-              <option value="@code.Id" data-title="@code.Title" data-code="@code.Code">
-                @code.Code - @code.Title
-              </option>
-            }
-          </select>
-          <span class="error-message">@Html.ValidationMessage("DeleteId")</span>
-        </div>
-        <div class="button-group">
-          <button type="submit" class="btn-submit delete blur-on-leave">حذف درس</button>
-        </div>
+<!-- فرم حذف کد درس -->
+<div class="form-container">
+  <form asp-controller="CourseCodesManagement" asp-action="DeleteCourseCode" asp-route-h="@currentHash"
+        method="post" class="course-code-form" id="delete-course-form">
+    @Html.AntiForgeryToken()
+    <div class="form-row">
+      <div class="form-group">
+        <label>انتخاب درس</label>
+        <select class="form-control" name="DeleteId" id="DeleteId">
+          <option value="">-- انتخاب کنید --</option>
+          @foreach (var code in courseCodes)
+          {
+            <option value="@code.Id" data-title="@code.Title" data-code="@code.Code">
+              @code.Code - @code.Title
+            </option>
+          }
+        </select>
+        <span class="error-message">@Html.ValidationMessage("DeleteId")</span>
       </div>
-    </form>
-  </div>
+      <div class="button-group">
+        <button type="button" class="btn-submit delete blur-on-leave" id="delete-course-btn">حذف درس</button>
+      </div>
+    </div>
+    <div class="error-row">
+      <div class="error-group">
+        <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
+      </div>
+    </div>
+  </form>
+</div>
 </main>
 
 <partial name="_ValidationScriptsPartial" />
@@ -264,4 +270,74 @@
       });
     });
   </script>
+
+  <script>
+  const currentHash = '@currentHash';
+
+  document.getElementById('delete-course-btn').addEventListener('click', function () {
+    const selected = document.getElementById('DeleteId').value;
+    if (!selected) {
+      replaceError("DeleteId", "لطفاً یک مورد را انتخاب کنید");
+      return;
+    }
+
+    GlobalPopup.show({
+      PopupTitle: "تأیید حذف کد درس",
+      SimpleMessage: "آیا از حذف این کد درس مطمئن هستید؟",
+      CanCloseManually: false,
+      CloseOnBackdropClick: false,
+      BlockScroll: true,
+      ShowActionButtons: true,
+      GreenButtonText: "انصراف",
+      OnGreenClickJs: "GlobalPopup.hide()",
+      RedButtonText: "حذف",
+      OnRedClickJs: "submitDeleteCourseCode()",
+      iconType: "warning"
+    });
+  });
+
+  function submitDeleteCourseCode() {
+    GlobalPopup.hide();
+    const form = document.getElementById('delete-course-form');
+    replaceError("GeneralError", "");
+    replaceError("DeleteId", "");
+
+    setTimeout(() => {
+      const formData = new FormData(form);
+      fetch(form.action, {
+        method: 'POST',
+        body: formData
+      }).then(response => {
+        return response.text().then(html => ({ ok: response.ok, html }));
+      }).then(({ ok, html }) => {
+        // پارس کردن ویو برگشتی
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const generalError = doc.querySelector('#GeneralError')?.textContent.trim();
+        const deleteError = doc.querySelector('[name="DeleteId"] + .error-message')?.textContent.trim();
+
+        if (generalError || deleteError) {
+          if (generalError) replaceError("GeneralError", generalError);
+          if (deleteError) replaceError("DeleteId", deleteError);
+        } else {
+          GlobalPopup.show({
+            PopupTitle: "حذف موفق",
+            SimpleMessage: "کد درس با موفقیت حذف شد.",
+            CanCloseManually: false,
+            CloseOnBackdropClick: false,
+            BlockScroll: true,
+            iconType: "success"
+          });
+          setTimeout(() => {
+            window.location.href = '@Url.Action("ManageCourseCodesIndex", "CourseCodesManagement")' + '?h=' + encodeURIComponent(currentHash);
+          }, 2500);
+        }
+      }).catch(() => {
+        replaceError("GeneralError", "خطا در حذف کد درس. لطفاً دوباره تلاش کنید.");
+      });
+    }, 850);
+  }
+</script>
+
 }

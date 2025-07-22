@@ -8,7 +8,8 @@
 }
 
 <!-- استایل اختصاصی -->
-<link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-form-actions.css"asp-append-version="true" />
+<link rel="stylesheet" href="~/css/AdminDashboard/InstructorManagement/instructor-form-actions.css"
+  asp-append-version="true" />
 
 <main class="dashboard-main admin">
   <div class="titlebar">
@@ -17,15 +18,16 @@
     </div>
   </div>
   <div class="form-container">
-    <form asp-controller="InstructorManagement" asp-action="DeleteInstructor" asp-route-h="@currentHash" method="post" id="delete-instructor-form">
+    <form asp-controller="InstructorManagement" asp-action="DeleteInstructor" asp-route-h="@currentHash" method="post"
+      id="delete-instructor-form">
       @Html.AntiForgeryToken()
 
       <div class="error-row">
-        <div class="error-group" >
-          <span class="error-message general-error" id="GeneralError" >@Html.ValidationMessage("GeneralError")</span>
+        <div class="error-group">
+          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
         </div>
       </div>
-      
+
       <div class="form-row">
         <div class="form-group">
           <label>نام</label>
@@ -59,25 +61,67 @@
       <div class="form-actions">
         <a type="button" asp-controller="InstructorManagement" asp-action="Index" asp-route-h="@currentHash"
           class="btn-cancel blur-on-leave">انصراف</a>
-        <button type="submit" class="btn-submit blur-on-leave">تایید</button>
+        <button type="button" class="btn-submit blur-on-leave" id="delete-confirm-btn">تایید</button>
       </div>
     </form>
   </div>
 </main>
 @section Scripts {
-  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
   <script src="~/js/Shared/blur-on-leave.js"></script>
   <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
-  <script>
-    // بعد زدن کلید تایید
-    document.getElementById('delete-instructor-form').addEventListener('submit', function (e) {
-      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
 
-        // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
-      replaceError("GeneralError", '');
-      setTimeout(() => { // این بخش کد 850 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
-        this.submit();
-      }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
+  <script>
+    const currentHash = '@currentHash';
+
+    document.getElementById('delete-confirm-btn').addEventListener('click', function () {
+      GlobalPopup.show({
+        PopupTitle: "تأیید حذف استاد",
+        SimpleMessage: "آیا از حذف این استاد مطمئن هستید؟",
+        CanCloseManually: false,
+        CloseOnBackdropClick: false,
+        BlockScroll: true,
+        ShowActionButtons: true,
+        GreenButtonText: "انصراف",
+        OnGreenClickJs: "GlobalPopup.hide()",
+        RedButtonText: "حذف",
+        OnRedClickJs: "submitDeleteInstructor()",
+        iconType: "warning"
+      });
     });
+
+    function submitDeleteInstructor() {
+      GlobalPopup.hide();
+
+      const form = document.getElementById('delete-instructor-form');
+      replaceError("GeneralError", '');
+
+      setTimeout(() => {
+        const formData = new FormData(form);
+        fetch(form.action, {
+          method: 'POST',
+          body: formData
+        }).then(response => {
+          if (response.ok) {
+            GlobalPopup.show({
+              PopupTitle: "حذف موفق",
+              SimpleMessage: "استاد مورد نظر با موفقیت حذف شد.",
+              CanCloseManually: false,
+              CloseOnBackdropClick: false,
+              BlockScroll: true,
+              iconType: "success"
+            });
+
+            setTimeout(() => {
+              const redirectUrl = '@Url.Action("Index", "InstructorManagement")' + '?h=' + encodeURIComponent(currentHash);
+              window.location.href = redirectUrl;
+            }, 2500);
+          } else {
+            throw new Error();
+          }
+        }).catch(() => {
+          replaceError("GeneralError", "خطا در حذف استاد. لطفاً دوباره تلاش کنید.");
+        });
+      }, 850);
+    }
   </script>
 }

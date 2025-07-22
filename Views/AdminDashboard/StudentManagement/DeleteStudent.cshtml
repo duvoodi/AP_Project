@@ -55,25 +55,69 @@
       <div class="form-actions">
         <a type="button" asp-controller="StudentManagement" asp-action="Index" asp-route-h="@currentHash"
           class="btn-cancel blur-on-leave">انصراف</a>
-        <button type="submit" class="btn-submit blur-on-leave">تایید</button>
+        <button type="button" class="btn-submit blur-on-leave" id="delete-confirm-btn">تایید</button>
       </div>
     </form>
   </div>
 </main>
+
+
 @section Scripts {
-  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
   <script src="~/js/Shared/blur-on-leave.js"></script>
   <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
-    <script>
-    // بعد زدن کلید تایید
-    document.getElementById('delete-student-form').addEventListener('submit', function (e) {
-      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
 
-        // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
-      replaceError("GeneralError", '');
-      setTimeout(() => { // این بخش کد 850 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
-        this.submit();
-      }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
+  <script>
+    const currentHash = '@currentHash';
+
+    document.getElementById('delete-confirm-btn').addEventListener('click', function () {
+      GlobalPopup.show({
+        PopupTitle: "تأیید حذف دانشجو",
+        SimpleMessage: "آیا از حذف این دانشجو مطمئن هستید؟",
+        CanCloseManually: false,
+        CloseOnBackdropClick: false,
+        BlockScroll: true,
+        ShowActionButtons: true,
+        GreenButtonText: "انصراف",
+        OnGreenClickJs: "GlobalPopup.hide()",
+        RedButtonText: "حذف",
+        OnRedClickJs: "submitDeleteStudent()",
+        iconType: "warning"
+      });
     });
+
+    function submitDeleteStudent() {
+      GlobalPopup.hide();
+
+      const form = document.getElementById('delete-student-form');
+      replaceError("GeneralError", '');
+
+      setTimeout(() => {
+        const formData = new FormData(form);
+        fetch(form.action, {
+          method: 'POST',
+          body: formData
+        }).then(response => {
+          if (response.ok) {
+            GlobalPopup.show({
+              PopupTitle: "حذف موفق",
+              SimpleMessage: "دانشجو با موفقیت حذف شد.",
+              CanCloseManually: false,
+              CloseOnBackdropClick: false,
+              BlockScroll: true,
+              iconType: "success"
+            });
+
+            setTimeout(() => {
+              const redirectUrl = '@Url.Action("Index", "StudentManagement")' + '?h=' + encodeURIComponent(currentHash);
+              window.location.href = redirectUrl;
+            }, 2500);
+          } else {
+            throw new Error();
+          }
+        }).catch(() => {
+          replaceError("GeneralError", "خطا در حذف دانشجو. لطفاً دوباره تلاش کنید.");
+        });
+      }, 850);
+    }
   </script>
 }
