@@ -9,6 +9,8 @@
   int? year = firstsection?.Year;
   int? semester = firstsection?.Semester;
   var pc = new System.Globalization.PersianCalendar();
+  var currentHash = ViewBag.CurrentHash as string;
+
 
   string semesterDisplayCode = null;
   if (year.HasValue && semester.HasValue)
@@ -155,6 +157,16 @@
         }
       }
     </div>
+
+    <div class="action-buttons">
+      @if (ViewBag.IsSpecificTerm == true)
+      {
+        <a href="@Url.Action("Index", "FullInformation", new { h = currentHash })" class="btn-back">
+          <i class="fas fa-arrow-right"></i> بازگشت
+        </a>
+      }
+    </div>
+
   }
   else
   {
