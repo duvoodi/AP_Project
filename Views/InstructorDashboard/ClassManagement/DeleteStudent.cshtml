@@ -6,6 +6,7 @@
     Layout = "_LayoutInstructor";
     var students = ViewBag.Students as List<AP_Project.Models.Users.Student>;
     var takes = ViewBag.Takes as List<AP_Project.Models.Courses.Takes>;
+    takes = takes ?? new List<AP_Project.Models.Courses.Takes>();
     var sectionId = (Guid)ViewBag.SectionId;
     var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
 

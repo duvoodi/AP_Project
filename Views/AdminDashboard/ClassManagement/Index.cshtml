@@ -1,10 +1,11 @@
+@using AP_Project.Models.Courses
 @model AP_Project.Models.Users.Admin
 @{
   ViewData["ActiveTab"] = "Class";
   ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
 
-  var sections = ViewBag.Sections as List<AP_Project.Models.Courses.Section>;
+  var sections = ViewBag.Sections as List<Section> ?? new List<Section>();;
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
 }
 

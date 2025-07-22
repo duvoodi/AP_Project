@@ -18,6 +18,8 @@ namespace AP_Project.Controllers
             var instructor = CurrentInstructor;
 
             var classrooms = _db.Classrooms
+                .Where(c => c.Sections.Any(s => s.Teaches != null 
+                    && s.Teaches.InstructorUserId == instructor.Id)) // مطمئن می شویم این کلاس مال این استاد است
                 .Include(c => c.Sections)
                     .ThenInclude(s => s.Course)
                         .ThenInclude(c => c.CourseCode)
@@ -26,13 +28,18 @@ namespace AP_Project.Controllers
                 .Include(c => c.Sections)
                     .ThenInclude(s => s.Teaches)
                         .ThenInclude(t => t.Instructor)
-                        .OrderBy(s => s.Building)
-                        .ThenBy(s => s.RoomNumber)
-                        .ThenBy(s => s.Capacity)
-                        .ThenBy(s => s.Sections.FirstOrDefault().Course.CourseCode.Title)
-                        .ThenBy(s => s.Sections.FirstOrDefault().Teaches != null && s.Sections.FirstOrDefault().Teaches.Instructor != null
-                        ? s.Sections.FirstOrDefault().Teaches.Instructor.LastName : string.Empty)
+                .OrderBy(c => c.Building)
+                .ThenBy(c => c.RoomNumber)
+                .ThenBy(c => c.Capacity)
                 .ToList();
+
+            // فقط نگه دار سکشن‌هایی که مربوط به این استاد هستند
+            classrooms.ForEach(c =>
+                c.Sections = c.Sections
+                            .Where(s => s.Teaches != null
+                                    && s.Teaches.InstructorUserId == instructor.Id)
+                            .ToList()
+            );
 
             ViewBag.Classrooms = classrooms;
             return View("~/Views/InstructorDashboard/ClassManagement/Index.cshtml", instructor);
@@ -40,6 +47,8 @@ namespace AP_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCourseInfo(Guid courseId)
         {
+            var instructor = CurrentInstructor;
+
             var course = await _db.Courses
                 .Include(c => c.CourseCode)
                 .Include(c => c.Prerequisites)
@@ -49,7 +58,8 @@ namespace AP_Project.Controllers
                         .ThenInclude(t => t.Instructor)
                 .Include(c => c.Sections)
                     .ThenInclude(s => s.TimeSlot)
-                .FirstOrDefaultAsync(c => c.Id == courseId);
+                .FirstOrDefaultAsync(c => c.Id == courseId
+                    && c.Sections.Any(s => s.Teaches.InstructorUserId == instructor.Id)); // مطمئن می شویم این درس مال این استاد است
 
             if (course == null)
                 return NotFound();
@@ -58,22 +68,24 @@ namespace AP_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditGrades(Guid id)
+        public async Task<IActionResult> EditGrades(Guid id)
         {
+            var instructor = CurrentInstructor;
+
             // دریافت سکشن با تمام اطلاعات مرتبط
-            var section = _db.Sections
+            var section = await  _db.Sections
                 .Include(s => s.Course)
                     .ThenInclude(c => c.CourseCode)
                 .Include(s => s.Takes)
                     .ThenInclude(t => t.Student)
                 .Include(s => s.Teaches)
                     .ThenInclude(t => t.Instructor)
-                .FirstOrDefault(s => s.Id == id);
+                .FirstOrDefaultAsync(s => s.Id == id
+                    && s.Teaches != null
+                    && s.Teaches.InstructorUserId == instructor.Id); // مطمئن می شویم این سکشن مال این استاد است
 
             if (section == null)
-            {
                 return NotFound();
-            }
 
             // آماده‌سازی داده برای ویو
             ViewBag.Section = section;
@@ -128,35 +140,44 @@ namespace AP_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> GetStudentList(Guid sectionId)
         {
-            var students = _db.Takes
+
+            var instructor = CurrentInstructor;
+
+            // ابتدا مطمئن می شویم این سکشن مال این استاد است
+            var authorized = await _db.Sections
+                .AnyAsync(s => s.Id == sectionId
+                        && s.Teaches != null
+                        && s.Teaches.InstructorUserId == instructor.Id);
+
+            if (!authorized)
+                return NotFound();
+
+            var students = await _db.Takes
                 .Where(t => t.SectionId == sectionId)
                 .Include(t => t.Student)
                 .Select(t => t.Student)
                 .OrderBy(s => s.FirstName)
                 .ThenBy(s => s.LastName)
-                .ThenBy(s => s.StudentId)
-                .ToList();
+                .ToListAsync();
 
             return PartialView("~/Views/InstructorDashboard/ClassManagement/StudentListPopup.cshtml", students);
         }
 
-        // GET: نمایش صفحه حذف دانشجو برای یک سِکشِن خاص
         [HttpGet]
         public async Task<IActionResult> DeleteStudents(Guid sectionId, string h)
         {
+            var instructor = CurrentInstructor;
+
             var section = await _db.Sections
-                .Include(s => s.Course)
-                    .ThenInclude(c => c.CourseCode)
-                .Include(s => s.Takes)
-                    .ThenInclude(t => t.Student)
+                .Include(s => s.Course).ThenInclude(c => c.CourseCode)
+                .Include(s => s.Takes).ThenInclude(t => t.Student)
                 .Include(s => s.Teaches)
-                    .ThenInclude(t => t.Instructor)
-                .FirstOrDefaultAsync(s => s.Id == sectionId);
+                .FirstOrDefaultAsync(s => s.Id == sectionId
+                    && s.Teaches != null
+                    && s.Teaches.InstructorUserId == instructor.Id); // مطمئن می شویم این سکشن مال این استاد است
 
             if (section == null)
-            {
                 return NotFound();
-            }
 
             // آماده‌سازی داده‌ها برای View
             ViewBag.Section = section;
@@ -176,6 +197,16 @@ namespace AP_Project.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteStudents(Guid sectionId, List<Guid> studentIdsToDelete, string h)
         {
+            var instructor = CurrentInstructor;
+            
+            var authorized = await _db.Sections
+                .AnyAsync(s => s.Id == sectionId
+                        && s.Teaches != null
+                        && s.Teaches.InstructorUserId == instructor.Id); // مطمئن می شویم این سکشن مال این استاد است
+
+            if (!authorized)
+                return NotFound();
+
             if (studentIdsToDelete == null || studentIdsToDelete.Count == 0)
             {
                 return RedirectToAction("DeleteStudents", new { sectionId, h });

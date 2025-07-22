@@ -13,15 +13,12 @@ namespace AP_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string h)
+        public async Task<IActionResult>  Index(string h)
         {
             var student = CurrentStudent;
-            if (student == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
 
-            var takes = _db.Takes
+            var takes = await _db.Takes
+                .Where(t => t.StudentUserId == student.Id)
                 .Include(t => t.Section)
                     .ThenInclude(s => s.Course)
                         .ThenInclude(c => c.CourseCode)
@@ -31,8 +28,12 @@ namespace AP_Project.Controllers
                     .ThenInclude(s => s.Classroom)
                 .Include(t => t.Section)
                     .ThenInclude(s => s.Teaches)
-                        .ThenInclude(teaches => teaches.Instructor)
-                .Where(t => t.StudentUserId == student.Id)
+                        .ThenInclude(te => te.Instructor)
+                .ToListAsync();
+
+            // فیلتر حذف هر رکوردی که سکشنش نال باشد
+            takes = takes
+                .Where(t => t.Section != null)
                 .ToList();
 
             // گروه بندی بر اساس ترم
