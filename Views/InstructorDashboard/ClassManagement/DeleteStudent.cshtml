@@ -89,8 +89,6 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/Shared/globalPopup.js" asp-append-version="true"></script>
-
     <script>
         const currentHash = '@currentHash';
         const studentListIsEmpty = @((students == null || !students.Any()).ToString().ToLower());
