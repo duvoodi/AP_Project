@@ -162,7 +162,7 @@ button[type="submit"]:hover {
 
 .error-message {
   position: absolute; /* موقعیت دهی مطلق خطاها در فضای رزرو شده */
-  top: 75px;
+  top: 85px;
   left: 0;
   display: inline-flex;
   justify-content: flex-end;
