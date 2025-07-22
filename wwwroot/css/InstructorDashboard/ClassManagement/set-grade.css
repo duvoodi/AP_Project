@@ -110,6 +110,12 @@ body, html, input, textarea, select, button {
   font-weight: 600;
 }
 
+.text-success {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+
 /* ============================
    GRADE INPUT
 ============================ */
