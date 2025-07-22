@@ -53,23 +53,12 @@ function setError(id, message, append = false) {
         errorSpan.innerHTML = newMessage;
       }
 
-      // اگر فرم گروه از نوع ارور گروپ باشد، ارتفاع ماکسیمم را مطابق ارتفاع محتوای پیام تنظیم کن
-      if (isErrorGroup) {
-        errorSpan.style.maxHeight = errorSpan.scrollHeight + 32 + 'px';
-      }
-
       // فعال کردن انیمیشن نمایش پیام با افزودن کلاس ویزیبل در فریم بعدی
       requestAnimationFrame(() => {
         errorSpan.classList.add('visible');
       });
     } else {
       // اگر پیام جدید خالی است یعنی باید پیام مخفی شود
-
-      // تنظیم ارتفاع ماکسیمم به صفر برای اجرای انیمیشن ارتفاع در گروه خطا
-      if (isErrorGroup) {
-        errorSpan.style.maxHeight = '0';
-      }
-
       // حذف کلاس حذف برای شروع انیمیشن مخفی شدن
       requestAnimationFrame(() => {
         errorSpan.classList.remove('visible');
@@ -111,6 +100,7 @@ function setError(id, message, append = false) {
     updateMessage();
   }
 }
+
 
 // ***************
 // پاکسازی خودکار پیام خطا هنگام تایپ کاربر (به جز مکس لنگت ارور)
@@ -157,29 +147,46 @@ document.querySelectorAll('input[data-maxlength][id], textarea[data-maxlength][i
 
 // ***************
 // نمایش پیام‌های خطای دریافتی از سرور هنگام بارگذاری فرم
+// ارور های فرم گروپ با 300 میلی ثانیه تاخیر (برای 250 میلی ثانیه انیمیشن)
+// ارور جنرال ارور با 850 میلی ثانیه تاخیر (برای 800 میلی ثانیه انیمیشن)
 
-// پیام‌های درون المنت‌هایی با کلاس 'field-validation-error' خوانده شده و به صورت انیمیشنی نمایش داده می‌شوند
+
 (function () {
   // تابع نمایش پیام خطاهای سرور روی فرم
   function showErrorsFromServer() {
     document.querySelectorAll('.error-message').forEach(errorSpan => {
-      const serverErrorText = errorSpan.querySelector('.field-validation-error')?.textContent.trim() || '';
-      if (serverErrorText) {
-        const relatedInputId = errorSpan.id || errorSpan.closest('.form-group')?.querySelector('[id]')?.id;
+      const serverErrorEl = errorSpan.querySelector('.field-validation-error'); // ارور های سمت سرور درون این المنت قرار میگیرن
+      const serverErrorText = serverErrorEl?.textContent.trim() || '';
+      if (!serverErrorText) return;
+
+      // پیدا کردن آی‌دی ورودی مربوط به این ارور
+      const relatedInputId = errorSpan.id || errorSpan.closest('.form-group')?.querySelector('[id]')?.id;
+      // اگر ورودی‌ای پیدا نشد، یعنی جنرال ارور است
+      const isGeneralError = !relatedInputId;
+
+      // تنظیم تاخیر بر اساس نوع ارور
+      const delay = isGeneralError ? 850 : 300;
+
+      setTimeout(() => { // صدا زدن replaceError با تاخیر مناسب
         if (relatedInputId) {
-          // نمایش با انیمیشن پیام خطا آمده از سمت سرور درصورت تغییر
-          replaceError(relatedInputId, serverErrorText); // اگر پیام تغییر کرده باشه ریپلیسش میکنه با انیمیشن اول ناپدیدش میکند سپس پیام جدید را نمایش میدهد
+          replaceError(relatedInputId, serverErrorText);
+        } else {
+          // برای جنرال ارور می‌تونید یک المان placeholder در صفحه داشته باشید
+          // یا مثلاً المان .general-error-message
+          const genEl = document.querySelector('.general-error-message');
+          if (genEl) {
+            // فرض می‌کنیم کلاس visible و مکانیزم انیمیشن یکسان است
+            replaceError(genEl.id, serverErrorText);
+          }
         }
-      }
+      }, delay);
     });
   }
 
-  // بررسی وضعیت آماده بودن صفحه برای اجرا
+  // اجرا پس از بارگذاری DOM
   if (document.readyState === 'loading') {
-    // اگر صفحه در حال بارگذاری است، منتظر اتمام بارگذاری DOM بمان
-    document.addEventListener('DOMContentLoaded', () => setTimeout(showErrorsFromServer, 300));
+    document.addEventListener('DOMContentLoaded', showErrorsFromServer);
   } else {
-    // اگر صفحه آماده است، پس از 300 میلی‌ثانیه تابع نمایش پیام خطاهای سرور را اجرا کن
-    setTimeout(showErrorsFromServer, 300);
+    showErrorsFromServer();
   }
 })();

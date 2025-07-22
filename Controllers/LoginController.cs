@@ -26,29 +26,32 @@ namespace AP_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult CheckSession(bool hashed)
-        //  اکشن ای جی ای ایکس برای برگرداندن رول و استرینگ آی دی یا هش سشن فعلی
+        //  اکشن ای جی ای ایکس برای برگرداندن رول و آی دی هش شده سشن فعلی
+        public IActionResult CheckSession(bool withId)
         {
-            string hash = "";
+            string role = "none";
+            string hash = null;
+
             if (HttpContext.Session.GetInt32("AdminId") is int adminId)
             {
-                if (hashed)
-                    hash = ComputeHash.Sha1(adminId.ToString());
-                return Json(new { role = "admin", id = hashed ? hash : adminId.ToString() });
+                role = "admin";
+                hash = ComputeHash.Sha1(adminId.ToString());
             }
             else if (HttpContext.Session.GetInt32("InstructorId") is int instructorId)
             {
-                if (hashed)
-                    hash = ComputeHash.Sha1(instructorId.ToString());
-                return Json(new { role = "instructor", id = hashed ? hash : instructorId.ToString() });
+                role = "instructor";
+                hash = ComputeHash.Sha1(instructorId.ToString());
             }
             else if (HttpContext.Session.GetInt32("StudentId") is int studentId)
             {
-                if (hashed)
-                    hash = ComputeHash.Sha1(studentId.ToString());
-                return Json(new { role = "student", id = hashed ? hash : studentId.ToString() });
+                role = "student";
+                hash = ComputeHash.Sha1(studentId.ToString());
             }
-            return Json(new { role = "none" });
+
+            if (withId && hash != null)
+                return Json(new { role, id = hash });
+            else
+                return Json(new { role });
         }
 
         [HttpGet]

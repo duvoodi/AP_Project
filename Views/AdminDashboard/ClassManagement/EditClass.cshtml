@@ -1,0 +1,365 @@
+@using AP_Project.Models.Users
+@using AP_Project.Models.Classrooms
+@using AP_Project.Models.Courses
+@using Newtonsoft.Json
+@model AP_Project.Models.Users.Admin
+
+@{
+  ViewData["ActiveTab"] = "Class";
+  ViewData["Title"] = "افزودن کلاس";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var classrooms = ViewData["Classroom"] as List<Classroom> ?? new List<Classroom>();
+  var sections = ViewData["Sections"] as List<(Guid SectionId, string DetailText)> ?? new();
+  var students = ViewData["Students"] as List<Student> ?? new();
+  var form = ViewData["Form"] as AP_Project.FormViewModels.ClassForm.ClassFormViewModel;
+}
+
+<!-- سلکت دو برای دراپ دون -->
+<link href="/lib/select2/css/select2.min.css" rel="stylesheet" />
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/ClassManagement/class-form-actions.css" asp-append-version="true" />
+
+<main class="dashboard-main admin">
+  <div class="titlebar">
+    <div class="action-title-tab edit">
+      افزودن کلاس
+    </div>
+  </div>
+  <div class="form-container">
+    <form asp-controller="ClassManagement" asp-action="EditClass" asp-route-h="@currentHash" method="post" id="edit-class-form">
+      @Html.AntiForgeryToken()
+
+      <div class="error-row">
+        <div class="error-group">
+          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group wide">
+          <label>انتخاب کلاس</label>
+          <select class="form-control" id="ClassLocationId" name="ClassLocationId">
+            <option value="">-- انتخاب کنید --</option>
+            @foreach (var cr in classrooms)
+            {
+              if (form?.ClassLocationId == cr.Id)
+              {
+                <option value="@cr.Id" data-capacity="@cr.Capacity" selected="selected">
+                  ساختمان: @cr.Building - شماره: @cr.RoomNumber - ظرفیت: @cr.Capacity
+                </option>
+              }
+              else
+              {
+                <option value="@cr.Id" data-capacity="@cr.Capacity">
+                  ساختمان: @cr.Building - شماره: @cr.RoomNumber - ظرفیت: @cr.Capacity
+                </option>
+              }
+            }
+          </select>
+          <span class="error-message">@Html.ValidationMessage("ClassLocationId")</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group wide">
+          <label>انتخاب درس</label>
+          <select class="form-control" id="SectionId" name="SectionId">
+            <option value="">-- انتخاب کنید --</option>
+            @foreach (var item in sections)
+            {
+              if (form?.SectionId == item.SectionId)
+              {
+                <option value="@item.SectionId" selected="selected">
+                    @item.DetailText
+                </option>
+              }
+              else
+              {
+                <option value="@item.SectionId">@item.DetailText</option>
+              }
+            }
+          </select>
+          <span class="error-message">@Html.ValidationMessage("SectionId")</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group wide">
+          <label>انتخاب دانشجویان</label>
+          <div class="students-container">
+            <select id="student-select" class="form-control">
+              <option value="">-- انتخاب کنید --</option>
+              @foreach (var st in students)
+              {
+                <option value="@st.Id">@st.StudentId - @st.FirstName @st.LastName</option>
+              }
+            </select>
+            <button type="button" id="add-student" class="btn-add blur-on-leave">+</button>
+          </div>
+          <ul id="students-list" class="students-list"><!-- محل قرار گیری --></ul>
+          <span class="error-message list-error" id="list-error">@Html.ValidationMessage("StudentIds")</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a type="button" asp-controller="ClassManagement" asp-action="Index" asp-route-h="@currentHash" class="btn-cancel">انصراف</a>
+        <button type="submit" class="btn-submit blur-on-leave">تایید</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+  <!-- دریافت متغیر های ارسال شده از کنترلر -->
+  <script>
+    // گرفتن پیش‌نیازها از سرور
+    const Students = @Html.Raw(JsonConvert.SerializeObject(form?.StudentIds ?? new List<Guid>()));
+  </script>
+  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/Shared/blur-on-leave.js"></script>
+  <script src="~/js/FormUtils/Shared/persian-time-slot.js"></script>
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <!-- سلکت دو برای دراپ دون -->
+  <script src="~/lib/select2/js/select2.full.js"></script>
+  <script src="~/lib/select2/js/i18n/fa.js"></script>
+  <!-- تابع ولیدیت فیلد اختصاصی فیلد های این صفحه -->
+  <script src="~/js/FormUtils/ClassForm/validateField.js"></script>
+  <script>
+    // Select2
+    $(document).ready(function () {
+      $('#ClassLocationId').select2({
+        dropdownAutoWidth: true,
+        width: '100%',
+        dropdownCssClass: 'custom-select2-dropdown',
+        dropdownParent: $('#ClassLocationId').closest('.form-group')
+      });
+
+      
+      function formatSection(state) {
+        if (!state.id) return state.text;
+
+        var txt = state.text.trim();
+
+        // "این درس حذف ایمن شده" → کاملاً قرمز
+        if (txt === 'این درس حذف ایمن شده') {
+          return $('<span class="alert">این درس حذف ایمن شده</span>');
+        }
+
+        // 1) ابتدا "ندارداختیاری" را به یک متن موقت تبدیل می‌کنیم
+        txt = txt.replace(/ندارداختیاری/g, 'TEMPORARY_REPLACEMENT');
+
+        // 2) تمام "ندارد"های باقیمانده را قرمز می‌کنیم
+        txt = txt.replace(/ندارد/g, '<span class="alert">ندارد</span>');
+
+        // 3) متن موقت را به "ندارد" معمولی تبدیل می‌کنیم
+        txt = txt.replace(/TEMPORARY_REPLACEMENT/g, 'ندارد');
+
+        return txt;
+      }
+
+      $('#SectionId').select2({
+        dropdownAutoWidth: true,
+        width: '100%',
+        dropdownCssClass: 'custom-select2-dropdown',
+        dropdownParent: $('#SectionId').closest('.form-group'),
+        templateResult: formatSection,
+        templateSelection: formatSection
+      });
+
+      // ولیدیت فیلد ها هنگام خروج از فیلد با نمایش ارور ترو
+      // بلر سلکت ها با کلوز در جی کوئری سلکت2
+      ['ClassLocationId', 'SectionId'].forEach(id => {
+        $('#' + id).on('select2:close', function () {
+          validateField(id, true);
+
+          // چک اختصاصی تعداد دانشجویان با ظرفیت کلاس با تغییر کلاس
+          if (id === 'ClassLocationId') {
+            checkStudentCapacity();
+          }
+        });
+      });
+    });
+
+    // چک اختصاصی تعداد دانشجویان با ظرفیت کلاس
+    function checkStudentCapacity() {
+      const selectedOption = document.querySelector('#ClassLocationId option:checked');
+      if (!selectedOption) return true;
+      if (!selectedOption.dataset.capacity) return true;
+      const capacity = parseInt(selectedOption.dataset.capacity);
+      const currentCount = document.querySelectorAll('#students-list input[name="StudentIds"]').length;
+
+      if (currentCount > capacity) {
+        replaceError('list-error', 'تعداد دانشجویان بیش از ظرفیت کلاس انتخاب شده است');
+        return false;
+      } else {
+        replaceError('list-error', '');
+        return true;
+      }
+    }
+
+    // مقداردهی اولیه دانشجوها از سرور
+    document.addEventListener('DOMContentLoaded', function() {
+      const container = document.getElementById('students-list');
+      let initialCount = 0;
+
+      Students.forEach(id => {
+        const option = document.querySelector(`#student-select option[value="${id}"]`);
+        if (option) {
+          const li = document.createElement('li');
+          li.className = 'student-tag';
+          li.innerHTML = `
+            <div class="student-info">
+              <span class="student-number">${initialCount + 1}.</span>
+              <span class="student-name">${option.text}</span>
+            </div>
+            <button type="button" onclick="removeStudent('${id}')">×</button>
+            <input type="hidden" name="StudentIds" value="${id}" />
+          `;
+          container.appendChild(li);
+          initialCount++;
+        }
+      });
+
+      // اگر از سرور داده داشتیم، فهرست را ویزیبل کن
+      if (initialCount > 0) {
+        container.classList.add('visible');
+        checkStudentCapacity(); // فراخوانی چک اختصاصی هنگام نمایان شدن داده ها از سرور
+      }
+    });
+
+    // افزودن دانشجو توسط کاربر
+    document.getElementById('add-student')?.addEventListener('click', function () {
+      const container = document.getElementById('students-list');
+      const select = document.getElementById('student-select');
+      const value = select.value;
+      const text = select.options[select.selectedIndex].text;
+
+      if (value && value !== "" && !document.querySelector(`input[name="StudentIds"][value="${value}"]`)) {
+        const li = document.createElement('li');
+        li.className = 'student-tag';
+        li.innerHTML = `
+          <div class="student-info">
+            <span class="student-number">${container.children.length + 1}.</span>
+            <span class="student-name">${text}</span>
+          </div>
+          <button type="button" onclick="removeStudent('${value}')">×</button>
+          <input type="hidden" name="StudentIds" value="${value}" />
+        `;
+        container.appendChild(li);
+        container.classList.add('visible');
+
+        // مخفی کردن گزینه از دراپ‌داون
+        const optionToHide = select.querySelector(`option[value="${value}"]`);
+        if (optionToHide) {
+          optionToHide.disabled = true;
+          $(select).trigger('change.select2'); // اطلاع به Select2 که وضعیت گزینه‌ها تغییر کرده
+        }
+
+        Students.push(value); // به‌روز شدن لیست انتخاب شده
+        $('#student-select').select2('close');
+        checkStudentCapacity(); // فراخوانی چک اختصاصی هنگام نمایان شدن داده ها از سرور
+      }
+    });
+
+
+    // تابع حذف تگ دانشجو با شناسه‌ی مشخص
+    function removeStudent(id) {
+      const container = document.getElementById('students-list');
+      const li = container.querySelector(`.student-tag input[value="${id}"]`)?.parentElement;
+      if (li) {
+        // مشخص کردن مقدار واقعی عرض و جایگذاری بجای آتو برای انیمیت صحیح به صفر
+        const containerWidth = container.getBoundingClientRect().width;
+        // تنظیم عرض تگ به 100% کانتینر (یعنی همون عرض کانتینر)
+        li.style.width = containerWidth + 'px';
+        li.style.flexShrink = '0';
+
+        // تریگر ری‌فلوی برای اعمال تغییرات
+        li.offsetHeight;
+
+        // سپس شروع انیمیشن خروج
+        li.classList.add('animation-out');
+        li.style.width = '0px'; // به نرمی عرض را به صفر ببریم
+        setTimeout(() => {
+          // بعد از پایان انیمیشن، حذف از داکیمونت
+          li.remove();
+
+          // نشان دادن دوباره گزینه در دراپ‌داون
+          const optionToShow = document.querySelector(`#student-select option[value="${id}"]`);
+          if (optionToShow) {
+            optionToShow.disabled = false;
+            $('#student-select').trigger('change.select2'); // اطلاع به Select2 که وضعیت گزینه‌ها تغییر کرده
+          }
+
+          // حذف از لیست انتخاب شده ها
+          const idx = Students.indexOf(id);
+          if (idx > -1) Students.splice(idx, 1);
+
+          checkStudentCapacity(); // فراخوانی چک اختصاصی بعد حذف از انتخاب شده ها
+
+          // اگر دیگر موردی باقی نماند، فهرست را پنهان کن
+          if (container.children.length === 0) {
+            requestAnimationFrame(() => {
+              container.classList.remove('visible');
+            });
+          }
+
+          updateStudentNumbers(); // بازشماری شماره‌ها بعد از حذف
+        }, 300); // دقیقا 300 میلی ثانیه تا بلافاصله با حذف تگ، لیست بسته شود
+      }
+    }
+
+    // تابع شماره‌گذاری مجدد برای لیست دانشجویان
+    function updateStudentNumbers() {
+      const items = document.querySelectorAll('#students-list .student-tag');
+      items.forEach((li, index) => {
+        const numberSpan = li.querySelector('.student-number');
+        if (numberSpan) {
+          numberSpan.textContent = `${index + 1}.`;
+        }
+      });
+    }
+
+    // اعتبارسنجی فرم‌ها
+    document.getElementById('edit-class-form').addEventListener('submit', function(e) {
+      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
+
+      // حذف ارور های قبلی برای انیمیشن رفتن ارور ها قبلی و آماده شدن برای آمدن ارور های جدید ادامه
+      const errorMessages = document.querySelectorAll('.error-message');
+      errorMessages.forEach(errorSpan => {
+        const parentGroup = errorSpan.closest('.form-group, .error-group');
+        if (parentGroup) {
+          const firstWithId = parentGroup.querySelector('[id]');
+          if (firstWithId) {
+            replaceError(firstWithId.id, '')
+          }
+        }
+      });
+      setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر بالا اجرا تا خالی کردن ارور ها رندر گرفته بشه
+
+        let hasError = false;
+
+        // ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
+        // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+        this.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+          if (!validateField(input.id, true)) {
+            hasError = true;
+          }
+        });
+
+        // چک اختصاصی تعداد دانشجویان با ظرفیت کلاس قبل ارسال
+        if(!checkStudentCapacity()) hasError = true
+
+        // اگر خطایی نبود فرم ارسال شود
+        if (!hasError) {
+          // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
+          replaceError("GeneralError", '');
+          setTimeout(() => { // این بخش کد 800 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+            this.submit();
+          }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
+        }
+      }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+    });
+  </script>
+}

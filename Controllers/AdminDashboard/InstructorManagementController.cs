@@ -85,32 +85,39 @@ namespace AP_Project.Controllers
 
             // چک تکراری نبودن داده های یکتا با سرور
 
-            // چک یکتایی کد مدرسی
-            if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt))
-            {
-                var InstructorIdExists = await _db.Instructors.AnyAsync(i => i.InstructorId == instructorIdInt);
-                if (InstructorIdExists)
+            if (ModelState.TryGetValue("InstructorId", out var iId) && iId.Errors.Count == 0)
+                // چک یکتایی کد مدرسی
+                if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt))
                 {
-                    ModelState.AppendModelError("GeneralError", "کد مدرسی تولید شده تکراری بود و مجدداً تولید شد.");
-                    ViewData["IsInstructorIdDuplicate"] = true;
+                    var InstructorIdExists = await _db.Instructors.AnyAsync(i => i.InstructorId == instructorIdInt);
+                    if (InstructorIdExists)
+                    {
+                        ModelState.AppendModelError("GeneralError", "کد مدرسی تولید شده تکراری بود و مجدداً تولید شد.");
+                        ViewData["IsInstructorIdDuplicate"] = true;
+                    }
+                }
+                
+            if (ModelState.TryGetValue("FirstName", out var fname) && fname.Errors.Count == 0
+                    && ModelState.TryGetValue("LastName", out var lname) && lname.Errors.Count == 0)
+            {
+                // چک یکتایی نام و نام خانوادگی
+                var nameExists = await _db.Instructors.AnyAsync(i =>
+                    i.FirstName == InstructorForm.FirstName &&
+                    i.LastName == InstructorForm.LastName);
+                if (nameExists)
+                {
+                    ModelState.AppendModelError("GeneralError", "نام و نام خانوادگی وارد شده قبلاً ثبت شده است.");
                 }
             }
-
-            // چک یکتایی نام و نام خانوادگی
-            var nameExists = await _db.Instructors.AnyAsync(i => 
-                i.FirstName == InstructorForm.FirstName && 
-                i.LastName == InstructorForm.LastName);
-            if (nameExists)
+            if (ModelState.TryGetValue("Email", out var email) && email.Errors.Count == 0)
             {
-                ModelState.AppendModelError("GeneralError", "نام و نام خانوادگی وارد شده قبلاً ثبت شده است.");
-            }
-
-            // چک یکتایی ایمیل
-            var emailExists = await _db.Instructors.AnyAsync(i => 
-                i.Email.ToLower() == InstructorForm.Email.ToLower());
-            if (emailExists)
-            {
-                ModelState.AppendModelError("GeneralError", "ایمیل وارد شده قبلاً ثبت شده است.");
+                // چک یکتایی ایمیل
+                var emailExists = await _db.Instructors.AnyAsync(i =>
+                    i.Email.ToLower() == InstructorForm.Email.ToLower());
+                if (emailExists)
+                {
+                    ModelState.AppendModelError("GeneralError", "ایمیل وارد شده قبلاً ثبت شده است.");
+                }
             }
 
             // برگشت در صورت وجود خطا
@@ -125,6 +132,7 @@ namespace AP_Project.Controllers
             {
                 var instructor = new Instructor
                 {
+                    Id = Guid.NewGuid(), // ایجاد تا بشه به یوزر رول وصل کرد
                     FirstName = InstructorForm.FirstName,
                     LastName = InstructorForm.LastName,
                     Email = InstructorForm.Email,
@@ -135,7 +143,6 @@ namespace AP_Project.Controllers
                 };
 
                 _db.Instructors.Add(instructor);
-                await _db.SaveChangesAsync();
 
                 var userRole = new UserRole
                 {
@@ -143,8 +150,9 @@ namespace AP_Project.Controllers
                     RoleId = 2
                 };
                 _db.UserRoles.Add(userRole);
-                await _db.SaveChangesAsync();
 
+                // ذخیر نهایی همه تغییرات
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
             }
             catch (Exception)
@@ -214,45 +222,49 @@ namespace AP_Project.Controllers
 
             // چک تکراری نبودن داده های یکتا با سرور (اگر تغییر کردند)
 
-            // چک یکتایی کد مدرسی (اگر تغییر کرده)
-            if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt) &&
-                instructor.InstructorId != instructorIdInt)
-            {
-                var InstructorIdExists = await _db.Instructors.AnyAsync(i => i.InstructorId == instructorIdInt);
-                if (InstructorIdExists)
+            if (ModelState.TryGetValue("InstructorId", out var iId) && iId.Errors.Count == 0)
+                // چک یکتایی کد مدرسی (اگر تغییر کرده)
+                if (int.TryParse(InstructorForm.InstructorId, out int instructorIdInt) &&
+                    instructor.InstructorId != instructorIdInt)
                 {
-                    ModelState.AppendModelError("GeneralError", "کد مدرسی تولید شده تکراری بود و مجدداً تولید شد.");
-                    ViewData["IsInstructorIdDuplicate"] = true;
+                    var InstructorIdExists = await _db.Instructors.AnyAsync(i => i.InstructorId == instructorIdInt);
+                    if (InstructorIdExists)
+                    {
+                        ModelState.AppendModelError("GeneralError", "کد مدرسی تولید شده تکراری بود و مجدداً تولید شد.");
+                        ViewData["IsInstructorIdDuplicate"] = true;
+                    }
                 }
-            }
 
-            // چک یکتایی نام و نام خانوادگی (اگر تغییر کرده)
-            if (instructor.FirstName != InstructorForm.FirstName ||
-                instructor.LastName != InstructorForm.LastName)
-            {
-                var nameExists = await _db.Instructors.AnyAsync(i =>
-                    i.FirstName == InstructorForm.FirstName &&
-                    i.LastName == InstructorForm.LastName &&
-                    i.Id != instructor.Id);
-                if (nameExists)
+            if (ModelState.TryGetValue("FirstName", out var fname) && fname.Errors.Count == 0
+                    && ModelState.TryGetValue("LastName", out var lname) && lname.Errors.Count == 0)
+                // چک یکتایی نام و نام خانوادگی (اگر تغییر کرده)
+                if (instructor.FirstName != InstructorForm.FirstName ||
+                    instructor.LastName != InstructorForm.LastName)
                 {
-                    ModelState.AppendModelError("GeneralError", "نام و نام خانوادگی وارد شده قبلاً ثبت شده است.");
+                    var nameExists = await _db.Instructors.AnyAsync(i =>
+                        i.FirstName == InstructorForm.FirstName &&
+                        i.LastName == InstructorForm.LastName &&
+                        i.Id != instructor.Id);
+                    if (nameExists)
+                    {
+                        ModelState.AppendModelError("GeneralError", "نام و نام خانوادگی وارد شده قبلاً ثبت شده است.");
+                    }
                 }
-            }
 
 
             // چک یکتایی ایمیل (اگر تغییر کرده)
-            if (!string.Equals(instructor.Email, InstructorForm.Email, StringComparison.OrdinalIgnoreCase))
-            {
-                var emailExists = await _db.Instructors.AnyAsync(i =>
-                    i.Email.ToLower() == InstructorForm.Email.ToLower() &&
-                    i.Id != instructor.Id);
-                if (emailExists)
+            if (ModelState.TryGetValue("Email", out var email) && email.Errors.Count == 0)
+                if (!string.Equals(instructor.Email, InstructorForm.Email, StringComparison.OrdinalIgnoreCase))
                 {
-                    ModelState.AppendModelError("GeneralError", "ایمیل وارد شده قبلاً ثبت شده است.");
+                    var emailExists = await _db.Instructors.AnyAsync(i =>
+                        i.Email.ToLower() == InstructorForm.Email.ToLower() &&
+                        i.Id != instructor.Id);
+                    if (emailExists)
+                    {
+                        ModelState.AppendModelError("GeneralError", "ایمیل وارد شده قبلاً ثبت شده است.");
+                    }
                 }
-            }
-            
+                
             // برگشت در صورت وجود خطا
             if (!ModelState.IsValid)
             {
@@ -283,7 +295,6 @@ namespace AP_Project.Controllers
                 }
 
                 await _db.SaveChangesAsync();
-
                 return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
             }
             catch (Exception)
@@ -352,7 +363,6 @@ namespace AP_Project.Controllers
                     .ToListAsync();
                 foreach (var t in teachesToUpdate)
                     t.InstructorUserId = null;
-                await _db.SaveChangesAsync(); // برای حذف وابستگی تیچز به استاد تا بتوان استاد را حذف کرد
 
                 // حذف استاد
                 _db.Instructors.Remove(instructor);
@@ -366,7 +376,6 @@ namespace AP_Project.Controllers
 
                 // ذخیره تغییرات
                 await _db.SaveChangesAsync();
-
                 return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
             }
             catch (Exception)

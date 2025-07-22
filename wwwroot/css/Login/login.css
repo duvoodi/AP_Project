@@ -27,7 +27,7 @@
 
 .form-group {
   position: relative;
-  margin-bottom: 15px;
+  padding-bottom: 22px; /* فضای رزرو شده برای خطا */
 }
 
 /* ============================
@@ -56,7 +56,7 @@ input.form-control  {
   font-size: 20px;
   box-sizing: border-box;
   direction: rtl;
-  transition: none;
+  transition: border .2s, background .2s;
 }
 
 .form-control:focus {
@@ -154,16 +154,24 @@ button[type="submit"]:hover {
 /* ============================
    ERROR MESSAGES
    ============================ */
+   
+.form-group .error-message {
+  align-self: flex-end;
+  text-align: right;
+}
 
 .error-message {
-  position: absolute;
-  bottom: -25px;       /* مقدار فاصله از پایین فیلد */
-  left: 0;             /* سمت چپ کادر */
+  position: absolute; /* موقعیت دهی مطلق خطاها در فضای رزرو شده */
+  top: 75px;
+  left: 0;
+  display: inline-flex;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 18px;
   color: #e74c3c;
   font-size: 13px;
-  margin-top: 4px;
-  padding-right: 2px;
-  min-height: 18px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
   opacity: 0;
   transition: opacity 0.25s ease-in-out;
 }
@@ -174,40 +182,40 @@ button[type="submit"]:hover {
 
 .error-row {
   height: auto;
-  margin: 0;
 }
-
 .error-message.general-error {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #fceefd;  /* پس‌زمینه صورتی-بنفش روشن */
-  color: #722872;             /* متن ارغوانی تیره */
-  border: 1px solid #e9c7f0;  /* حاشیه بنفش روشن */
-  margin-top: -2.5px;
+  background-color: #fceefd;
+  color: #722872;
+  border: 1px solid #e9c7f0;
+  margin: 0px auto 0px;
   padding: 0 24px;
   border-radius: 6px;
   font-size: 16px;
   font-weight: 600;
   text-align: center;
   line-height: 1.6;
+  width: 100%; /* صد درصد عرض کانتینر */
   box-sizing: border-box;
-
   overflow: hidden;
   max-height: 0;
   transform: scaleY(0.9);
   opacity: 0;
   transition:
-    max-height 0.25s ease,
-    padding 0.25s ease,
-    transform 0.25s ease,
-    opacity 0.25s ease;
+    max-height 0.8s ease-in-out,
+    padding 0.8s ease-in-out,
+    margin 0.8s ease-in-out,
+    transform 0.8s ease-in-out,
+    opacity 0.8s ease-in-out;
 }
 
-/* فعال‌سازی انیمیشن */
 .general-error.visible {
-  padding: 16px 0;
+  max-height: 80px;
+  margin: 20px auto 0px;
+  padding: 8px 16px;
   transform: scaleY(1);
   opacity: 1;
 }

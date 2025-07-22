@@ -282,13 +282,13 @@ namespace AP_Project.Migrations
                     b.Property<Guid?>("CourseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Semester")
+                    b.Property<int?>("Semester")
                         .HasColumnType("int");
 
-                    b.Property<int>("TimeSlotId")
+                    b.Property<int?>("TimeSlotId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Year")
+                    b.Property<int?>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -503,8 +503,7 @@ namespace AP_Project.Migrations
                     b.HasOne("AP_Project.Models.Classrooms.TimeSlot", "TimeSlot")
                         .WithMany("Sections")
                         .HasForeignKey("TimeSlotId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Classroom");
 
@@ -622,8 +621,7 @@ namespace AP_Project.Migrations
                 {
                     b.Navigation("Takes");
 
-                    b.Navigation("Teaches")
-                        .IsRequired();
+                    b.Navigation("Teaches");
                 });
 
             modelBuilder.Entity("AP_Project.Models.Users.User", b =>

@@ -9,6 +9,6 @@ namespace AP_Project.Models.Classrooms
         public int RoomNumber { get; set; }
         public int Capacity { get; set; }
 
-        public ICollection<Section> Sections { get; set; }
+        public ICollection<Section> Sections { get; set; } = new List<Section>();
     }
 }

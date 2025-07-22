@@ -9,6 +9,6 @@ namespace AP_Project.Models.Classrooms
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
 
-        public ICollection<Section> Sections { get; set; }
+        public ICollection<Section> Sections { get; set; } = new List<Section>();
     }
 }
