@@ -7,7 +7,6 @@
   var termSummaries = ViewBag.TermSummaries as List<dynamic>;
   var currentHash = ViewContext.HttpContext.Request.Query["h"].FirstOrDefault() ?? "";
   var pc = new System.Globalization.PersianCalendar();
-  bool hasData = termSummaries != null && termSummaries.Any();
 }
 
 <link rel="stylesheet" href="~/css/StudentDashboard/full-information.css" asp-append-version="true" />
@@ -34,7 +33,7 @@
   </div>
 
 
-  @if (hasData)
+  @if (termSummaries != null && termSummaries.Any())
   {
     <table class="semester-table">
       <thead>
@@ -59,7 +58,6 @@
             var persianYear = term.Year != null ? (term.Year % 1000).ToString() : "-";
             var semester = term.Semester != null ? term.Semester.ToString() : "-";
 
-            // ساختن URL با هش
             string transcriptUrl = Url.Action("Index", "Transcripts", new
             {
               year = term.Year,
@@ -97,13 +95,13 @@
       <button type="button" onclick="window.print()" class="btn-submit">پرینت صفحه</button>
     </div>
   }
-  else
-  {
-    <div class="empty-popup will-show">
-      <p>موردی جهت نمایش وجود ندارد</p>
-    </div>
-  }
 </main>
+
+@section FooterPopup {
+  <div class="footer-popup empty @(termSummaries != null && termSummaries.Any() ? "" : "will-show")">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+  </div>
+}
 
 <script>
   function printSection() {

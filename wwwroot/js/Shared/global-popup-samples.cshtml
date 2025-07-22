@@ -48,52 +48,52 @@
     تست پاپ‌آپ ناموفق
   </button>
 
-  <!-- دکمه 2: لیست دروس پیش‌نیاز (کلاینت ساید) -->
-<button class="btn-popup" 
-        data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
-          options = new {
-            PopupTitle = "لیست دروس پیش‌نیاز",
-            CanCloseManually = true,
-            CloseOnBackdropClick = true,
-            BlockScroll = true,
-            iconType = "info"
-          },
-          model = new {
-            Courses = new[] {
-              new { Id = 1, Title = "برنامه‌سازی پیشرفته", Code = "CS102" },
-              new { Id = 2, Title = "مدار منطقی", Code = "CE201" },
-              new { Id = 3, Title = "ریاضیات گسسته", Code = "MA140" },
-              new { Id = 4, Title = "ساختمان داده", Code = "CS220" }
+    <!-- دکمه 2: لیست دروس پیش‌نیاز (کلاینت ساید) -->
+  <button class="btn-popup" 
+          data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = new {
+              PopupTitle = "لیست دروس پیش‌نیاز",
+              CanCloseManually = true,
+              CloseOnBackdropClick = true,
+              BlockScroll = true,
+              iconType = "info"
+            },
+            model = new {
+              Courses = new[] {
+                new { Id = 1, Title = "برنامه‌سازی پیشرفته", Code = "CS102" },
+                new { Id = 2, Title = "مدار منطقی", Code = "CE201" },
+                new { Id = 3, Title = "ریاضیات گسسته", Code = "MA140" },
+                new { Id = 4, Title = "ساختمان داده", Code = "CS220" }
+              }
+            },
+            config = new {
+              ShowListProps = true,
+              ListProps = new[] { "Courses" },
+              SimplePropDisplayNames = new Dictionary<string, string> {
+                { "Courses", "دروس" }
+              },
+              ListPropFieldOrder = new Dictionary<string, string[]> {
+                { "Courses", new[] { "Title", "Code" } }
+              },
+              ListPropItemDisplayNames = new Dictionary<string, Dictionary<string, string>> {
+                { "Courses", new Dictionary<string, string> {
+                  { "Title", "عنوان درس" },
+                  { "Code", "کد درس" }
+                }}
+              },
+              // همه گزینه‌های زیر غیرفعال یا خالی برای حذف کامل چک‌باکس و حذف
+              ShowCheckboxes = new Dictionary<string, bool> {
+                { "Courses", false }
+              },
+              ClientSideLists = new string[] { },
+              ClientSideDelete = new Dictionary<string, bool>(),
+              DeleteIdFields = new Dictionary<string, string>(),
+              BulkActionText = new Dictionary<string, string>(),
+              OnBulkActionJs = ""
             }
-          },
-          config = new {
-            ShowListProps = true,
-            ListProps = new[] { "Courses" },
-            SimplePropDisplayNames = new Dictionary<string, string> {
-              { "Courses", "دروس" }
-            },
-            ListPropFieldOrder = new Dictionary<string, string[]> {
-              { "Courses", new[] { "Title", "Code" } }
-            },
-            ListPropItemDisplayNames = new Dictionary<string, Dictionary<string, string>> {
-              { "Courses", new Dictionary<string, string> {
-                { "Title", "عنوان درس" },
-                { "Code", "کد درس" }
-              }}
-            },
-            // همه گزینه‌های زیر غیرفعال یا خالی برای حذف کامل چک‌باکس و حذف
-            ShowCheckboxes = new Dictionary<string, bool> {
-              { "Courses", false }
-            },
-            ClientSideLists = new string[] { },
-            ClientSideDelete = new Dictionary<string, bool>(),
-            DeleteIdFields = new Dictionary<string, string>(),
-            BulkActionText = new Dictionary<string, string>(),
-            OnBulkActionJs = ""
-          }
-        }))'>
-  لیست دروس پیش‌نیاز
-</button>
+          }))'>
+    لیست دروس پیش‌نیاز
+  </button>
 
 
 
@@ -275,71 +275,62 @@
   </button>
 
 
-<!-- دکمه آخر: لیست دروس پیش‌نیاز (کلاینت‌ساید بایگانی شده) -->
-<div class="archived-section">
-  <button class="btn-popup" 
-          data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
-            options = new {
-              PopupTitle = "لیست دروس پیش‌نیاز",
-              CanCloseManually = true,
-              CloseOnBackdropClick = true,
-              BlockScroll = true,
-              iconType = "info"
-            },
-            model = new {
-              Courses = new[] {
-                new { Id = 1, Title = "برنامه‌سازی پیشرفته", Code = "CS102" },
-                new { Id = 2, Title = "مدار منطقی", Code = "CE201" },
-                new { Id = 3, Title = "ریاضیات گسسته", Code = "MA140" },
-                new { Id = 4, Title = "ساختمان داده", Code = "CS220" }
+  <!-- دکمه آخر: لیست دروس پیش‌نیاز (کلاینت‌ساید بایگانی شده) -->
+  <div class="archived-section">
+    <button class="btn-popup" 
+            data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+              options = new {
+                PopupTitle = "لیست دروس پیش‌نیاز",
+                CanCloseManually = true,
+                CloseOnBackdropClick = true,
+                BlockScroll = true,
+                iconType = "info"
+              },
+              model = new {
+                Courses = new[] {
+                  new { Id = 1, Title = "برنامه‌سازی پیشرفته", Code = "CS102" },
+                  new { Id = 2, Title = "مدار منطقی", Code = "CE201" },
+                  new { Id = 3, Title = "ریاضیات گسسته", Code = "MA140" },
+                  new { Id = 4, Title = "ساختمان داده", Code = "CS220" }
+                }
+              },
+              config = new {
+                ShowListProps = true,
+                ListProps = new[] { "Courses" },
+                SimplePropDisplayNames = new Dictionary<string, string> {
+                  { "Courses", "دروس" }
+                },
+
+                ListPropFieldOrder = new Dictionary<string, string[]> {
+                  { "Courses", new[] { "Title", "Code" } }
+                },
+                ListPropItemDisplayNames = new Dictionary<string, Dictionary<string, string>> {
+                  { "Courses", new Dictionary<string, string> {
+                    { "Title", "عنوان درس" },
+                    { "Code", "کد درس" }
+                  }}
+                },
+                ShowCheckboxes = new Dictionary<string, bool> {
+                  { "Courses", true }
+                },
+                ClientSideLists = new[] { "Courses" },
+                ClientSideDelete = new Dictionary<string, bool> {
+                  { "Courses", true }
+                },
+                DeleteIdFields = new Dictionary<string, string> {
+                  { "Courses", "Id" }
+                },
+                BulkActionText = new Dictionary<string, string> {
+                  { "Courses", "حذف انتخاب شده‌ها" }
+                },
+                OnBulkActionJs = "deleteSelectedCoursesClientSide"
               }
-            },
-            config = new {
-              ShowListProps = true,
-              ListProps = new[] { "Courses" },
-              SimplePropDisplayNames = new Dictionary<string, string> {
-                { "Courses", "دروس" }
-              },
-
-              ListPropFieldOrder = new Dictionary<string, string[]> {
-                { "Courses", new[] { "Title", "Code" } }
-              },
-              ListPropItemDisplayNames = new Dictionary<string, Dictionary<string, string>> {
-                { "Courses", new Dictionary<string, string> {
-                  { "Title", "عنوان درس" },
-                  { "Code", "کد درس" }
-                }}
-              },
-              ShowCheckboxes = new Dictionary<string, bool> {
-                { "Courses", true }
-              },
-              ClientSideLists = new[] { "Courses" },
-              ClientSideDelete = new Dictionary<string, bool> {
-                { "Courses", true }
-              },
-              DeleteIdFields = new Dictionary<string, string> {
-                { "Courses", "Id" }
-              },
-              BulkActionText = new Dictionary<string, string> {
-                { "Courses", "حذف انتخاب شده‌ها" }
-              },
-              OnBulkActionJs = "deleteSelectedCoursesClientSide"
-            }
-          }))'>
-    لیست دروس پیش‌نیاز (کلاینت‌ساید بایگانی شده)
-  </button>
-</div>
-
-  
-
+            }))'>
+      لیست دروس پیش‌نیاز (کلاینت‌ساید بایگانی شده)
+    </button>
+  </div>
 </main>
 
-@if (hasFooter)
-{
-  <footer class="admin-footer">
-    <p>متن فوتر</p>
-  </footer>
-}
 
 @section Scripts {
   <script>

@@ -15,8 +15,6 @@
   {
     semesterDisplayCode = $"{year.Value % 1000}{semester.Value}";
   }
-
-  var hasFooter = takes != null && takes.Any(t => t.Section?.Course != null);
 }
 
 <link rel="stylesheet" href="~/css/StudentDashboard/courses-list.css" asp-append-version="true" />
@@ -122,9 +120,11 @@
   }
 </main>
 
-<div class="empty-popup @(hasFooter ? "" : "will-show")">
-  <p>موردی جهت نمایش وجود ندارد</p>
-</div>
+@section FooterPopup {
+  <div class="footer-popup empty @(takes == null || !takes.Any() ? "will-show" : "")">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+  </div>
+}
 
 @section Scripts {
   <script>

@@ -8,12 +8,11 @@
     takes = takes ?? new List<AP_Project.Models.Courses.Takes>();
     var sectionId = (Guid)ViewBag.SectionId;
     var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-    var hasFooter = students != null && students.Any();
 }
 
 <link rel="stylesheet" href="~/css/InstructorDashboard/ClassManagement/set-grade.css" asp-append-version="true" />
 
-<main class="dashboard-main instructor @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main instructor">
     <div class="titlebar"></div>
     <div class="action-title-tab edit">
         ثبت نمره
@@ -91,9 +90,11 @@
     </form>
 </main>
 
-<div class="empty-popup @(hasFooter ? "" : "will-show")">
-    <p>موردی جهت نمایش وجود ندارد</p>
-</div>
+@section FooterPopup {
+  <div class="footer-popup empty @(students == null || !students.Any() ? "will-show" : "")">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+  </div>
+}
 
 @section Scripts {
     <script src="~/js/Shared/tooltip.js"></script>

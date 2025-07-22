@@ -168,10 +168,13 @@
     </div>
 
   }
-  else
-  {
-    <div class="empty-popup will-show">
-      <p>موردی جهت نمایش وجود ندارد</p>
-    </div>
-  }
 </main>
+
+@section FooterPopup {
+  <div class="footer-popup empty @(takes == null || !takes.Any() ? "will-show" : "")">
+    <p>
+      <i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>
+      موردی جهت نمایش وجود ندارد
+    </p>
+  </div>
+}
