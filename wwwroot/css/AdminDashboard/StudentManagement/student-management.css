@@ -11,7 +11,7 @@ table, button, td, th {
    ============================ */
 
 .toolbar {
-  position: sticky;
+  position: static;
   margin: 0;
   padding: 15px 0;
   top: 100px;
@@ -81,43 +81,47 @@ table, button, td, th {
 
 .student-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
   background-color: #ccdfef;
-  font-size: 16px;
+  font-size: 15px;
+  margin-top: 0.9rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .student-table thead tr {
-  font-size: 18px;
-}
-
-.student-table tbody tr {
-  background-color: #ccdfef;
-  color: #000000;
-}
-
-.student-table th,
-.student-table td {
-  border: 1px solid white;
-  padding: 8px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.student-table th:last-child,
-.student-table td:last-child {
-  border-right: none;
+  font-size: 15px;
 }
 
 .student-table thead th {
   color: white;
   background-color: #00b0f0;
   font-weight: 600;
+  padding: 12px 8px;
+  text-align: center;
   position: sticky;
-  top: 181px; /* ارتفاع تول بار */
-  border-top: 5px solid white;
-  background-clip: padding-box;
-  border-top: none; /* تا کامل بچسبد به تول بار */
+  top: 0;
   z-index: 2;
+}
+
+.student-table th,
+.student-table td {
+  border: 1px solid white;
+  padding: 10px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.student-table tbody tr {
+  background-color: #f1f9ff;
+  color: #000;
+  transition: background-color 0.2s ease;
+}
+
+.student-table tbody tr:hover {
+  background-color: #d9f0ff;
 }
 
 /* ============================
@@ -165,14 +169,13 @@ table, button, td, th {
   background: none;
   border: none;
   color: #0645AD;
-  text-decoration: underline;
   cursor: pointer;
   padding: 0;
-  position: relative;
+  font-size: 14px !important;
+  font-weight: 450 !important;
   transition: color 0.25s ease;
 }
 
-/* افکت هاور */
 .text-link:hover {
   color: #ce0e84;
 }
@@ -184,7 +187,7 @@ COPY ID BUTTOON
 ============================ */
 
 .copy-id-button {
-  font-size: 12pt;
+  font-size: 13px;
   font-weight: 450;
 }
 
