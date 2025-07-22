@@ -110,7 +110,7 @@
 </main>
 
 @section FooterPopup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
-  @if (sections == null && !sections.Any())
+  @if (sections == null || !sections.Any())
   {
     <div class="footer-popup empty will-show">
       <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
@@ -125,9 +125,8 @@
 }
 
 @section Scripts {
-  <script src="~/js/Shared/tooltip.js"></script>
-  <script src="~/js/FormUtils/Shared/persian-time-slot.js"></script>
-  <script src="~/js/Shared/tooltip.js"></script>
+    <script src="~/js/FormUtils/Shared/persian-time-slot.js"></script>
+    <script src="~/js/Shared/tooltip.js"></script>
   <script>
   // دکمه‌های کپی
   document.querySelectorAll('.copy-id-button').forEach(btn => {
