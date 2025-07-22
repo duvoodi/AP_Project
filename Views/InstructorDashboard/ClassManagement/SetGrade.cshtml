@@ -25,7 +25,6 @@
 
         @if (students != null && students.Any())
         {
-
             <table class="student-table">
                 <thead>
                     <tr>
@@ -39,7 +38,6 @@
                         <th class="col-status">وضعیت</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     @for (int i = 0; i < students.Count; i++)
                     {
@@ -48,12 +46,13 @@
                         var gradeVal = (take != null && double.TryParse(take.Grade, out var g)) ? g.ToString("0.00") : "";
                         var statusText = "ثبت نشده";
                         var statusClass = "text-danger";
-                        if (take != null && double.TryParse(take.Grade, out var stg))
+
+                        if (!string.IsNullOrWhiteSpace(take?.Grade) && double.TryParse(take.Grade, out var stg))
                         {
                             if (stg >= 0 && stg <= 20)
                             {
-                                statusText = "در انتظار تایید";
-                                statusClass = "text-warning";
+                                statusText = "ثبت شده";
+                                statusClass = "text-success";
                             }
                             else
                             {
@@ -85,8 +84,7 @@
             </table>
 
             <div class="form-actions">
-                <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-h="@currentHash"
-                    class="btn-cancel">انصراف</a>
+                <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-h="@currentHash" class="btn-cancel">خروج</a>
                 <button type="submit" class="btn-submit">تایید</button>
             </div>
         }
@@ -101,43 +99,45 @@
     <script src="~/js/Shared/tooltip.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // اگر لیست دانشجو خالی بود، بعد 5 ثانیه ریدایرکت شود
             const currentHash = '@currentHash';
-
             const studentListIsEmpty = @((students == null || !students.Any()).ToString().ToLower());
+
             if (studentListIsEmpty) {
-                setTimeout(function () {
+                setTimeout(() => {
                     window.location.href = '@Url.Action("Index", "InstructorClassManagement")' + '?h=' + currentHash;
                 }, 5000);
             }
 
-            // کنترل نمره‌ها و تغییر وضعیت
+            // بررسی نمره‌ها در هنگام تغییر
             document.querySelectorAll('.grade-input').forEach(function (input) {
                 input.addEventListener('input', function () {
-                    let rawValue = this.value.trim();
+                    const rawValue = this.value.trim();
+                    const statusEl = document.getElementById(this.dataset.statusId);
+                    const originalVal = this.dataset.original;
 
+                    // اصلاح اعشار بیشتر از دو رقم
                     if (rawValue.includes('.')) {
                         const parts = rawValue.split('.');
                         if (parts[1].length > 2) {
                             this.value = parts[0] + '.' + parts[1].slice(0, 2);
-                            rawValue = this.value;
                         }
                     }
 
-                    const value = parseFloat(rawValue);
-                    const statusId = this.dataset.statusId;
-                    const statusEl = document.getElementById(statusId);
+                    const value = parseFloat(this.value);
+                    const validFormat = /^\d{1,2}(\.\d{1,2})?$/.test(this.value);
 
-                    if (!rawValue) {
+                    if (!this.value) {
                         statusEl.textContent = 'ثبت نشده';
                         statusEl.className = 'text-danger';
-                        return;
-                    }
-
-                    const validFormat = /^\d{1,2}(\.\d{1,2})?$/.test(rawValue);
-                    if (!isNaN(value) && value >= 0 && value <= 20 && validFormat) {
-                        statusEl.textContent = 'در انتظار تایید';
-                        statusEl.className = 'text-warning';
+                    } else if (!isNaN(value) && value >= 0 && value <= 20 && validFormat) {
+                        // بررسی اینکه مقدار با مقدار اولیه فرق کرده یا نه
+                        if (this.value !== originalVal) {
+                            statusEl.textContent = 'در انتظار تایید';
+                            statusEl.className = 'text-warning';
+                        } else {
+                            statusEl.textContent = 'ثبت شده';
+                            statusEl.className = 'text-success';
+                        }
                     } else {
                         statusEl.textContent = 'ورودی نامعتبر';
                         statusEl.className = 'text-danger';
@@ -145,12 +145,10 @@
                 });
             });
 
-            // جلوگیری از ارسال فرم اگر نمره نامعتبر است
+            // جلوگیری از ارسال فرم در صورت وجود نمره نامعتبر
             document.getElementById('grade-submit-form').addEventListener('submit', function (e) {
                 let isValid = true;
-                const inputs = document.querySelectorAll('.grade-input');
-
-                inputs.forEach(function (input) {
+                document.querySelectorAll('.grade-input').forEach(function (input) {
                     const rawValue = input.value.trim();
                     const value = parseFloat(rawValue);
                     const validFormat = /^\d{1,2}(\.\d{1,2})?$/.test(rawValue);

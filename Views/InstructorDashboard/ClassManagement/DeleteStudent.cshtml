@@ -78,7 +78,7 @@
 
             <div class="form-actions">
                 <a asp-controller="InstructorClassManagement" asp-action="Index" asp-route-h="@currentHash"
-                    class="btn-cancel">انصراف</a>
+                    class="btn-cancel">خروج</a>
                 <button type="submit" class="btn-submit">تایید</button>
             </div>
         </form>
@@ -161,11 +161,6 @@
                     body: formData
                 }).then(response => {
                     if (response.ok) {
-                        let redirectUrl = '@Url.Action("Index", "InstructorClassManagement")';
-                        if (currentHash) {
-                            redirectUrl += '?h=' + encodeURIComponent(currentHash);
-                        }
-
                         GlobalPopup.show({
                             PopupTitle: "حذف موفق",
                             SimpleMessage: message,
@@ -173,8 +168,6 @@
                             CloseOnBackdropClick: false,
                             BlockScroll: true,
                             iconType: "success",
-                            RedirectUrl: redirectUrl,
-                            RedirectDelayMs: 3000
                         });
                     } else {
                         alert("خطا در حذف دانشجویان، لطفاً دوباره تلاش کنید.");

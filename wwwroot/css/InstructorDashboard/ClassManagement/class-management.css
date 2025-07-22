@@ -135,9 +135,9 @@ table, button, td, th {
 
 .text-link {
   background: none;
+  font-weight: 500;
   border: none;
   color: #0645AD;
-  text-decoration: underline;
   cursor: pointer;
   padding: 0;
   transition: color 0.25s ease;
