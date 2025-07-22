@@ -139,7 +139,7 @@ namespace AP_Project.Controllers
 
             return result;
         }
-        
+
 
         [HttpGet]
         public IActionResult AddClass()
@@ -526,7 +526,7 @@ namespace AP_Project.Controllers
             var classroom = await _db.Classrooms.FirstOrDefaultAsync(c => c.Id == section.ClassroomId);
             if (classroom == null)
                 return NotFound();
-                
+
             try
             {
                 // حذف همه تیکز های این سکشن
@@ -569,6 +569,49 @@ namespace AP_Project.Controllers
                 return View("~/Views/AdminDashboard/ClassManagement/DeleteClass.cshtml", admin);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCourseInfo(Guid courseId)
+        {
+            var admin = CurrentAdmin;
+
+            var course = await _db.Courses
+                .Include(c => c.CourseCode)
+                .Include(c => c.Prerequisites)
+                    .ThenInclude(p => p.PrerequisiteCourseCode)
+                .Include(c => c.Sections)
+                    .ThenInclude(s => s.Teaches)
+                        .ThenInclude(t => t.Instructor)
+                .Include(c => c.Sections)
+                    .ThenInclude(s => s.TimeSlot)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+
+            if (course == null)
+                return NotFound();
+
+            return PartialView("~/Views/InstructorDashboard/ClassManagement/CourseDetailsPopup.cshtml", course);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetStudentList(Guid sectionId)
+        {
+
+            var admin = CurrentAdmin;
+
+            var students = await _db.Takes
+                .Where(t => t.SectionId == sectionId)
+                .Include(t => t.Student)
+                .Select(t => t.Student)
+                .OrderBy(s => s.FirstName)
+                .ThenBy(s => s.LastName)
+                .ToListAsync();
+
+            return PartialView("~/Views/InstructorDashboard/ClassManagement/StudentListPopup.cshtml", students);
+        }
+
+
     }
 }
 
