@@ -468,6 +468,107 @@ namespace AP_Project.Controllers
                 return View("~/Views/AdminDashboard/ClassManagement/EditClass.cshtml", admin);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteClass(Guid id)
+        {
+            var admin = CurrentAdmin;
+            ModelState.ReplaceModelError("GeneralError", "");
+
+            // بررسی جی یو آی دی گرفته شده از روت آی دی
+            var section = await _db.Sections
+                .Include(s => s.Classroom)
+                .Include(s => s.Takes)
+                .Include(s => s.Course)
+                    .ThenInclude(c => c.Sections)
+                        .ThenInclude(sec => sec.Teaches)
+                .FirstOrDefaultAsync(s => s.Id == id);
+            if (section == null || section.ClassroomId == null)
+                return NotFound();
+            var classroom = await _db.Classrooms.FirstOrDefaultAsync(c => c.Id == section.ClassroomId);
+            if (classroom == null)
+                return NotFound();
+
+            var form = new ClassFormViewModel
+            {
+                SectionId = section.Id,
+                ClassLocationId = section.ClassroomId.Value,
+                StudentIds = await _db.Takes
+                    .Where(t => t.SectionId == id)
+                    .Select(t => t.StudentUserId)
+                    .ToListAsync()
+            };
+            ViewData["Form"] = form;
+            ViewData["selectedClassroom"] = _db.Classrooms.ToList().FirstOrDefault(cr => cr.Id == section.ClassroomId.Value);
+            ViewData["selectedSection"] = GetUnassignedSectionList(id).ToList().FirstOrDefault(s => s.SectionId == section.Id);
+            ViewData["Students"] = _db.Students.OrderBy(i => i.LastName).ThenBy(i => i.FirstName).ToList();
+
+            return View("~/Views/AdminDashboard/ClassManagement/DeleteClass.cshtml", admin);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteClass(Guid id, ClassFormViewModel model) // ویو مدل فرم صرفا جهت متفاوت بودن پارامتر ها اکشن پست با گت اش گرفته شده و از آن هیچ استفاده ای نشده
+        {
+            var admin = CurrentAdmin;
+            ModelState.ReplaceModelError("GeneralError", "");
+
+            // بررسی جی یو آی دی گرفته شده از روت آی دی
+            var section = await _db.Sections
+                .Include(s => s.Classroom)
+                .Include(s => s.Takes)
+                .Include(s => s.Course)
+                    .ThenInclude(c => c.Sections)
+                        .ThenInclude(sec => sec.Teaches)
+                .FirstOrDefaultAsync(s => s.Id == id);
+            if (section == null || section.ClassroomId == null)
+                return NotFound();
+            var classroom = await _db.Classrooms.FirstOrDefaultAsync(c => c.Id == section.ClassroomId);
+            if (classroom == null)
+                return NotFound();
+                
+            try
+            {
+                // حذف همه تیکز های این سکشن
+                _db.Takes.RemoveRange(section.Takes);
+
+                if (section.CourseId != null)
+                { // درس حذف ایمن نشده و موجود هست فقط کلاس روم آی دی رو نال کن
+                    section.ClassroomId = null;
+                    await _db.SaveChangesAsync();
+
+                    return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
+                }
+                else
+                { // درس حذف ایمن شده و ای دی اش نال شده برای حذف تخصیص کلاس سکشن را پاک کن
+
+                    _db.Sections.Remove(section);
+                    await _db.SaveChangesAsync();
+
+                    return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
+                }
+            }
+            catch
+            {
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام حذف اطلاعات رخ داد! لطفاً دوباره تلاش کنید...");
+
+                var form = new ClassFormViewModel
+                {
+                    SectionId = section.Id,
+                    ClassLocationId = section.ClassroomId.Value,
+                    StudentIds = await _db.Takes
+                        .Where(t => t.SectionId == id)
+                        .Select(t => t.StudentUserId)
+                        .ToListAsync()
+                };
+                ViewData["Form"] = form;
+                ViewData["selectedClassroom"] = _db.Classrooms.ToList().FirstOrDefault(cr => cr.Id == section.ClassroomId.Value);
+                ViewData["selectedSection"] = GetUnassignedSectionList(id).ToList().FirstOrDefault(s => s.SectionId == section.Id);
+                ViewData["Students"] = _db.Students.OrderBy(i => i.LastName).ThenBy(i => i.FirstName).ToList();
+
+                return View("~/Views/AdminDashboard/ClassManagement/DeleteClass.cshtml", admin);
+            }
+        }
     }
 }
 
