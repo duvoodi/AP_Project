@@ -15,8 +15,6 @@
   {
     semesterDisplayCode = $"{year.Value % 1000}{semester.Value}";
   }
-
-  var hasFooter = takes != null && takes.Any(t => t.Section?.Course != null);
 }
 
 <link rel="stylesheet" href="~/css/StudentDashboard/courses-list.css" asp-append-version="true" />
@@ -26,13 +24,14 @@
 </form>
 
 <main class="dashboard-main student">
-  <div class="titlebar"></div>
-
-  @if (takes != null && takes.Any())
-  {
+  <div class="titlebar">
     <div class="action-title-tab">
       دروس نیمسال @semesterDisplayCode
     </div>
+  </div>
+
+  @if (takes != null && takes.Any())
+  {
 
     <table class="class-table">
       <thead>
@@ -49,82 +48,89 @@
         </tr>
       </thead>
 
-      <tbody>
-        @for (int i = 0; i < takes.Count; i++)
-        {
-          var take = takes[i];
-          var section = take.Section;
-          var course = section?.Course;
-          var timeSlot = section?.TimeSlot;
-          var classroom = section?.Classroom;
-
-          if (section?.Course != null)
+      @if (takes != null && takes.Any())
+      {
+        <tbody>
+          @for (int i = 0; i < takes.Count; i++)
           {
-            <tr>
-              <td class="col-index">@(i + 1)</td>
-              <td class="col-title">@(course?.CourseCode?.Title ?? "-")</td>
-              <td class="col-units">@(course?.Unit.ToString() ?? "-")</td>
+            var take = takes[i];
+            var section = take.Section;
+            var course = section?.Course;
+            var timeSlot = section?.TimeSlot;
+            var classroom = section?.Classroom;
 
-              <td class="col-instructor">
-                @if (section?.Teaches?.Instructor != null)
-                {
-                  @($"{section.Teaches.Instructor.FirstName} {section.Teaches.Instructor.LastName}")
-                }
-                else
-                {
-                  <span class="pending-info">استاد این درس به زودی مشخص می‌شود</span>
-                }
-              </td>
+            if (section?.Course != null)
+            {
+              <tr>
+                <td class="col-index">@(i + 1)</td>
+                <td class="col-title">@(course?.CourseCode?.Title ?? "-")</td>
+                <td class="col-units">@(course?.Unit.ToString() ?? "-")</td>
 
-              <td class="col-location">
-                @if (classroom != null)
-                {
-                  @($"{classroom.Building} - {classroom.RoomNumber}")
-                }
-                else
-                {
-                  <span class="pending-info">مکان کلاس به‌زودی مشخص می‌شود</span>
-                }
-              </td>
+                <td class="col-instructor">
+                  @if (section?.Teaches?.Instructor != null)
+                  {
+                    @($"{section.Teaches.Instructor.FirstName} {section.Teaches.Instructor.LastName}")
+                  }
+                  else
+                  {
+                    <span class="pending-info">استاد این درس به زودی مشخص می‌شود</span>
+                  }
+                </td>
 
-              <td class="col-day">@(timeSlot?.Day ?? "-")</td>
-              <td class="col-time">
-                @if (timeSlot != null)
-                {
-                  <span>@timeSlot.StartTime.ToString(@"hh\:mm") - @timeSlot.EndTime.ToString(@"hh\:mm")</span>
-                }
-                else
-                {
-                  <span>-</span>
-                }
-              </td>
-              <td class="col-exam">
-                @if (course?.FinalExamDate != null)
-                {
-                  var exyear = pc.GetYear(course.FinalExamDate);
-                  var exmonth = pc.GetMonth(course.FinalExamDate).ToString("00");
-                  var exday = pc.GetDayOfMonth(course.FinalExamDate).ToString("00");
-                  @($"{exyear}/{exmonth}/{exday}")
-                }
-                else
-                {
-                  @("-")
-                }
-              </td>
-              <td class="col-action">
-                <a href="#" class="text-link delete-course-btn" data-sectionid="@take.SectionId">حذف</a>
-              </td>
-            </tr>
+                <td class="col-location">
+                  @if (classroom != null)
+                  {
+                    @($"{classroom.Building} - {classroom.RoomNumber}")
+                  }
+                  else
+                  {
+                    <span class="pending-info">مکان کلاس به‌زودی مشخص می‌شود</span>
+                  }
+                </td>
+
+                <td class="col-day">
+                  <span>@(timeSlot?.Day ?? "-")</span>
+                </td>
+                <td class="col-time">
+                  @if (timeSlot != null)
+                  {
+                    <span>@timeSlot.StartTime.ToString(@"hh\:mm") - @timeSlot.EndTime.ToString(@"hh\:mm")</span>
+                  }
+                  else
+                  {
+                    <span>-</span>
+                  }
+                </td>
+                <td class="col-exam">
+                  @if (course?.FinalExamDate != null)
+                  {
+                    var exyear = pc.GetYear(course.FinalExamDate);
+                    var exmonth = pc.GetMonth(course.FinalExamDate).ToString("00");
+                    var exday = pc.GetDayOfMonth(course.FinalExamDate).ToString("00");
+                    @($"{exyear}/{exmonth}/{exday}")
+                  }
+                  else
+                  {
+                    @("-")
+                  }
+                </td>
+                <td class="col-action">
+                  <a href="#" class="text-link delete-course-btn" data-sectionid="@take.SectionId">حذف</a>
+                </td>
+              </tr>
+            }
           }
-        }
-      </tbody>
+        </tbody>
+      }
     </table>
   }
 </main>
 
-<div class="empty-popup @(hasFooter ? "" : "will-show")">
-  <p>موردی جهت نمایش وجود ندارد</p>
-</div>
+@section FooterPopup {
+  <div class="footer-popup empty @(takes == null || !takes.Any() ? "will-show" : "")">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+  </div>
+}
 
 @section Scripts {
   <script>

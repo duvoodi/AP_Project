@@ -86,13 +86,13 @@ th {
 }
 
 .semester-table tbody tr {
-    background-color: #f1f9ff;
+    background-color: #e2f2ff;
     color: #000;
     transition: background-color 0.2s ease;
 }
 
 .semester-table tbody tr:hover {
-    background-color: #d9f0ff;
+    background-color: #a1d9ff;
 }
 
 /* ============================
@@ -204,37 +204,118 @@ th {
 
 
 @media print {
-    body * {
-        visibility: hidden;
-    }
+  body * {
+    visibility: hidden;
+  }
 
-    .form-actions {
-        display: none !important;
-    }
+  .form-actions,
+  .print-button,
+  header,
+  footer,
+  nav,
+  .sidebar {
+    display: none !important;
+  }
 
-    #printable-area,
-    #printable-area * {
-        visibility: visible;
-    }
+  #printable-area,
+  #printable-area * {
+    visibility: visible;
+  }
 
-    #printable-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-    }
+  #printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0 16px; /* فاصله کمی از چپ و راست برای جلوگیری از چسبیدن به لبه صفحه */
+    box-sizing: border-box;
+    direction: rtl;
+  }
 
-    .print-button {
-        display: none;
-    }
+  /* گرید دانشجو: عرض کامل، حاشیه پایین برای فاصله با جدول */
+  .student-summary-grid {
+    width: 100%;
+    margin: 0 0 24px 0; /* 24px فاصله پایین برای جدا شدن از جدول */
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-    header,
-    footer,
-    nav,
-    .sidebar {
-        display: none !important;
-    }
+  /* جدول ترم‌ها: عرض کامل، بدون margin و padding اضافی */
+  .semester-table {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0;
+    padding: 0;
+    border-collapse: collapse !important;
+    box-sizing: border-box;
+    direction: rtl;
+  }
+
+  /* سلول‌های جدول: اندازه استاندارد و پرش متن */
+  .semester-table th,
+  .semester-table td {
+    border: 1px solid #000 !important;
+    padding: 8px 12px !important;
+    text-align: center;
+    word-wrap: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+.semester-table th.col-action,
+.semester-table td.col-action {
+  margin-left: 10px;
+  border: none !important; /* حذف بردر سلول‌ها */
+  color: white !important;          
+  background-color: white !important; 
 }
+
+.semester-table th.col-action a,
+.semester-table td.col-action a {
+  color: white !important;
+  text-decoration: none !important;
+  cursor: default !important;
+  pointer-events: none !important;
+  opacity: 0 !important; /* شفاف کردن */
+  filter: none !important;
+  margin-left: 10px;
+  border: none !important; /* حذف بردر لینک‌ها */
+}
+
+  /* حذف سایه جدول */
+  .semester-table {
+    box-shadow: none !important;
+    border-radius: 0 !important; /* گوشه‌ها تیز */
+    border-collapse: collapse !important; /* برای بهتر شدن بردرهای ضخیم */
+  }
+
+  /* بردرهای ضخیم‌تر و تیز در سلول‌ها */
+  .semester-table th,
+  .semester-table td {
+    border: 2px solid black !important; /* ضخامت بردر بیشتر */
+    border-radius: 0 !important; /* گوشه تیز */
+    padding: 8px 12px !important;
+  }
+  body, 
+  body * {
+    color: black !important;
+  }
+
+  /* رنگ متن سیاه و بردر مشکی برای سگمنت‌ها */
+  .student-summary-grid > div {
+    color: black !important;
+    border: 1px solid black !important;
+    box-shadow: none !important; /* حذف سایه برای چاپ */
+    background: white !important; /* پس‌زمینه سفید برای وضوح بهتر */
+  }
+  .student-summary-grid {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+}
+
 
 /* ============================
    ANIMATIONS

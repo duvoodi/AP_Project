@@ -38,13 +38,13 @@ table, button, td, th {
 }
 
 .class-table tbody tr {
-  background-color: #f1f9ff;
+  background-color: #e2f2ff;
   color: #000;
   transition: background-color 0.2s ease;
 }
 
 .class-table tbody tr:hover {
-  background-color: #d9f0ff;
+  background-color: #a1d9ff;
 }
 
 .class-table td[class*="col-building"][colspan="3"] {
@@ -64,7 +64,7 @@ table, button, td, th {
 }
 
 .col-building {
-  width: 10%;
+  width: 18%;
 }
 
 .col-roomnumber {
@@ -80,7 +80,7 @@ table, button, td, th {
 }
 
 .col-courseid {
-  width: 10%;
+  width: 6%;
 }
 
 .col-schedule {
@@ -88,19 +88,19 @@ table, button, td, th {
 }
 
 .col-details {
-  width: 12%;
+  width: 6%;
 }
 
 .col-students {
-  width: 12%;
+  width: 6%;
 }
 
 .col-classid {
-  width: 10%;
+  width: 6%;
 }
 
 .col-actions {
-  width: 5%;
+  width: 7%;
 }
 
 /* دکمه‌های داخل جدول */
@@ -108,7 +108,7 @@ table, button, td, th {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
+  gap: 20%;
 }
 
 .btn-action {

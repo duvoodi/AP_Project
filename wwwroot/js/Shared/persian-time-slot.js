@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
   // فارسی‌سازی روزها در سلول‌های جدول
   function convertTableCells() {
-    const cells = document.querySelectorAll('.col-schedule');
+    const cells = document.querySelectorAll('.col-schedule, .col-day');
     let convertedCount = 0;
 
     cells.forEach(cell => {
@@ -102,7 +102,50 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // فارسی سازی روز در گلوبال پاپ آپ
+  function convertTextNodesInPopup() {
+    const popup = document.getElementById('globalPopupContainer');
+    if (!popup) return;
+
+    const walker = document.createTreeWalker(popup, NodeFilter.SHOW_TEXT, null, false);
+    const textNodes = [];
+
+    while (walker.nextNode()) {
+      textNodes.push(walker.currentNode);
+    }
+
+    textNodes.forEach(node => {
+      let replaced = node.nodeValue;
+      Object.entries(dayMap).forEach(([en, fa]) => {
+        const regex = new RegExp(`\\b${en}\\b`, 'g');
+        replaced = replaced.replace(regex, fa);
+      });
+
+      if (replaced !== node.nodeValue) {
+        debugLog('Converted popup text node', {
+          from: node.nodeValue,
+          to: replaced
+        });
+        node.nodeValue = replaced;
+      }
+    });
+  }
+  
   convertTableCells();
   convertAllSelectOptions();
   convertReadonlyInputs();
+  convertTextNodesInPopup();
+
+  const popupContainer = document.getElementById('globalPopupContainer');
+  if (popupContainer) {
+    const popupObserver = new MutationObserver(() => {
+      convertTextNodesInPopup();
+    });
+
+    popupObserver.observe(popupContainer, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  }
 });

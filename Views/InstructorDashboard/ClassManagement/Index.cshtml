@@ -5,13 +5,12 @@
     Layout = "_LayoutInstructor";
     var classrooms = ViewBag.Classrooms as List<AP_Project.Models.Classrooms.Classroom>;
     var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-    var hasFooter = false;
 }
 
 <link rel="stylesheet" href="~/css/InstructorDashboard/ClassManagement/class-management.css"
     asp-append-version="true" />
 
-<main class="dashboard-main instructor @(hasFooter ? "has-footer" : "has-not-footer")">
+<main class="dashboard-main instructor">
     <table class="class-table">
         <thead>
             <tr>
@@ -26,9 +25,7 @@
                 <th class="col-classid">آی دی کلاس</th>
                 <th class="col-courseid">آی‌دی درس</th>
                 @if (classrooms != null && classrooms.Any())
-                {
-                    <th class="col-actions"></th>
-                }
+                {<th class="col-actions"></th>}
             </tr>
         </thead>
 
@@ -134,19 +131,11 @@
 
 </main>
 
-
-<div class="empty-popup @(classrooms == null || !classrooms.Any() ? "will-show" : "")">
-    <p>موردی جهت نمایش وجود ندارد</p>
-</div>
-
-
-@if (hasFooter)
-{
-    <footer class="dashboard-footer instructor">
-        <p>متن فوتر</p>
-    </footer>
+@section FooterPopup {
+  <div class="footer-popup empty @(classrooms == null || !classrooms.Any() ? "will-show" : "")">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+  </div>
 }
-
 
 @section Scripts {
     <script src="~/js/Shared/tooltip.js" asp-append-version="true"></script>

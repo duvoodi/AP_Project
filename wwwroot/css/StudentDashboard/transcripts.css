@@ -44,13 +44,13 @@ th {
 }
 
 .class-table tbody tr {
-    background-color: #f1f9ff;
+    background-color: #e2f2ff;
     color: #000;
     transition: background-color 0.2s ease;
 }
 
 .class-table tbody tr:hover {
-    background-color: #b8d4eb;
+    background-color: #a1d9ff;
 }
 
 /* ستون‌ها */
@@ -112,6 +112,14 @@ th {
 }
 
 /* تب عنوان بالای جدول */
+.titlebar {
+  position: sticky;
+  top: 100px;
+  margin: 0;
+  padding: 30px 0 0;
+  background-color: white;
+  z-index: 3;
+}
 .action-title-tab {
     background-color: #f5dc71;
     color: #725810;
@@ -120,7 +128,6 @@ th {
     padding: 11px 20px;
     border-radius: 23px;
     display: inline-block;
-    margin-top: 20px;
     margin-right: 20px;
 }
 
