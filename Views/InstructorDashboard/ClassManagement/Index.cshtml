@@ -132,11 +132,6 @@
     <p>موردی جهت نمایش وجود ندارد</p>
 </div>
 
-<!-- پاپ‌آپ مشخصات درس -->
-<div id="course-popup-container"></div>
-
-<div id="student-popup-container"></div>
-
 
 @if (hasFooter)
 {
@@ -148,6 +143,7 @@
 
 @section Scripts {
     <script src="~/js/Shared/tooltip.js" asp-append-version="true"></script>
+
     <script>
         // هندل کردن دکمه‌های کپی
         document.querySelectorAll('.copy-id-button').forEach(btn => {
