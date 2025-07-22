@@ -53,7 +53,7 @@
                             <td class="col-grade">
                                 @if (string.IsNullOrWhiteSpace(grade))
                                 {
-                                    <span class= "grade-empty">ثبت نشده</span>
+                                    <span class="grade-empty">ثبت نشده</span>
                                 }
                                 else
                                 {
@@ -149,10 +149,15 @@
 
             function confirmDeleteStudents() {
                 GlobalPopup.hide();
+
                 const form = document.getElementById('deleteStudentsForm');
                 const formData = new FormData(form);
 
-                const selectedCount = form.querySelectorAll('input.delete-checkbox:checked').length;
+                // قبل از ارسال، ID دانشجوهایی که انتخاب شدن رو ذخیره کنیم
+                const selectedCheckboxes = form.querySelectorAll('input.delete-checkbox:checked');
+                const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+                const selectedCount = selectedIds.length;
                 const message = selectedCount === 1
                     ? "دانشجوی انتخاب‌شده با موفقیت حذف شد."
                     : "دانشجویان انتخاب‌شده با موفقیت حذف شدند.";
@@ -170,6 +175,28 @@
                             BlockScroll: true,
                             iconType: "success",
                         });
+
+                        //  حالا هر سطری که studentId اون در selectedIds هست رو حذف کن
+                        selectedIds.forEach(id => {
+                            const row = document.querySelector(`.status-toggle[data-id="${id}"]`)?.closest('tr');
+                            if (row) row.remove();
+                        });
+
+                        //  بازشماری شماره ردیف‌ها
+                        reindexRows();
+
+                        //  اگر همه ردیف‌ها حذف شدن
+                        const remainingRows = document.querySelectorAll('.student-table tbody tr');
+                        if (remainingRows.length === 0) {
+                            document.querySelector('.dashboard-main').classList.remove("has-footer");
+                            document.querySelector('.dashboard-main').classList.add("has-not-footer");
+                            document.querySelector('.empty-popup')?.classList.add("will-show");
+                        }
+
+                        //  بستن پاپ‌آپ بعد از چند ثانیه
+                        setTimeout(() => {
+                            GlobalPopup.hide();
+                        }, 3000);
                     } else {
                         alert("خطا در حذف دانشجویان، لطفاً دوباره تلاش کنید.");
                     }
@@ -177,6 +204,16 @@
                     alert("خطا در ارتباط با سرور.");
                 });
             }
+
+            // بازشماری شماره ردیف‌ها
+            function reindexRows() {
+                const rows = document.querySelectorAll('.student-table tbody tr');
+                rows.forEach((row, index) => {
+                    const indexCell = row.querySelector('.col-index'); // اصلاح کلاس اینجا
+                    if (indexCell) indexCell.textContent = index + 1;
+                });
+            }
         }
     </script>
+
 }

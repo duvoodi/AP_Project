@@ -9,14 +9,14 @@
   ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
-  
+
   // Get class ID from route
   var classId = Guid.Parse(ViewContext.RouteData.Values["id"]?.ToString() ?? Guid.Empty.ToString());
   bool hasStudents = ViewData["HasStudents"] as bool? ?? false;
 
   var form = ViewData["Form"] as AP_Project.FormViewModels.ClassForm.ClassFormViewModel;
   var selectedClassroom = ViewData["selectedClassroom"] as Classroom;
-  var selectedSection =ViewData["selectedSection"] is ValueTuple<Guid, string> tuple ? tuple : default;
+  var selectedSection = ViewData["selectedSection"] is ValueTuple<Guid, string> tuple ? tuple : default;
   var students = ViewData["Students"] as List<Student> ?? new();
 }
 
@@ -30,7 +30,8 @@
     </div>
   </div>
   <div class="form-container">
-    <form asp-controller="ClassManagement" asp-action="DeleteClass" asp-route-h="@currentHash" method="post" id="delete-class-form">
+    <form asp-controller="ClassManagement" asp-action="DeleteClass" asp-route-h="@currentHash" method="post"
+      id="delete-class-form">
       @Html.AntiForgeryToken()
 
       <div class="error-row">
@@ -42,10 +43,10 @@
       <div class="form-row">
         <div class="form-group wide">
           <label>کلاس</label>
-          <input class="form-control" 
-                value="@(selectedClassroom != null ? 
-                    $"ساختمان: {selectedClassroom.Building} - شماره: {selectedClassroom.RoomNumber} - ظرفیت: {selectedClassroom.Capacity}" : "")" 
-                readonly />
+          <input class="form-control"
+            value="@(selectedClassroom != null ? 
+                                            $"ساختمان: {selectedClassroom.Building} - شماره: {selectedClassroom.RoomNumber} - ظرفیت: {selectedClassroom.Capacity}" : "")"
+            readonly />
           <input type="hidden" name="ClassLocationId" value="@(form?.ClassLocationId.ToString() ?? "")" />
         </div>
       </div>
@@ -53,7 +54,7 @@
       <div class="form-row">
         <div class="form-group wide">
           <label>درس</label>
-          <input class="form-control" value="@(selectedSection.Item2)" readonly/>
+          <input class="form-control" value="@(selectedSection.Item2)" readonly />
           <input type="hidden" name="SectionId" value="@(form?.SectionId.ToString() ?? "")" />
         </div>
       </div>
@@ -61,19 +62,20 @@
       <div class="form-row">
         <div class="form-group wide">
           <label>لیست دانشجویان</label>
-          <div id="students-list" class="students-list readonly-list @(form?.StudentIds?.Any() == true ? "visible" : "")">
+          <div id="students-list"
+            class="students-list readonly-list @(form?.StudentIds?.Any() == true ? "visible" : "")">
             @foreach (var studentId in form?.StudentIds ?? Enumerable.Empty<Guid>())
             {
-                var student = students.FirstOrDefault(s => s.Id == studentId);
-                if (student != null)
-                {
-                    <div class="student-tag readonly-tag">
-                        <div class="student-info">
-                            <span class="student-name">@student.StudentId - @student.FirstName @student.LastName</span>
-                        </div>
-                        <input type="hidden" name="StudentIds" value="@studentId" />
-                    </div>
-                }
+              var student = students.FirstOrDefault(s => s.Id == studentId);
+              if (student != null)
+              {
+                <div class="student-tag readonly-tag">
+                  <div class="student-info">
+                    <span class="student-name">@student.StudentId - @student.FirstName @student.LastName</span>
+                  </div>
+                  <input type="hidden" name="StudentIds" value="@studentId" />
+                </div>
+              }
             }
           </div>
         </div>
@@ -81,8 +83,8 @@
 
       <div class="form-actions">
         <a asp-controller="ClassManagement" asp-action="Index" asp-route-h="@currentHash" class="btn-cancel">انصراف</a>
-            <button type="submit" class="btn-submit blur-on-leave" formaction="@Url.Action("DeleteClass", new { h = currentHash, id = classId })">تایید</button>
-            </div>
+        <button type="button" id="delete-confirm-btn" class="btn-submit blur-on-leave">تایید</button>
+      </div>
     </form>
   </div>
 </main>
@@ -126,13 +128,65 @@
         }
       });
     });
-    document.getElementById('delete-class-form').addEventListener('submit', function(e) {
-      e.preventDefault(); // جلوی ارسال فرم را بگیر
-      // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
-      replaceError("GeneralError", '');
-      setTimeout(() => { // این بخش کد 800 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
-        this.submit();
-      }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
-    });
+
   </script>
+
+  <script>
+
+
+    const currentHash = '@currentHash';
+
+    document.getElementById('delete-confirm-btn').addEventListener('click', function () {
+      GlobalPopup.show({
+        PopupTitle: "تأیید حذف کلاس",
+        SimpleMessage: "آیا از حذف این کلاس مطمئن هستید؟",
+        CanCloseManually: false,
+        CloseOnBackdropClick: false,
+        BlockScroll: true,
+        ShowActionButtons: true,
+        GreenButtonText: "انصراف",
+        OnGreenClickJs: "GlobalPopup.hide()",
+        RedButtonText: "حذف",
+        OnRedClickJs: "submitDeleteClass()",
+        iconType: "warning"
+      });
+    });
+
+    function submitDeleteClass() {
+      GlobalPopup.hide();
+
+      const form = document.getElementById('delete-class-form');
+      replaceError("GeneralError", '');
+
+      setTimeout(() => {
+        const formData = new FormData(form);
+        fetch(form.action, {
+          method: 'POST',
+          body: formData
+        }).then(response => {
+          if (response.ok) {
+            GlobalPopup.show({
+              PopupTitle: "حذف موفق",
+              SimpleMessage: "کلاس مورد نظر با موفقیت حذف شد.",
+              CanCloseManually: false,
+              CloseOnBackdropClick: false,
+              BlockScroll: true,
+              iconType: "success"
+            });
+
+            setTimeout(() => {
+              const redirectUrl = '@Url.Action("Index", "ClassManagement")' + '?h=' + encodeURIComponent(currentHash);
+              window.location.href = redirectUrl;
+            }, 2500);
+          } else {
+            throw new Error();
+          }
+        }).catch(() => {
+          replaceError("GeneralError", "خطا در حذف کلاس. لطفاً دوباره تلاش کنید.");
+        });
+      }, 850);
+    }
+
+  </script>
+
 }

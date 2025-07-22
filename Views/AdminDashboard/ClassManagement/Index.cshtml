@@ -5,7 +5,7 @@
   ViewData["Title"] = "داشبورد ادمین";
   Layout = "_LayoutAdmin";
 
-  var sections = ViewBag.Sections as List<Section> ?? new List<Section>();;
+  var sections = ViewBag.Sections as List<Section> ?? new List<Section>(); ;
   var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
 }
 
@@ -13,13 +13,12 @@
 
 <main class="dashboard-main admin">
   <div class="toolbar">
-    <a asp-controller="ClassManagement" asp-action="AddClass"
-       asp-route-h="@currentHash" class="btn-add-class">
+    <a asp-controller="ClassManagement" asp-action="AddClass" asp-route-h="@currentHash" class="btn-add-class">
       <span class="icon">&#43;</span>
       <span class="text">افزودن کلاس</span>
     </a>
-    <a asp-controller="ClassLocationsManagement" asp-action="ManageClassLocationsIndex" 
-       asp-route-h="@currentHash" class="btn-manage-class-locations">
+    <a asp-controller="ClassLocationsManagement" asp-action="ManageClassLocationsIndex" asp-route-h="@currentHash"
+      class="btn-manage-class-locations">
       <span class="icon">&#8227;</span>
       <span class="text">مدیریت محل کلاس‌ها</span>
     </a>
@@ -40,129 +39,130 @@
         <th class="col-classid">آی‌دی کلاس</th>
         <th class="col-sectionid">آی‌دی درس</th>
         @if (sections != null && sections.Any())
-        {<th class="col-actions"></th>}
+        {
+          <th class="col-actions"></th>
+        }
       </tr>
     </thead>
     @if (sections != null && sections.Any())
     {
       <tbody>
-      @for (int i = 0; i < sections.Count; i++)
-      {
-        var s = sections[i];
-        var room = s.Classroom;
-        var course = s.Course;
-        var instructor = s.Teaches?.Instructor;
-        var students = s.Takes?.Select(tk => tk.Student).ToList() ?? new List<AP_Project.Models.Users.Student>();
+        @for (int i = 0; i < sections.Count; i++)
+        {
+          var s = sections[i];
+          var room = s.Classroom;
+          var course = s.Course;
+          var instructor = s.Teaches?.Instructor;
+          var students = s.Takes?.Select(tk => tk.Student).ToList() ?? new List<AP_Project.Models.Users.Student>();
 
-        <tr>
-          <td class="col-index">@((i + 1))</td>
-          <td class="col-building">@room.Building</td>
-          <td class="col-room">@room.RoomNumber</td>
-          <td class="col-capacity">@room.Capacity</td>
+          <tr>
+            <td class="col-index">@((i + 1))</td>
+            <td class="col-building">@room.Building</td>
+            <td class="col-room">@room.RoomNumber</td>
+            <td class="col-capacity">@room.Capacity</td>
 
-          <td class="col-code @(course == null ? "no-content" : "")">
-            @(course != null 
-               ? course.CourseCode.Code 
-               : "-")
-          </td>
-          <td class="col-title @(course == null ? "no-content" : "")">
-            @(course != null 
-               ? course.CourseCode.Title 
-               : "-")
-          </td>
-          <td class="col-instructor @((course == null || instructor == null) ? "no-content" : "")">
-            @if (course == null)
-            {
-              @:—
-            }
-            else if (instructor == null)
-            {
-              @:استاد ندارد
-            }
-            else
-            {
-              @($"{instructor.FirstName} {instructor.LastName}")
-            }
-          </td>
-          <td class="col-details @(course == null ? "no-content" : "")">
-            @if (course != null)
-            {
-              <button class="text-link view-info"
-                  data-tooltip="مشخصات درس"
+            <td class="col-code @(course == null ? "no-content" : "")">
+              @(course != null
+                        ? course.CourseCode.Code
+                        : "-")
+            </td>
+            <td class="col-title @(course == null ? "no-content" : "")">
+              @(course != null
+                        ? course.CourseCode.Title
+                        : "-")
+            </td>
+            <td class="col-instructor @((course == null || instructor == null) ? "no-content" : "")">
+              @if (course == null)
+              {
+                @:—
+              }
+              else if (instructor == null)
+              {
+                @:استاد ندارد
+              }
+              else
+              {
+                @($"{instructor.FirstName} {instructor.LastName}")
+              }
+            </td>
+            <td class="col-details @(course == null ? "no-content" : "")">
+              @if (course != null)
+              {
+                <button class="text-link view-course-btn" data-course-id="@course.Id" data-tooltip="مشخصات درس"
                   data-tooltip-align="center">
-                مشاهده
-              </button>
-            }
-            else
-            {
-              <span>-</span>
-            }
-          </td>
+                  مشاهده
+                </button>
+              }
+              else
+              {
+                <span>-</span>
+              }
+            </td>
 
-          <td class="col-students ">
-            @if (students.Any())
-            {
-              <button class="text-link view-info"
-                  data-tooltip="لیست دانشجویان"
+            <td class="col-students">
+              @if (students.Any())
+              {
+                <button class="text-link view-students-btn" data-section-id="@s.Id" data-tooltip="لیست دانشجویان"
                   data-tooltip-align="center">
-                مشاهده
+                  مشاهده
+                </button>
+              }
+              else
+              {
+                <span>-</span>
+              }
+            </td>
+
+
+            <td class="col-classid">
+              <button class="text-link copy-id-button" data-id="@room.Id" data-tooltip="@room.Id"
+                data-tooltip-align="center">
+                کپی
               </button>
-            }
-            else
-            {
-              <span>-</span>
-            }
-          </td>
+            </td>
+            <td class="col-sectionid">
+              <button class="text-link copy-id-button" data-id="@s.Id" data-tooltip="@s.Id" data-tooltip-align="center">
+                کپی
+              </button>
+            </td>
 
-          <td class="col-classid">
-            <button class="text-link copy-id-button"
-                data-id="@room.Id"
-                data-tooltip="@room.Id"
-                data-tooltip-align="center">
-              کپی
-            </button>
-          </td>
-          <td class="col-sectionid">
-            <button class="text-link copy-id-button"
-                data-id="@s.Id"
-                data-tooltip="@s.Id"
-                data-tooltip-align="center">
-              کپی
-            </button>
-          </td>
-
-          <td class="col-actions">
-            <div class="actions-wrapper">
-              <a asp-controller="ClassManagement" asp-action="EditClass"
-                 asp-route-id="@s.Id" asp-route-h="@currentHash"
-                 class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
-                <i class="fas fa-edit"></i>
-              </a>
-              <a asp-controller="ClassManagement" asp-action="DeleteClass"
-                 asp-route-id="@s.Id" asp-route-h="@currentHash"
-                 class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
-                <i class="fas fa-trash-alt"></i>
-              </a>
-            </div>
-          </td>
-        </tr>
-      }
+            <td class="col-actions">
+              <div class="actions-wrapper">
+                <a asp-controller="ClassManagement" asp-action="EditClass" asp-route-id="@s.Id" asp-route-h="@currentHash"
+                  class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a asp-controller="ClassManagement" asp-action="DeleteClass" asp-route-id="@s.Id" asp-route-h="@currentHash"
+                  class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
+                  <i class="fas fa-trash-alt"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+        }
       </tbody>
     }
   </table>
+
+
+  <div id="course-popup-container"></div>
+  <div id="student-popup-container"></div>
+
 </main>
 
-@section FooterPopup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
+@section FooterPopup {
+  <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
   @if (sections == null || !sections.Any())
   {
     <div class="footer-popup empty will-show">
       <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
-    </div>  
+    </div>
   }
   else if (sections.Any(s => s.CourseId == null || s.Teaches == null || s.Teaches.Instructor == null))
   {
     <div class="footer-popup error will-show">
-      <p><i class="fas fa-exclamation-triangle" style="margin-left: 8px;"></i>اطلاعات بعضی کلاس‌ها ناقص هست، لطفاً آنها را ویرایش کرده و یا حذف کنید.</p>
+      <p><i class="fas fa-exclamation-triangle" style="margin-left: 8px;"></i>اطلاعات بعضی کلاس‌ها ناقص هست، لطفاً آنها را
+        ویرایش کرده و یا حذف کنید.</p>
     </div>
   }
 }
@@ -175,15 +175,58 @@
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
         navigator.clipboard.writeText(id).then(() => {
-        tooltip.textContent = 'کپی شد';
-        tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
-        tooltip.classList.add('align-center', 'show');
+          tooltip.textContent = 'کپی شد';
+          tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
+          tooltip.classList.add('align-center', 'show');
 
-        const r = btn.getBoundingClientRect();
-        tooltip.style.top = (r.bottom + 6) + 'px';
-        tooltip.style.left = (r.left + r.width / 2) + 'px';
+          const r = btn.getBoundingClientRect();
+          tooltip.style.top = (r.bottom + 6) + 'px';
+          tooltip.style.left = (r.left + r.width / 2) + 'px';
         });
       });
     });
   </script>
+
+
+  <script>
+    document.addEventListener('click', function (e) {
+      if (e.target.classList.contains('view-course-btn')) {
+        const courseId = e.target.getAttribute('data-course-id');
+        openCoursePopup(courseId);
+      }
+      if (e.target.classList.contains('view-students-btn')) {
+        const sectionId = e.target.getAttribute('data-section-id');
+        openStudentsPopup(sectionId);
+      }
+    });
+
+    function openCoursePopup(courseId) {
+      fetch(`/ClassManagement/GetCourseInfo?courseId=${courseId}`)
+        .then(res => res.text())
+        .then(html => {
+          const container = document.getElementById("course-popup-container");
+          container.innerHTML = html;
+          const popupBtn = container.querySelector(".btn-popup");
+          if (popupBtn) {
+            popupBtn.click();
+            popupBtn.remove();
+          }
+        });
+    }
+
+    function openStudentsPopup(sectionId) {
+      fetch(`/ClassManagement/GetStudentList?sectionId=${sectionId}`)
+        .then(res => res.text())
+        .then(html => {
+          const container = document.getElementById("student-popup-container");
+          container.innerHTML = html;
+          const popupBtn = container.querySelector(".btn-popup");
+          if (popupBtn) {
+            popupBtn.click();
+            popupBtn.remove();
+          }
+        });
+    }
+  </script>
+
 }

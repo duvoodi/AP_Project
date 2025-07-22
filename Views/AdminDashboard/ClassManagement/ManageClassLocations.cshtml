@@ -17,7 +17,8 @@
 <!-- استایل مشترک -->
 <link rel="stylesheet" href="~/css/AdminDashboard/ClassManagement/class-form-actions.css" asp-append-version="true" />
 <!-- استایل اختصاصی -->
-<link rel="stylesheet" href="~/css/AdminDashboard/ClassManagement/manage-class-locations.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/AdminDashboard/ClassManagement/manage-class-locations.css"
+  asp-append-version="true" />
 
 <main class="dashboard-main admin">
   <div class="titlebar">
@@ -36,22 +37,26 @@
 
   <!-- فرم افزودن کلاس جدید -->
   <div class="form-container">
-    <form asp-controller="ClassLocationsManagement" asp-action="AddClassLocation" asp-route-h="@currentHash" method="post" class="class-location-form add-form">
+    <form asp-controller="ClassLocationsManagement" asp-action="AddClassLocation" asp-route-h="@currentHash"
+      method="post" class="class-location-form add-form">
       @Html.AntiForgeryToken()
       <div class="form-row">
         <div class="form-group">
           <label>ساختمان</label>
-          <input class="form-control valid-name" id="AddBuilding" name="AddBuilding" data-maxlength="64" value="@(addForm?.AddBuilding ?? "")" />
+          <input class="form-control valid-name" id="AddBuilding" name="AddBuilding" data-maxlength="64"
+            value="@(addForm?.AddBuilding ?? "")" />
           <span class="error-message">@Html.ValidationMessage("AddBuilding")</span>
         </div>
         <div class="form-group">
           <label>شماره کلاس</label>
-          <input class="form-control valid-numeric" id="AddRoomNumber" name="AddRoomNumber" data-maxlength="6" value="@(addForm?.AddRoomNumber ?? "")" />
+          <input class="form-control valid-numeric" id="AddRoomNumber" name="AddRoomNumber" data-maxlength="6"
+            value="@(addForm?.AddRoomNumber ?? "")" />
           <span class="error-message">@Html.ValidationMessage("AddRoomNumber")</span>
         </div>
         <div class="form-group">
           <label>ظرفیت</label>
-          <input class="form-control valid-numeric" id="AddCapacity" name="AddCapacity" data-maxlength="3" value="@(addForm?.AddCapacity ?? "")" />
+          <input class="form-control valid-numeric" id="AddCapacity" name="AddCapacity" data-maxlength="3"
+            value="@(addForm?.AddCapacity ?? "")" />
           <span class="error-message">@Html.ValidationMessage("AddCapacity")</span>
         </div>
         <div class="button-group">
@@ -65,7 +70,8 @@
 
   <!-- فرم ویرایش کلاس -->
   <div class="form-container">
-    <form asp-controller="ClassLocationsManagement" asp-action="EditClassLocation" asp-route-h="@currentHash" method="post" class="class-location-form edit-form">
+    <form asp-controller="ClassLocationsManagement" asp-action="EditClassLocation" asp-route-h="@currentHash"
+      method="post" class="class-location-form edit-form">
       @Html.AntiForgeryToken()
       <div class="form-row">
         <div class="form-group Edit">
@@ -85,17 +91,20 @@
       <div class="form-row">
         <div class="form-group">
           <label>ساختمان</label>
-          <input class="form-control valid-name" id="EditBuilding" name="EditBuilding" data-maxlength="64" value="@(editForm?.EditBuilding ?? "")" />
+          <input class="form-control valid-name" id="EditBuilding" name="EditBuilding" data-maxlength="64"
+            value="@(editForm?.EditBuilding ?? "")" />
           <span class="error-message">@Html.ValidationMessage("EditBuilding")</span>
         </div>
         <div class="form-group">
           <label>شماره کلاس</label>
-          <input class="form-control valid-numeric" id="EditRoomNumber" name="EditRoomNumber" data-maxlength="6" value="@(editForm?.EditRoomNumber ?? "")" />
+          <input class="form-control valid-numeric" id="EditRoomNumber" name="EditRoomNumber" data-maxlength="6"
+            value="@(editForm?.EditRoomNumber ?? "")" />
           <span class="error-message">@Html.ValidationMessage("EditRoomNumber")</span>
         </div>
         <div class="form-group">
           <label>ظرفیت</label>
-          <input class="form-control valid-numeric" id="EditCapacity" name="EditCapacity" data-maxlength="3" value="@(editForm?.EditCapacity ?? "")" />
+          <input class="form-control valid-numeric" id="EditCapacity" name="EditCapacity" data-maxlength="3"
+            value="@(editForm?.EditCapacity ?? "")" />
           <span class="error-message">@Html.ValidationMessage("EditCapacity")</span>
         </div>
         <div class="button-group">
@@ -109,7 +118,8 @@
 
   <!-- فرم حذف کلاس -->
   <div class="form-container">
-    <form asp-controller="ClassLocationsManagement" asp-action="DeleteClassLocation" asp-route-h="@currentHash" method="post" class="class-location-form">
+    <form asp-controller="ClassLocationsManagement" asp-action="DeleteClassLocation" asp-route-h="@currentHash"
+      method="post" class="class-location-form" id="delete-class-form">
       @Html.AntiForgeryToken()
       <div class="form-row">
         <div class="form-group">
@@ -126,7 +136,9 @@
           <span class="error-message">@Html.ValidationMessage("DeleteId")</span>
         </div>
         <div class="button-group">
-          <button type="submit" class="btn-submit delete blur-on-leave">حذف کلاس</button>
+          <button type="button" class="btn-submit delete blur-on-leave" id="delete-class-btn">
+            حذف کلاس
+          </button>
         </div>
       </div>
     </form>
@@ -187,7 +199,7 @@
         $('#EditId').val(selectedEditId).trigger('change');
       }
       if (selectedDeleteId) {
-        $('#DeleteId').val(selectedDeleteId).trigger('change'); 
+        $('#DeleteId').val(selectedDeleteId).trigger('change');
       }
 
 
@@ -204,7 +216,7 @@
 
       // پر کردن اولیه فیلدها با توجه به انتخاب در بارگذاری صفحه
       populateEditFields();
-      
+
       // هر بار که یک آیتم Select2 انتخاب می‌شود
       $('#EditId').on('select2:select', function (e) {
         populateEditFields();
@@ -276,4 +288,73 @@
       });
     });
   </script>
+
+  <script>
+    const currentHash = '@currentHash';
+
+    document.getElementById('delete-class-btn').addEventListener('click', function () {
+      const selected = document.getElementById('DeleteId').value;
+      if (!selected) {
+        replaceError("DeleteId", "لطفاً یک کلاس را انتخاب کنید");
+        return;
+      }
+
+      GlobalPopup.show({
+        PopupTitle: "تأیید حذف کلاس",
+        SimpleMessage: "آیا از حذف این کلاس مطمئن هستید؟",
+        CanCloseManually: false,
+        CloseOnBackdropClick: false,
+        BlockScroll: true,
+        ShowActionButtons: true,
+        GreenButtonText: "انصراف",
+        OnGreenClickJs: "GlobalPopup.hide()",
+        RedButtonText: "حذف",
+        OnRedClickJs: "submitDeleteClass()",
+        iconType: "warning"
+      });
+    });
+
+    function submitDeleteClass() {
+      GlobalPopup.hide();
+      const form = document.getElementById('delete-class-form');
+      replaceError("GeneralError", "");
+      replaceError("DeleteId", "");
+
+      setTimeout(() => {
+        const formData = new FormData(form);
+        fetch(form.action, {
+          method: 'POST',
+          body: formData
+        }).then(response => {
+          return response.text().then(html => ({ ok: response.ok, html }));
+        }).then(({ ok, html }) => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+
+          const generalError = doc.querySelector('#GeneralError')?.textContent.trim();
+          const deleteError = doc.querySelector('[name="DeleteId"] + .error-message')?.textContent.trim();
+
+          if (generalError || deleteError) {
+            if (generalError) replaceError("GeneralError", generalError);
+            if (deleteError) replaceError("DeleteId", deleteError);
+          } else {
+            GlobalPopup.show({
+              PopupTitle: "حذف موفق",
+              SimpleMessage: "کلاس با موفقیت حذف شد.",
+              CanCloseManually: false,
+              CloseOnBackdropClick: false,
+              BlockScroll: true,
+              iconType: "success"
+            });
+            setTimeout(() => {
+              window.location.href = '@Url.Action("ManageClassLocationsIndex", "ClassLocationsManagement")' + '?h=' + encodeURIComponent(currentHash);
+            }, 2500);
+          }
+        }).catch(() => {
+          replaceError("GeneralError", "خطا در حذف کلاس. لطفاً دوباره تلاش کنید.");
+        });
+      }, 850);
+    }
+  </script>
+
 }
