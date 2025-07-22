@@ -11,10 +11,10 @@ table, button, td, th {
    ============================ */
 
 .toolbar {
-  position: static;
-  margin: 0;
-  padding: 15px 0;
+  position: sticky;
   top: 100px;
+  margin: 0 -20px; /* از طرفین 20 پیکسل بزنه بیرون تا سایه رو بپوشونه */
+  padding: 15px 20px; /* پدینگ طرفین 20 تا مارجین منفی که دادیم را جبران کند */
   background: white;
   z-index: 3;
 }
@@ -83,11 +83,8 @@ table, button, td, th {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border-radius: 10px;
-  background-color: #ccdfef;
+  background-color: #ffffff;
   font-size: 15px;
-  margin-top: 0.9rem;
-  overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -99,11 +96,30 @@ table, button, td, th {
   color: white;
   background-color: #00b0f0;
   font-weight: 600;
-  padding: 12px 8px;
-  text-align: center;
   position: sticky;
-  top: 0;
+  top: 181px; /* ارتفاع تول بار */
+  border-top: 5px solid white;
+  background-clip: padding-box;
+  border-top: none; /* تا کامل بچسبد به تول بار */
   z-index: 2;
+}
+
+/* گرد کردن گوشه‌های بالا */
+.student-table thead th:first-child {
+  border-top-right-radius: 10px;
+}
+
+.student-table thead th:last-child {
+  border-top-left-radius: 10px;
+}
+
+/* گرد کردن گوشه‌های پایین */
+.student-table tbody tr:last-child td:first-child {
+  border-bottom-right-radius: 10px;
+}
+
+.student-table tbody tr:last-child td:last-child {
+  border-bottom-left-radius: 10px;
 }
 
 .student-table th,
@@ -115,13 +131,13 @@ table, button, td, th {
 }
 
 .student-table tbody tr {
-  background-color: #f1f9ff;
+  background-color: #e2f2ff;
   color: #000;
   transition: background-color 0.2s ease;
 }
 
 .student-table tbody tr:hover {
-  background-color: #d9f0ff;
+  background-color: #a1d9ff;
 }
 
 /* ============================

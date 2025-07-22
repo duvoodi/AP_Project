@@ -65,11 +65,11 @@
               h = currentHash
             });
             <tr>
-              <td>@rowIndex</td>
-              <td>@($"{persianYear}-{semester}")</td>
-              <td>@term.TotalUnits</td>
-              <td>@term.PassedUnits</td>
-              <td>@term.UnitsWithoutGrade</td>
+              <td class="col-index">@rowIndex</td>
+              <td class="col-semester">@($"{persianYear}-{semester}")</td>
+              <td class="col-units">@term.TotalUnits</td>
+              <td class="col-passed-units">@term.PassedUnits</td>
+              <td class="col-ungraded-units">@term.UnitsWithoutGrade</td>
               <td>@(term.TermAverage > 0 ? ((double)term.TermAverage).ToString("0.00") : "-")</td>
               <td>
                 @if (isProbation)
@@ -81,7 +81,7 @@
                   <span>عادی</span>
                 }
               </td>
-              <td>
+              <td class="col-action">
                 <a href="@transcriptUrl" class="text-link">ریزنمرات</a>
               </td>
             </tr>

@@ -8,9 +8,13 @@ body, html, input, textarea, select, button {
 /* ============================
    TITLE BAR + TAB
 ============================ */
-.titlebar {
-  margin: 20px 0 30px;
-  padding: 0 30px;
+.toolbar {
+  position: sticky;
+  margin: 0;
+  padding: 15px 0;
+  top: 100px;
+  background: white;
+  z-index: 3;
 }
 
 .action-title-tab {
@@ -23,58 +27,69 @@ body, html, input, textarea, select, button {
   font-size: 22px;
   font-weight: 700;
   text-decoration: none;
-  border-radius: 24px;
-  margin: 0 auto 0;
+  box-shadow: none;
+  border: none;
+  border-radius: 27px; /* نصف ارتفاع برای کپسول */
+  margin: 20px auto 0;
   direction: rtl !important;
   text-align: right !important;
 }
+
 
 .action-title-tab.edit {
   background-color: #f5dc71;
   color: #725810;
 }
 
-/* ============================
-   STUDENT TABLE
-============================ */
 .student-table {
   width: 100%;
-  border-collapse: collapse;
-  background-color: #ccdfef;
+  border-collapse: separate;
+  border-spacing: 0;
   border-radius: 10px;
+  background-color: #ccdfef;
+  font-size: 15px;
+  margin-top: 2rem;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .student-table thead tr {
-  background-color: #1d3557;
+  font-size: 15px;
+}
+
+.student-table thead th {
   color: white;
+  background-color: #00b0f0;
+  font-weight: 600;
+  padding: 12px 8px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 .student-table th,
 .student-table td {
-  border: 1px solid #e9ecef;
-  padding: 12px 8px;
+  border: 1px solid white;
+  padding: 10px 6px;
   text-align: center;
   vertical-align: middle;
-  font-size: 16px;
 }
 
-.student-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  font-weight: 700;
-  background-color: #00b0f0;
-  color: white;
+.student-table tbody tr {
+  background-color: #e2f2ff;
+  color: #000;
+  transition: background-color 0.2s ease;
 }
 
-/* ============================
-   TABLE COLUMN WIDTHS
-============================ */
+.student-table tbody tr:hover {
+  background-color: #a1d9ff;
+}
+
+/* عرض ستون‌ها */
 .col-index {
-  width: 40px;
+  width: 5%;
+  min-width: 40px;
 }
 
 .col-eyear {
@@ -145,7 +160,7 @@ body, html, input, textarea, select, button {
 .form-actions {
   display: flex;
   justify-content: left; 
-  margin: 0 auto 0; 
+  margin: -100px auto 0; 
   gap: 20px;
   z-index: 1000;
   padding: 10px 0px;
@@ -190,19 +205,3 @@ body, html, input, textarea, select, button {
   background-color: #ff4545;
   color: #ffffff;
 }
-
-/* ============================
-   EMPTY POPUP
-============================ */
-.empty-popup {
-  display: none;
-  text-align: center;
-  font-size: 18px;
-  color: #333;
-  margin-top: 50px;
-}
-
-.empty-popup.will-show {
-  display: block;
-}
-

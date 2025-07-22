@@ -14,8 +14,9 @@
 <link rel="stylesheet" href="~/css/InstructorDashboard/ClassManagement/delete-student.css" asp-append-version="true" />
 
 <main class="dashboard-main instructor">
-    <div class="titlebar"></div>
-    <div class="action-title-tab delete">حذف دانشجو</div>
+    <div class="titlebar">
+        <div class="action-title-tab delete">حذف دانشجو</div>
+    </div>
 
     @if (students != null && students.Any())
     {

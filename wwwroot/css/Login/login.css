@@ -136,6 +136,7 @@ button[type="submit"] {
   color: white;
   padding: 10px;
   margin-top: 20px;
+  margin-bottom: -20px;
   border: none;
   font-family: 'Vazirmatn', sans-serif;
   font-weight: bold;
@@ -211,11 +212,10 @@ button[type="submit"]:hover {
     transform 0.8s ease-in-out,
     opacity 0.8s ease-in-out;
 }
-
 .general-error.visible {
   max-height: 80px;
-  margin: 20px auto 0px;
-  padding: 8px 16px;
+  margin: -30px auto -10px;
+  padding: 16px 16px;
   transform: scaleY(1);
   opacity: 1;
 }

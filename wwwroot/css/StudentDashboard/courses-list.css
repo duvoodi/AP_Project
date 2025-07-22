@@ -42,13 +42,13 @@ th {
 }
 
 .class-table tbody tr {
-    background-color: #f1f9ff;
+    background-color: #e2f2ff;
     color: #000;
     transition: background-color 0.2s ease;
 }
 
 .class-table tbody tr:hover {
-    background-color: #d9f0ff;
+    background-color: #a1d9ff;
 }
 
 
@@ -118,6 +118,15 @@ th {
 /* ============================
    REST OF THE ORIGINAL STYLES
    ============================ */
+.titlebar {
+  position: sticky;
+  top: 100px;
+  margin: 0;
+  padding: 30px 0 0;
+  background-color: white;
+  z-index: 3;
+}
+
 .action-title-tab {
     background-color: #84e291;
     color: #265C26;
@@ -126,12 +135,11 @@ th {
     padding: 11px 20px;
     border-radius: 23px;
     display: inline-block;
-    margin-top: 20px;
     margin-right: 27px;
 }
 
 .class-table tbody tr:hover {
-    background-color: #b8d4eb;
+    background-color: #a1d9ff;
 }
 
 .pending-info {

@@ -26,13 +26,14 @@
 </form>
 
 <main class="dashboard-main student">
-  <div class="titlebar"></div>
-
-  @if (takes != null && takes.Any())
-  {
+  <div class="titlebar">
     <div class="action-title-tab">
       ریزنمرات نیمسال @semesterDisplayCode
     </div>
+  </div>
+
+  @if (takes != null && takes.Any())
+  {
 
     <table class="class-table">
       <thead>
