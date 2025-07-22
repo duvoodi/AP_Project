@@ -503,5 +503,202 @@ namespace AP_Project.Controllers
                 return View("~/Views/AdminDashboard/CourseManagement/EditCourse.cshtml", admin);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteCourse(Guid id)
+        {
+            var admin = CurrentAdmin;
+            ModelState.ReplaceModelError("GeneralError", "");
+
+            // بررسی جی یو آی دی گرفته شده از روت آی دی
+            var section = await _db.Sections
+                .Include(s => s.Course)
+                    .ThenInclude(c => c.Prerequisites)
+                .Include(s => s.Course.Sections)
+                    .ThenInclude(sec => sec.Teaches)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (section == null || section.CourseId == null || section.Course == null)
+                return NotFound();
+
+            var course = section.Course;
+
+            // بررسی کلاس‌های متصل به کورس
+            if (course.Sections.Any(sec => sec.ClassroomId != null))
+            {
+                ModelState.ReplaceModelError("GeneralError",
+                    "با حذف این درس، بعضی کلاس‌ها بدون درس می‌مانند.\nبعد از حذف به پنل مدیریت کلاس‌ها بروید و آن کلاس‌ها را ویرایش یا حذف کنید.");
+            }
+
+            bool hasClassroom = section.ClassroomId != null;
+            ViewData["HasClassroom"] = hasClassroom;
+
+            var form = new CourseFormViewModel
+            {
+                CourseCodeId = course.CodeId,
+                Unit = course.Unit.ToString(),
+                Description = course.Description,
+                FinalExamDate = course.FinalExamDate.ToString("yyyy/MM/dd", new CultureInfo("fa-IR")),
+                Semester = $"{section.Year}{section.Semester}",
+                TimeSlotId = section.TimeSlotId.Value,
+                InstructorId = section.Teaches?.InstructorUserId,
+                PrerequisiteIds = course.Prerequisites.Select(p => p.PrerequisiteCourseCodeId).ToList()
+            };
+            ViewData["Form"] = form;
+            ViewData["selectedCode"] = _db.CourseCodes.ToList().FirstOrDefault(c => c.Id == form?.CourseCodeId);
+            ViewData["CourseCodes"] = _db.CourseCodes.OrderBy(cc => cc.Code).ToList();
+            ViewData["selectedInstructor"] = _db.Instructors.ToList().FirstOrDefault(i => i.Id == form?.InstructorId);
+            ViewData["selectedSlot"] = _db.TimeSlots.ToList().FirstOrDefault(s => s.Id == form?.TimeSlotId);
+
+            return View("~/Views/AdminDashboard/CourseManagement/DeleteCourse.cshtml", admin);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCourse(Guid id, CourseFormViewModel model) // ویو مدل فرم صرفا جهت متفاوت بودن پارامتر ها اکشن پست با گت اش گرفته شده و از آن هیچ استفاده ای نشده
+        {
+            var admin = CurrentAdmin;
+            ModelState.ReplaceModelError("GeneralError", "");
+
+            // بررسی جی یو آی دی گرفته شده از روت آی دی
+            var section = await _db.Sections
+                .Include(s => s.Course)
+                    .ThenInclude(c => c.Prerequisites)
+                .Include(s => s.Course.Sections)
+                    .ThenInclude(sec => sec.Teaches)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (section == null || section.CourseId == null || section.Course == null)
+                return NotFound();
+
+            var course = section.Course;
+
+            // بررسی کلاس‌های متصل به کورس
+            if (section.ClassroomId != null)
+            {
+                ModelState.ReplaceModelError("GeneralError",
+                    "با حذف این درس، بعضی کلاس‌ها بدون درس می‌مانند.\nبعد از حذف به پنل مدیریت کلاس‌ها بروید و آن کلاس‌ها را ویرایش یا حذف کنید.");
+            }
+
+            try
+            {
+                // Null out CourseId on section and reset defaults
+                section.CourseId = null;
+                section.Semester = null;
+                section.Year = null;
+                section.TimeSlotId = null;
+                _db.Sections.Update(section);
+
+                // Remove related Teaches
+                _db.Teaches.Remove(section.Teaches);
+
+                // Remove the course
+                _db.Courses.Remove(course);
+
+                await _db.SaveChangesAsync();
+                return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
+            }
+            catch
+            {
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام حذف اطلاعات رخ داد! لطفاً دوباره تلاش کنید...");
+
+                bool hasClassroom = section.ClassroomId != null;
+                ViewData["HasClassroom"] = hasClassroom;
+
+                var form = new CourseFormViewModel
+                {
+                    CourseCodeId = course.CodeId,
+                    Unit = course.Unit.ToString(),
+                    Description = course.Description,
+                    FinalExamDate = course.FinalExamDate.ToString("yyyy/MM/dd", new CultureInfo("fa-IR")),
+                    Semester = $"{section.Year}{section.Semester}",
+                    TimeSlotId = section.TimeSlotId.Value,
+                    InstructorId = section.Teaches?.InstructorUserId,
+                    PrerequisiteIds = course.Prerequisites.Select(p => p.PrerequisiteCourseCodeId).ToList()
+                };
+                ViewData["Form"] = form;
+                ViewData["selectedCode"] = _db.CourseCodes.ToList().FirstOrDefault(c => c.Id == form?.CourseCodeId);
+                ViewData["CourseCodes"] = _db.CourseCodes.OrderBy(cc => cc.Code).ToList();
+                ViewData["selectedInstructor"] = _db.Instructors.ToList().FirstOrDefault(i => i.Id == form?.InstructorId);
+                ViewData["selectedSlot"] = _db.TimeSlots.ToList().FirstOrDefault(s => s.Id == form?.TimeSlotId);
+                
+                return View("~/Views/AdminDashboard/CourseManagement/DeleteCourse.cshtml", admin);
+            }
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> FullDeleteCourse(Guid id)
+        {
+            var admin = CurrentAdmin;
+            ModelState.ReplaceModelError("GeneralError", "");
+
+            // بررسی جی یو آی دی گرفته شده از روت آی دی
+            var section = await _db.Sections
+                .Include(s => s.Course)
+                    .ThenInclude(c => c.Prerequisites)
+                .Include(s => s.Course.Sections)
+                    .ThenInclude(sec => sec.Teaches)
+                .Include(s => s.Takes)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+
+            if (section == null || section.CourseId == null || section.Course == null)
+                return NotFound();
+
+            var course = section.Course;
+
+            // بررسی کلاس‌های متصل به کورس
+            if (section.ClassroomId != null)
+            {
+                ModelState.ReplaceModelError("GeneralError",
+                    "با حذف این درس، بعضی کلاس‌ها بدون درس می‌مانند.\nبعد از حذف به پنل مدیریت کلاس‌ها بروید و آن کلاس‌ها را ویرایش یا حذف کنید.");
+            }
+
+            try
+            {
+                // حذف تمام Teaches های کورس و سکشن‌هاش
+                _db.Teaches.Remove(section.Teaches);
+
+                // حذف تمام Takes های سکشن‌ها
+                _db.Takes.RemoveRange(section.Takes);
+
+                // حذف تمام سکشن‌ها
+                _db.Sections.RemoveRange(course.Sections);
+
+                // حذف کورس
+                _db.Courses.Remove(course);
+
+                await _db.SaveChangesAsync();
+                return RedirectToAction("Index", new { h = ComputeHash.Sha1(admin.AdminId.ToString()) });
+            }
+            catch
+            {
+                ModelState.AppendModelError("GeneralError", "خطایی هنگام حذف اطلاعات رخ داد! لطفاً دوباره تلاش کنید...");
+
+                bool hasClassroom = section.ClassroomId != null;
+                ViewData["HasClassroom"] = hasClassroom;
+
+                var form = new CourseFormViewModel
+                {
+                    CourseCodeId = course.CodeId,
+                    Unit = course.Unit.ToString(),
+                    Description = course.Description,
+                    FinalExamDate = course.FinalExamDate.ToString("yyyy/MM/dd", new CultureInfo("fa-IR")),
+                    Semester = $"{section.Year}{section.Semester}",
+                    TimeSlotId = section.TimeSlotId.Value,
+                    InstructorId = section.Teaches?.InstructorUserId,
+                    PrerequisiteIds = course.Prerequisites.Select(p => p.PrerequisiteCourseCodeId).ToList()
+                };
+                ViewData["Form"] = form;
+                ViewData["selectedCode"] = _db.CourseCodes.ToList().FirstOrDefault(c => c.Id == form?.CourseCodeId);
+                ViewData["CourseCodes"] = _db.CourseCodes.OrderBy(cc => cc.Code).ToList();
+                ViewData["selectedInstructor"] = _db.Instructors.ToList().FirstOrDefault(i => i.Id == form?.InstructorId);
+                ViewData["selectedSlot"] = _db.TimeSlots.ToList().FirstOrDefault(s => s.Id == form?.TimeSlotId);
+
+                return View("~/Views/AdminDashboard/CourseManagement/DeleteCourse.cshtml", admin);
+            }
+        }
     }
 }
