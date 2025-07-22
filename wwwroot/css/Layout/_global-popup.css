@@ -13,7 +13,7 @@
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
-  z-index: 9999;
+  z-index: 9999; /* گلوبال پاپ آپ 9999 هدر 9998 فوتر پاپ آپ 9997 */
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s;

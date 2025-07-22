@@ -13,7 +13,7 @@ namespace AP_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var student = CurrentStudent;
 
@@ -22,8 +22,9 @@ namespace AP_Project.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // گرفتن همه Takes دانشجو به همراه اطلاعات کامل
-            var allTakes = _db.Takes
+            // ۱. می‌گیریم همه Takes مربوط به این دانشجو
+            var allTakes = await _db.Takes
+                .Where(t => t.StudentUserId == student.Id)
                 .Include(t => t.Section)
                     .ThenInclude(s => s.Course)
                         .ThenInclude(c => c.CourseCode)
@@ -33,11 +34,16 @@ namespace AP_Project.Controllers
                     .ThenInclude(s => s.Classroom)
                 .Include(t => t.Section)
                     .ThenInclude(s => s.Teaches)
-                        .ThenInclude(teaches => teaches.Instructor)
-                .Where(t => t.StudentUserId == student.Id)
+                        .ThenInclude(te => te.Instructor)
+                .AsNoTracking()     // چون فقط می‌خوانیم
+                .ToListAsync();
+
+            // ۲. حذف هر رکوردی که Section نال باشد
+            allTakes = allTakes
+                .Where(t => t.Section != null)
                 .ToList();
 
-            // پیدا کردن جدیدترین ترم از بین Takes
+            // پیدا کردن جدیدترین ترم
             var latestTerm = allTakes
                 .Where(t => t.Section != null)
                 .OrderByDescending(t => t.Section.Year)
@@ -52,10 +58,13 @@ namespace AP_Project.Controllers
 
             // فقط دروس آخرین ترم
             var currentTermTakes = allTakes
-                .Where(t => t.Section.Year == latestTerm.Year && t.Section.Semester == latestTerm.Semester)
-                .OrderBy(t => t.Section.Course.CourseCode.Title)
-                .ThenBy(t => t.Section.TimeSlot.Day)
-                .ThenBy(t => t.Section.TimeSlot.StartTime)
+                .Where(t =>
+                    t.Section != null &&
+                    t.Section.Year == latestTerm.Year &&
+                    t.Section.Semester == latestTerm.Semester)
+                .OrderBy(t => t.Section?.Course?.CourseCode?.Title ?? "")
+                .ThenBy(t => t.Section?.TimeSlot?.Day ?? "")
+                .ThenBy(t => t.Section?.TimeSlot?.StartTime ?? TimeSpan.Zero)
                 .ToList();
 
             ViewBag.Takes = currentTermTakes;

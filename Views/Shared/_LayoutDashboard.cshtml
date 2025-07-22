@@ -60,16 +60,14 @@
   <main class="main">
     @RenderBody()
 
-    <!-- کانتینر خالی برای پاپ‌آپ -->
-    <div id="globalPopupContainer"></div>
-
     @RenderSection("Scripts", required: false)
   </main>
 
-  <!-- رندر فوتر پاپ آپ خارج از مین -->
-  <!-- چون مین کمتر یا بیشتر صفحه میتواند باشد و پوزیشن فیکسد فوتر پاپ آپ خراب میشود -->
-  @RenderSection("FooterPopup", required: false)
+  <!-- رندر پاپ آپ ها خارج از مین -->
+  <!-- چون مین کمتر یا بیشتر صفحه میتواند باشد و پوزیشن فیکسد فوتر پاپ آپ خراب میشود-->
 
+  <!-- کانتینر خالی برای گلوبال پاپ‌آپ -->
+  <div id="globalPopupContainer"></div>
   <!-- بارگذاری گلوبال پاپ‌آپ -->
   <script src="~/js/Shared/global-popup.js" asp-append-version="true"></script>
   <script>
@@ -87,6 +85,9 @@
     });
   </script>
   
+  <!-- کانتینر خالی برای فوتر پاپ‌آپ -->
+  @RenderSection("FooterPopup", required: false)
+
 </body>
 </html>
 

@@ -50,7 +50,7 @@ body::-webkit-scrollbar {
   justify-content: space-between;
   box-sizing: border-box;
   border-bottom: 0px solid #ddd;
-  z-index: 9999; /* هدر 9999 پاپ آپ 9998 */
+  z-index: 9998; /* گلوبال پاپ آپ 9999 هدر 9998 فوتر پاپ آپ 9997 */
 }
 
 /* ----------------------------
@@ -146,7 +146,7 @@ body::-webkit-scrollbar {
   border-radius: 4px;
   white-space: pre-wrap;
   word-break: break-word;
-  z-index: 9998; /* هدر 9999 پاپ آپ 9998 */
+  z-index: 500; /* تولتیپ 500 */
   pointer-events: none;
   font-size: 14px;
   max-width: 200px;
@@ -195,7 +195,7 @@ body::-webkit-scrollbar {
   padding: 0px 25px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  z-index: 9998;  /* هدر 9999 پاپ آپ 9998 */
+  z-index: 9997;  /* گلوبال پاپ آپ 9999 هدر 9998 فوتر پاپ آپ 9997 */
   font-size: 18px;
   opacity: 0;
   transition: opacity 0.4s ease-in-out;

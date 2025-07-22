@@ -34,7 +34,7 @@ namespace AP_Project.Controllers
                 .Include(t => t.Section)
                     .ThenInclude(s => s.Teaches)
                         .ThenInclude(teaches => teaches.Instructor)
-                .Where(t => t.StudentUserId == student.Id)
+                .Where(t => t.StudentUserId == student.Id) // مطمئن میشویم برای دانشجو هست
                 .ToList();
 
             Section? targetTerm = null;
@@ -68,7 +68,7 @@ namespace AP_Project.Controllers
             // فقط سکشن‌های ترم هدف را نگه دار
             var currentTermTakes = allTakes
                 .Where(t => t.Section != null && t.Section.Year == targetTerm.Year && t.Section.Semester == targetTerm.Semester)
-                .OrderBy(t => t.Section?.Course?.CourseCode.Title)
+                .OrderBy(t => t.Section?.Course?.CourseCode?.Title ?? "")
                 .ToList();
 
 
