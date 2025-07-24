@@ -1,0 +1,296 @@
+/* ============================
+   FONT
+============================ */
+body, html, input, textarea, select, button {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* ============================
+   TITLE BAR + TAB
+============================ */
+.toolbar {
+  position: sticky;
+  margin: 0;
+  padding: 15px 0;
+  top: 100px;
+  background: white;
+  z-index: 3;
+}
+
+
+.action-title-tab {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: calc(100% - 40px);
+  height: 54px;
+  padding: 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: none;
+  border: none;
+  border-radius: 27px; /* نصف ارتفاع برای کپسول */
+  margin: 20px auto 0;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+.action-title-tab.delete {
+  background-color: #ff8a80;
+  color: #a32626;
+}
+
+/* ============================
+   STUDENT TABLE
+============================ */
+.student-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  background-color: #ccdfef;
+  font-size: 15px;
+  margin-top: 2rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.student-table thead tr {
+  font-size: 15px;
+}
+
+.student-table thead th {
+  color: white;
+  background-color: #00b0f0;
+  font-weight: 600;
+  padding: 12px 8px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.student-table th,
+.student-table td {
+  border: 1px solid white;
+  padding: 10px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.student-table tbody tr {
+  background-color: #e2f2ff;
+  color: #000;
+  transition: background-color 0.2s ease;
+}
+
+.student-table tbody tr:hover {
+  background-color: #a1d9ff;
+}
+
+.col-index {
+  width: 5%;
+  min-width: 40px;
+}
+
+.col-eyear {
+  width: 10%;
+}
+
+.col-stdid {
+  width: 10%;
+}
+
+.col-email {
+  width: 20%;
+}
+
+.col-grade {
+  width: 8%;
+}
+
+.col-status {
+  width: 12%;
+}
+
+/* ============================
+   TABLE COLUMN WIDTHS
+============================ */
+.col-index {
+  width: 40px;
+}
+
+.col-eyear {
+  width: 7%;
+}
+
+.col-stdid {
+  width: 10%;
+}
+
+.col-email {
+  width: 20%;
+}
+
+.col-grade {
+  width: 8%;
+}
+
+.col-status {
+  width: 12%;
+}
+
+/* --- Checkbox زیبا --- */
+.checkbox-container {
+    position: relative;
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    margin-left: 10px;
+}
+
+.checkbox-container input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.custom-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 22px;
+    width: 22px;
+    background-color: #eee;
+    border-radius: 4px;
+    border: 2px solid #ccc;
+    transition: all 0.2s ease;
+}
+
+
+/* ============================
+   STATUS TAGS
+============================ */
+
+.checkbox-container input:checked ~ .custom-checkmark {
+    background-color: #ff4d4d;
+    border-color: #ff4d4d;
+}
+
+.custom-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container input:checked ~ .custom-checkmark:after {
+    display: block;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* --- متن وضعیت --- */
+.status-text {
+    font-size: 0.85rem;
+    color: #555;
+    vertical-align: middle;
+    transition: color 0.2s ease;
+}
+
+.status-text.pending {
+    color: #d63031;
+    font-weight: bold;
+}
+
+/* ============================
+   GRADE INPUT
+============================ */
+.grade-input {
+  width: 80px;
+  padding: 6px;
+  border: 1.5px solid #b6d7f7;
+  border-radius: 10px;
+  background: #f7fbff;
+  text-align: center;
+  font-size: 16px;
+  color: #222;
+  box-sizing: border-box;
+  transition: border 0.2s, background 0.2s;
+}
+
+.grade-input:focus {
+  outline: none;
+  border-color: #00b0f0;
+  background: #e6f7ff;
+}
+
+/* ============================
+   GRADE - EMPTY TEXT STYLE
+============================ */
+.grade-empty {
+  color: #e53935;      
+  font-size: 0.9rem;     
+  font-weight: 500;
+  font-style: italic;
+}
+
+
+/* ============================
+   SUBMIT BUTTON
+   ============================ */
+
+.form-actions {
+  display: flex;
+  justify-content: left; 
+  margin: -100px auto 0; 
+  gap: 20px;
+  z-index: 1000;
+  padding: 10px 0px;
+  border-radius: 10px;
+}
+.btn-submit,
+.btn-cancel {
+  width: 150px;      
+  height: 48px;      
+  padding: 0 0px;   
+  border-radius: 24px; /* کپسولی شدن با نصف ارتفاع */
+  font-size: 18px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  transition: background 0.25s, color 0.25s;
+}
+
+.btn-submit {
+  background-color: #84e291;
+  color: #265C26;
+}
+
+.btn-submit:hover,
+.btn-submit:focus {
+  background-color: #4dc44d;
+  color: #ffffff;
+}
+
+.btn-cancel {
+  background-color: #ff8a80;
+  color: #851b1b;
+}
+
+.btn-cancel:hover,
+.btn-cancel:focus {
+  background-color: #ff4545;
+  color: #ffffff;
+}

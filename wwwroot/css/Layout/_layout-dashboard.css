@@ -1,0 +1,231 @@
+/* ============================
+   FONT
+   ============================ */
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonts/vazirmatn/Vazirmatn[wght].woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================
+   LAYOUT: HTML & BODY
+   ============================ */
+html, body {
+  min-width: 958px; /* 1920÷2 یکم کمتر از نصف فول‌اچ‌دی */
+  overflow-x: auto;
+  font-family: 'Vazirmatn', sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  direction: rtl;
+  background-color: #ffffff;
+}
+
+/* حذف نوار اسکرول عمودی در بادی با حفظ عملکرد */
+body {
+  overflow-y: scroll; /* فعال‌سازی اسکرول عمودی */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+
+/* ============================
+   HEADER (Shared)
+   ============================ */
+.dashboard-header {
+  position: sticky;
+  margin: 0;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100px;
+  background-color: #00B0F0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  border-bottom: 0px solid #ddd;
+  z-index: 9998; /* گلوبال پاپ آپ 9999 هدر 9998 فوتر پاپ آپ 9997 */
+}
+
+/* ----------------------------
+   HEADER TITLE
+   ---------------------------- */
+.dashboard-header .header-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  padding: 15px 20px 0px;
+}
+
+.dashboard-header .header-title h1 {
+  margin: 0;
+  font-size: 35px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+
+/* ----------------------------
+   HEADER ACTIONS
+   ---------------------------- */
+.dashboard-header .header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 20px 10px;
+  padding-left: 14px;
+}
+
+/* نام کاربر - نقش خاص */
+.dashboard-header .header-actions .user-name {
+  font-size: 19px;
+  font-weight: 900;
+  color: #fff;
+  padding-top: 12px;
+}
+
+.dashboard-header .header-actions .nav-links a {
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  opacity: 0.8;
+  color: #094e8f;
+  background: #fff;
+  padding: 5px 10px;
+  margin-left: 6px;
+  border-radius: 4px;
+  text-decoration: none;
+
+  transition: color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.dashboard-header .header-actions .nav-links a.active {
+  background-color: #fff;
+  color: #178ae7;
+  text-decoration: none;
+  opacity: 1;
+}
+
+.dashboard-header .header-actions .nav-links a:hover {
+  background-color: #fff;
+  color: #696fbe;
+  text-decoration: none;
+  opacity: 1;
+}
+
+.dashboard-header .header-actions .nav-links a.active {
+  opacity: 1;
+}
+
+/* ============================
+   MAIN CONTENT (Shared)
+   ============================ */
+.dashboard-main {
+  background-color: #fff;
+  box-sizing: border-box;
+  margin-bottom: 30px;
+  padding: 0px 30px 0px;
+}
+
+/* ============================
+   CUSTOM TOOLTIP (Shared)
+   ============================ */
+
+.custom-tooltip {
+  position: fixed;
+  background-color: #156082;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  z-index: 500; /* تولتیپ 500 */
+  pointer-events: none;
+  font-size: 14px;
+  max-width: 200px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.custom-tooltip.show {
+  opacity: 1;
+}
+
+.custom-tooltip.align-left {
+  text-align: left;
+  transform: none;
+}
+.custom-tooltip.align-center {
+  text-align: center;
+  transform: translateX(-50%);
+}
+.custom-tooltip.align-right {
+  text-align: right;
+  transform: translateX(-100%);
+}
+
+/* ============================
+   FOOTER POPUP (Shared)
+   ============================ */
+
+/* مارجین دادن به همه جدول ها */
+/* تا جا داشته باشیم بریم پایین تر جدول بیاد بالا تر پاپ آپ */
+.dashboard-main table {
+  margin-bottom: 140px;
+}
+
+.footer-popup {
+  position: fixed;
+  bottom: 20px;                    /* فاصله از پایین صفحه */
+  left: 50%;                       /* وسط افقی */
+  transform: translateX(-50%);     /* برای وسط‌چینی کامل */
+  width: 50%;
+  max-width: 100%;                  /* برای ریسپانسیو بودن */
+  background-color: #4169e1;
+  color: white;
+  text-align: center;
+  padding: 0px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 9997;  /* گلوبال پاپ آپ 9999 هدر 9998 فوتر پاپ آپ 9997 */
+  font-size: 18px;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.footer-popup.visible {
+  opacity: 1;
+  animation: popupScaleAnim 0.6s ease forwards;
+}
+
+.footer-popup.empty {
+  background-color: #4169e1;
+}
+
+.footer-popup.error {
+  background-color: #d9534f;
+}
+
+/* ============================
+   POPUP ANIMATION
+   ============================ */
+   
+@keyframes popupScaleAnim {
+  0% {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) translateY(0) scale(1.1);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}

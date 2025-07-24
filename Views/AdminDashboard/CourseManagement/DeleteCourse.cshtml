@@ -1,0 +1,182 @@
+@using AP_Project.Models.Users
+@using AP_Project.Models.Classrooms
+@using AP_Project.Models.Courses
+@using Newtonsoft.Json
+@using System.Globalization
+@model AP_Project.Models.Users.Admin
+@{
+  ViewData["ActiveTab"] = "Course";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+
+  var sectionId = Guid.Parse(ViewContext.RouteData.Values["id"]?.ToString() ?? Guid.Empty.ToString());
+  bool hasClassroom = ViewData["HasClassroom"] as bool? ?? false;
+
+  var form = ViewData["Form"] as AP_Project.FormViewModels.CourseForm.CourseFormViewModel;
+
+  var selectedCode = ViewData["selectedCode"] as CourseCode;
+  var courseCodes = ViewData["CourseCodes"] as List<CourseCode> ?? new();
+  var selectedInstructor = ViewData["selectedInstructor"] as Instructor;
+  var selectedSlot = ViewData["selectedSlot"] as TimeSlot;
+
+  string finalDateStr = form?.FinalExamDate ?? "";
+  DateTime finalDate;
+  string finalDateShamsi = "";
+  if (DateTime.TryParse(finalDateStr, out finalDate))
+  {
+      var pc = new PersianCalendar();
+      finalDateShamsi = $"{pc.GetYear(finalDate):0000}/{pc.GetMonth(finalDate):00}/{pc.GetDayOfMonth(finalDate):00}";
+  }
+  else
+  {
+      finalDateShamsi = "";
+  }
+}
+
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/CourseManagement/course-form-actions.css" asp-append-version="true" />
+
+<main class="dashboard-main admin">
+  <div class="titlebar">
+    <div class="action-title-tab delete">
+      حذف درس
+    </div>
+  </div>
+  <div class="form-container">
+    <form asp-controller="CourseManagement" asp-action="DeleteCourse" asp-route-h="@currentHash" method="post" id="delete-course-form">
+      @Html.AntiForgeryToken()
+
+      <div class="error-row">
+        <div class="error-group">
+          <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+      
+      <!-- ردیف 1: کد درس و تعداد واحد و نیم‌سال-->
+      <div class="form-row">
+        <div class="form-group">
+          <label>درس</label>
+          <!-- فقط نمایش متن -->
+          <input class="form-control" 
+                value="@(selectedCode != null ? $"{selectedCode.Code} – {selectedCode.Title}" : "")" 
+                readonly />
+
+          <!-- شناسه واقعی که به سرور ارسال می‌شود -->
+          <input type="hidden" 
+                name="CourseCodeId" 
+                value="@(form?.CourseCodeId.ToString() ?? "")" />
+        </div>
+        <div class="form-group tiny">
+          <label>تعداد واحد</label>
+          <input class="form-control" id="Unit" name="Unit" value="@form?.Unit" readonly />
+        </div>
+        <div class="form-group tiny">
+          <label>نیم‌سال</label>
+          <input class="form-control" id="Semester" name="Semester" value="@form?.Semester" readonly/>
+        </div>
+      </div>
+
+      <!-- ردیف 2: دروس پیش‌نیاز -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>دروس پیش‌نیاز</label>
+          <div class="prerequisites-container">
+            <div class="prerequisite-select-warper">
+              <input class="form-control" id="prerequisite-select" value="" readonly/>
+             </div>
+          </div>
+          <div id="prerequisites-list" class="prerequisites-list @(form?.PrerequisiteIds?.Any() == true ? "visible" : "")">
+            @foreach (var id in form?.PrerequisiteIds ?? Enumerable.Empty<Guid>())
+            {
+                var code = courseCodes?.FirstOrDefault(cc => cc.Id == id);
+                if (code != null)
+                {
+                    <div class="prerequisite-tag readonly-tag">
+                        @($"{code.Code} - {code.Title}")
+                        <input type="hidden" name="PrerequisiteIds" value="@id" />
+                    </div>
+                }
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- ردیف 3: مدرس و زمان برگزاری و تاریخ امتحان -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>مدرس</label>
+          <input class="form-control" 
+                value="@(selectedInstructor != null ? $"{selectedInstructor.InstructorId} - {selectedInstructor.FirstName} {selectedInstructor.LastName}" : "")" 
+                readonly />
+          <input type="hidden" 
+                name="InstructorId" 
+                value="@(form?.InstructorId.ToString() ?? "")" />
+        </div>
+        <div class="form-group TimeSlot">
+          <label>زمان برگزاری</label>
+          <input class="form-control" 
+                value="@(selectedSlot != null ? $"{selectedSlot.Day} - {selectedSlot.StartTime:hh\\:mm} تا {selectedSlot.EndTime:hh\\:mm}" : "")" 
+                readonly />
+          <input type="hidden" 
+                name="TimeSlotId" 
+                value="@(form?.TimeSlotId.ToString() ?? "")" />
+        </div>
+        <div class="form-group ExamDate">
+          <label>تاریخ امتحان</label>
+          <input class="form-control" 
+               id="FinalExamDate" 
+               name="FinalExamDate" 
+               value="@finalDateShamsi" 
+              readonly/>
+        </div>
+      </div>
+
+      <!-- ردیف 6: توضیحات -->
+      <div class="form-row">
+        <div class="form-group wide">
+          <label>توضیحات (اختیاری)</label>
+          <input class="form-control" id="Description" name="Description" value="@form?.Description" readonly/>
+        </div>
+      </div>
+
+      <div class="form-actions">
+          <a asp-action="Index" asp-route-h="@currentHash" class="btn-cancel">انصراف</a>
+
+          @if (hasClassroom)
+          {
+              <button type="submit" formaction="@Url.Action("DeleteCourse", new { h = currentHash, id = sectionId })"
+                      class="btn-safeDelete blur-on-leave">حذف ایمن</button>
+
+              <button type="submit" formaction="@Url.Action("FullDeleteCourse", new { h = currentHash, id = sectionId })"
+                      class="btn-fullDelete blur-on-leave">حذف کامل</button>
+          }
+          else
+          {
+              <button type="submit" formaction="@Url.Action("FullDeleteCourse", new { h = currentHash, id = sectionId })"
+                      class="btn-submit blur-on-leave">تایید</button>
+          }
+      </div>
+    </form>
+  </div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/Shared/blur-on-leave.js"></script>
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <!-- سلکت دو برای دراپ دون -->
+  <script src="~/lib/select2/js/select2.full.js"></script>
+  <script src="~/lib/select2/js/i18n/fa.js"></script>
+  <script>
+    document.getElementById('delete-course-form').addEventListener('submit', function(e) {
+      e.preventDefault(); // جلوی ارسال فرم را بگیر
+      // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
+      replaceError("GeneralError", '');
+      setTimeout(() => { // این بخش کد 800 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+        this.submit();
+      }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه}
+    });
+  </script>
+}

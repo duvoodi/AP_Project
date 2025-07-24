@@ -1,0 +1,81 @@
+/* ============================
+   ACTION TITLE TAB MANAGE
+   ============================ */
+
+.action-title-tab.manage {
+  background-color: #ffb169;
+  color: #85512e;
+}
+
+/* ============================
+   FORM CONTAINER
+   ============================ */
+
+.separator {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 15px 20px 30px;
+}
+
+
+/* ============================
+   CLASS LOCATION FORM ROW
+   ============================ */
+
+.class-location-form .form-row {
+  display: flex;
+  align-items: flex-start;  /* ردیف‌ها از ابتدا شروع و تمام عرض بگیرند */
+  justify-content: flex-start; /* از ابتدا شروع شوند */
+}
+
+.class-location-form .form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* ============================
+   Edit CLASS LOCATION LIST
+   ============================ */
+.form-group.Edit {
+  flex: 0 0 65%;
+}
+
+/* ============================
+   BUTTONS
+   ============================ */
+
+.button-group {
+  flex: 0 0 auto;      /* اندازه ثابت، اندازه محتوا */
+  height: auto;      /* ارتفاع محتوای فرم */
+  display: flex;       /* فعال کردن فلکس برای مرکز کردن */
+  justify-content: center; /* وسط افقی */
+  align-items: center;   /* وسط عمودی */
+}
+
+/* استایل دکمه‌ها */
+.btn-submit {
+  margin: 30px 0 0 auto;   /* به اندازه لیبل ها از بالای فرم گروپ فاصله بگیرد */
+  padding: 8px 16px;
+}
+
+.btn-submit.add {
+  background-color: #84e291;
+  color: #265C26;
+}
+
+.btn-submit.edit {
+  background-color: #f5dc71;
+  color: #725810;
+}
+
+.btn-submit.delete {
+  background-color: #ff8a80;
+  color: #851b1b;
+}
+
+.btn-submit.add:hover,
+.btn-submit.edit:hover,
+.btn-submit.delete:hover,
+.btn-submit:focus {
+  color: #ffffff;
+}

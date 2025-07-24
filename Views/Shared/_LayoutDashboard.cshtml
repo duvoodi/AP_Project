@@ -1,0 +1,139 @@
+@using Newtonsoft.Json
+@using AP_Project.Models
+@using AP_Project.Models.Popups
+
+@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <!-- شروع به کار اسکریپت چک متوالی سشن بلافاصله بعد لود هد -->
+  <script>
+    setInterval(() => {
+      fetch('/Login/CheckSession?withId=true', { cache: 'no-store' })
+      .then(res => res.json())
+      .then(data => {
+          const role = data.role;
+          const sessionHash = data.id;
+          if (role === 'none') {
+            window.location.href = '/Login/Index';
+            return;
+          }
+          const currentHash = (new URLSearchParams(window.location.search)).get('h');
+          if (currentHash !== sessionHash) {
+            window.location.href = '/Login/Index';
+            return;
+          }
+      })
+      .catch(() => {
+          window.location.href = '/Login/Index';
+      });
+    }, 5000); // هر 5 ثانیه تا فشار به سرور نیاد
+    // این هر چند ثانیه چک میکند که هش سشن صفحه با هش سشن فعال یکی باشد
+    // اگر متفاوت باشد سشن این صفحه منقضی شده و به صفحه لاگین میرود
+    // اونجا اگر سشن فعال داریم به داشبوردش میرود اگر نداریم صفحه لاگین لود میشود
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"]</title>
+  <link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" /> <!-- آیکون های استفاده شده در کل برنامه -->
+  <link rel="stylesheet" href="~/css/Layout/_layout-dashboard.css"  asp-append-version="true" /> <!-- استایل مشترک داشبورد لی اوت -->
+  <link rel="stylesheet" href="~/css/Layout/_global-popup.css"  asp-append-version="true" /> <!-- استایل گلوبال پاپ آپ -->
+  @RenderSection("Styles", required: false) <!-- استایل لی اوت ادمین یا استاد یا دانشجو اینجا رندر -->
+</head>
+<body>
+  @RenderSection("Header", required: true)
+
+  <style>
+    .main { /* انیمیشن لود صفحات با قابلیت خاموش شد اگر پست هست */
+      @(ViewData["NoAnimationIn"] as bool? == true ? "opacity: 1 !important; transform: none !important; transition: none !important;" : "opacity: 0; transform: translateY(20px);")
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .main.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+  <main class="main">
+    @RenderBody()
+
+    @RenderSection("Scripts", required: false)
+  </main>
+
+  <!-- رندر پاپ آپ ها خارج از مین -->
+  <!-- چون مین کمتر یا بیشتر صفحه میتواند باشد و پوزیشن فیکسد فوتر پاپ آپ خراب میشود-->
+
+  <!-- کانتینر خالی برای گلوبال پاپ‌آپ -->
+  <div id="globalPopupContainer"></div>
+  <!-- بارگذاری گلوبال پاپ‌آپ -->
+  <script src="~/js/Shared/global-popup.js" asp-append-version="true"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      GlobalPopup.init('globalPopupContainer');
+      
+      @if (ViewBag.PopupOptions != null) {
+        <text>
+        const options = @Html.Raw(Json.Serialize(ViewBag.PopupOptions));
+        const model = @Html.Raw(Json.Serialize(ViewData["PopupModel"]));
+        const config = @Html.Raw(Json.Serialize(ViewData["PopupModelConfig"]));
+        GlobalPopup.show(options, model, config);
+        </text>
+      }
+    });
+  </script>
+  
+  <!-- کانتینر خالی برای فوتر پاپ‌آپ -->
+  @RenderSection("FooterPopup", required: false)
+
+</body>
+</html>
+
+<!-- فارسی سازی تایم اسلات های درون صفحه -->
+<script src="~/js/Shared/persian-time-slot.js"></script>
+  
+<script>
+  // بعد از لود کامل DOM و مقداردهی اولیه پاپ‌آپ
+  document.addEventListener('DOMContentLoaded', function() {
+    // مدیریت کلیک دکمه‌های پاپ‌آپ
+    document.querySelectorAll('.btn-popup').forEach(btn => {
+      btn.addEventListener('click', function() {
+        try {
+          const popupData = JSON.parse(this.dataset.popup);
+          if (!popupData) return;
+          
+          // نمایش پاپ‌آپ با داده‌های دریافتی
+          GlobalPopup.show(
+            popupData.options || {},
+            popupData.model || null,
+            popupData.config || null
+          );
+        } catch (e) {
+          console.error('خطا در پردازش داده‌های پاپ‌آپ:', e);
+        }
+      });
+    });
+  });
+</script>
+
+
+<script>
+  // بعد از لود موارد بالا یعنی بعد از لود تمام موارد صفحه، داشبورد مین را نمایان میکنیم
+  // در سی اس اس سراسری داشبورد برای ویزیبل شدن داشبورد مین انیمیشن زدیم
+  // ویو دیتا نو انیمیشن این خودکار از اکشن های پست فرستاده میشه و بدون انیمیشن می کند
+  window.addEventListener('load', () => {
+    const elements = document.querySelectorAll('.main');
+    elements.forEach(el => {
+      el.classList.add('visible');
+    });
+    // بعد نمایش مین، پاپ آپ و مواردی که با تاخیر باید نمایان شوند و کلاس ویل شو دارن نمایش داده میشوند
+    setTimeout(() => { // ایجاد تاخیر نسبت به بالا
+      const willShowPopups = document.querySelectorAll('.will-show');
+      willShowPopups.forEach(el => {
+        el.classList.add('visible');
+      });
+    }, 300); // تأخیر 300 میلی ثانیه
+  });
+</script>

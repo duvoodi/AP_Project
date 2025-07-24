@@ -76,8 +76,7 @@ namespace AP_Project.Data
                 entity.HasOne(ur => ur.Role) // Role و UserRole
                     .WithMany()
                     .HasForeignKey(ur => ur.RoleId)
-                    .OnDelete(DeleteBehavior.Restrict); // یوزر رول اگر یوزرش هنوز هست نباید بشود تا داده‌ها ناقص نشوند
-
+                    .OnDelete(DeleteBehavior.Restrict); // یوزر رول اگر یوزرش هنوز هست نباید حذف بشود تا داده‌ها ناقص نشوند
             });
 
             // Prerequisite: کلید مرکب CourseId + PrerequisiteCourseCodeId
@@ -116,16 +115,17 @@ namespace AP_Project.Data
             // Teaches: کلید مرکب InstructorId + SectionId
             modelBuilder.Entity<Teaches>(entity => // چون سه تا تنظیمات داریم بلاک کد میزنیم
             {
-                entity.HasKey(t => new { t.InstructorUserId, t.SectionId });
+                entity.HasKey(t => t.SectionId); // تا هر تیچز فقط برای یک سکشن بتواند باشد
 
                 entity.HasOne(t => t.Instructor) // Instructor و Teaches
                     .WithMany(i => i.Teaches)
-                    .HasForeignKey(t => t.InstructorUserId);
+                    .HasForeignKey(t => t.InstructorUserId)
+                    .OnDelete(DeleteBehavior.Restrict); // استاد اگر به تیچزی وصل هست هست نباید حذف بشود تا داده‌ها ناقص نشوند
 
-                entity.HasOne(t => t.Section) //  Section و Teaches
-                    .WithMany(s => s.Teaches)
-                    .HasForeignKey(t => t.SectionId);
-
+                entity.HasOne(t => t.Section) // Section و Teaches
+                    .WithOne(s => s.Teaches)
+                    .HasForeignKey<Teaches>(t => t.SectionId)
+                    .OnDelete(DeleteBehavior.Cascade); // اگر سکشن حذف شد، تخصیص استادهای مربوط به آن هم حذف شوند
             });
 
             // پیکربندی روابط کلاس‌های اصلی
@@ -137,14 +137,12 @@ namespace AP_Project.Data
             // ایجاد جدول کلاس‌های مشتق شده از یوزرز چون به صورت پیشفرض به صورت ادغام شده با هم نمایش داده میشوند
             modelBuilder.Entity<Student>().ToTable("Students");
             modelBuilder.Entity<Admin>().ToTable("Admins");
-            modelBuilder.Entity<Instructor>(entity => // چون دو تا تنظیمات داریم باید بلاک کد بزنیم
-            {
-                entity.ToTable("Instructors");
+            modelBuilder.Entity<Instructor>().ToTable("Instructors");
+            // دات تو تیبل جدول های جدا برای اینها از جدول مدل والدشان میزند ولی وان تو وان نمیگذارد بینشان تعریف کنیم
+            // و دلیت بیهیویر بین اینها و مدل والدشان یعنی یوزر را باید دستی هندل کنیم
 
-                entity.Property(i => i.Salary) // تنظیم دسیمال که داده بیشتر نگه دارد
-                .HasPrecision(12, 2); // تا دوازده رقم در کل و دو رقم اعشار
-            });
-            // چون ارث بردند ای اف خودش بین یوزر آی دی فرزند و یوزر آی دی والد که یکی هست وان تو وان میزنه
+            modelBuilder.Entity<Instructor>().Property(i => i.Salary) // تنظیم دسیمال که داده بیشتر نگه دارد
+                .HasPrecision(9, 0); // تا نه رقم در کل و صفز رقم اعشار 
 
             // Course و CourseCode
             modelBuilder.Entity<CourseCode>()
@@ -158,7 +156,7 @@ namespace AP_Project.Data
                 entity.HasOne(c => c.CourseCode) // CourseCode و Course
                     .WithMany(cc => cc.Courses)
                     .HasForeignKey(c => c.CodeId)
-                    .OnDelete(DeleteBehavior.Restrict); // اگر کد درسی هنوز درسی به آن متصل هست نباید حذف شود  تا داده ها ناقص نشوند
+                    .OnDelete(DeleteBehavior.Restrict); // اگر کد درسی در حال استفاده در درسی باشد نباید حذف شود  تا داده ها ناقص نشوند
             });
 
             modelBuilder.Entity<Section>(entity => // چون چهار تا تنظیمات داریم بلاک کد میزنیم
@@ -168,17 +166,19 @@ namespace AP_Project.Data
 
                 entity.HasOne(s => s.Course) // Section و Course
                     .WithMany(c => c.Sections)
-                    .HasForeignKey(s => s.CourseId);
+                    .HasForeignKey(s => s.CourseId)
+                    .OnDelete(DeleteBehavior.Restrict); // اگر درس در حال استفاده در سکشنی باشد نباید حذف شود تا داده ها ناقص نشوند
+
 
                 entity.HasOne(s => s.Classroom) // Section و Classroom
                     .WithMany(c => c.Sections)
                     .HasForeignKey(s => s.ClassroomId)
-                    .OnDelete(DeleteBehavior.Restrict); // اگر کلاس هنوز سکشنی به آن متصل هست نباید حذف شود تا داده ها ناقص نشوند
+                    .OnDelete(DeleteBehavior.Restrict); // اگر کلاس در حال استفاده در سکشنی باشد نباید حذف شود تا داده ها ناقص نشوند
 
                 entity.HasOne(s => s.TimeSlot) // Section و TimeSlot
                     .WithMany(t => t.Sections)
                     .HasForeignKey(s => s.TimeSlotId)
-                    .OnDelete(DeleteBehavior.Restrict); // اگر تایم‌اسلات در حال استفاده باشد، نباید حذف شود تا داده ها ناقص نشوند
+                    .OnDelete(DeleteBehavior.Restrict); // اگر تایم‌اسلات در حال استفاده در سکشنی باشد، نباید حذف شود تا داده ها ناقص نشوند
             });
 
             modelBuilder.Entity<Classroom>()

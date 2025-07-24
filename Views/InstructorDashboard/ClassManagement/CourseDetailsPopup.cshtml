@@ -1,0 +1,81 @@
+@model AP_Project.Models.Courses.Course
+@using System.Globalization
+@using Newtonsoft.Json
+
+@{
+    // تنظیمات پاپ‌آپ
+    var popupOptions = new {
+        PopupTitle = "مشخصات درس",
+        CanCloseManually = true,
+        CloseOnBackdropClick = true,
+        BlockScroll = true,
+        iconType = "info"
+    };
+
+    // تبدیل تاریخ امتحان به شمسی
+    var pc = new PersianCalendar();
+
+    // داده‌های مدل برای پاپ‌آپ - از مدل اصلی می‌گیریم
+    var popupModel = new {
+        Title = Model.CourseCode?.Title ?? "-",
+        Code = Model.CourseCode != null ? Model.CourseCode.Code.ToString() : "-",
+        Units = Model.Unit,
+        InstructorCode = Model.Sections?.FirstOrDefault()?.Teaches?.Instructor?.InstructorId.ToString() ?? "-",
+        InstructorName = Model.Sections?.FirstOrDefault()?.Teaches?.Instructor != null
+            ? $"{Model.Sections.First().Teaches.Instructor.FirstName} {Model.Sections.First().Teaches.Instructor.LastName}"
+            : "-",
+        ClassTime = Model.Sections?.FirstOrDefault() != null
+            ? $"{Model.Sections.First().TimeSlot?.Day ?? "-"} ساعت {Model.Sections.First().TimeSlot?.StartTime.ToString(@"hh\:mm")} تا {Model.Sections.First().TimeSlot?.EndTime.ToString(@"hh\:mm")}"
+            : "-",
+        ExamDate = Model.FinalExamDate != DateTime.MinValue
+            ? $"{pc.GetYear(Model.FinalExamDate)}/{pc.GetMonth(Model.FinalExamDate):00}/{pc.GetDayOfMonth(Model.FinalExamDate):00}"
+            : "-",
+        Description = Model.Description ?? "-",
+        Prerequisites = Model.Prerequisites?.Select(p => new {
+            Id = p.PrerequisiteCourseCode?.Id,
+            Title = p.PrerequisiteCourseCode?.Title,
+            Code = p.PrerequisiteCourseCode?.Code.ToString()
+        }).ToArray() ?? new object[0]
+    };
+
+    // کانفیگ نمایش پاپ‌آپ
+    var popupConfig = new {
+        SimplePropsOrder = new[] {
+            "Title", "Code", "Units", "InstructorCode", "InstructorName", "ClassTime", "ExamDate", "Description"
+        },
+        SimplePropDisplayNames = new Dictionary<string, string> {
+            { "Title", "عنوان درس" },
+            { "Code", "کد درس" },
+            { "Units", "تعداد واحد" },
+            { "InstructorCode", "کد مدرسی" },
+            { "InstructorName", "نام استاد" },
+            { "ClassTime", "زمان برگزاری" },
+            { "ExamDate", "تاریخ امتحان" },
+            { "Description", "توضیحات" },
+            { "Prerequisites", "پیش‌نیازها" }
+        },
+        ShowListProps = true,
+        ListProps = new[] { "Prerequisites" },
+        ListPropFieldOrder = new Dictionary<string, string[]> {
+            { "Prerequisites", new[] { "Title", "Code" } }
+        },
+        ListPropItemDisplayNames = new Dictionary<string, Dictionary<string, string>> {
+            { "Prerequisites", new Dictionary<string, string> {
+                { "Title", "عنوان درس پیش‌نیاز" },
+                { "Code", "کد درس" }
+            }}
+        },
+        ListPropSortKey1 = new Dictionary<string, string> {
+            { "Prerequisites", "Title" }
+        }
+    };
+}
+
+<button class="btn-popup"
+        data-popup='@Html.Raw(JsonConvert.SerializeObject(new {
+            options = popupOptions,
+            model = popupModel,
+            config = popupConfig
+        }))'>
+    مشاهده مشخصات درس
+</button>

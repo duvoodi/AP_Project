@@ -1,0 +1,275 @@
+/* ============================
+   FONT
+   ============================ */
+table, button, td, th {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* ============================
+   ADD BUTTONS
+   ============================ */
+.toolbar {
+  position: static;
+  margin: 0;
+  padding: 15px 0;
+  top: 100px;
+  background: white;
+  z-index: 3;
+}
+
+.btn-add-class {
+  background-color: #84e291;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  position: relative;
+  transition: transform 0.25s, color 0.25s;
+}
+
+.btn-manage-class-locations {
+  background-color: #ffb169;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  margin-right: 10px; /* فاصله از دکمه بغلی */
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  position: relative;
+  transition: transform 0.25s, color 0.25s;
+}
+
+.btn-add-class .icon {
+  color: #22a74a;
+  font-size: 30px;
+  font-weight: 600;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  margin-top: -8px;
+  margin-bottom: -8px;
+  margin-left: 8px;
+  display: inline-block;
+  transform: rotate(270deg);
+}
+
+.btn-manage-class-locations .icon {
+  color: #b86b2c;
+  font-size: 30px;
+  font-weight: 600;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  margin-top: -10px;
+  margin-bottom: -8.5px;
+  margin-left: 8px;
+  display: inline-block;
+  transform: rotate(180deg);
+}
+
+.btn-add-class .text {
+  color: #265C26;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btn-manage-class-locations .text {
+  color: #85512e;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btn-add-class .icon,
+.btn-add-class .text,
+.btn-manage-class-locations .icon,
+.btn-manage-class-locations .text {
+  transition: transform 0.25s, color 0.25s;
+}
+
+.btn-add-class:hover .icon,
+.btn-add-class:focus .icon,
+.btn-add-class:hover .text,
+.btn-add-class:focus .text,
+.btn-manage-class-locations:hover .icon,
+.btn-manage-class-locations:focus .icon,
+.btn-manage-class-locations:hover .text,
+.btn-manage-class-locations:focus .text
+ {
+  color: #ffffff;
+}
+
+.btn-add-class:hover,
+.btn-add-class:focus,
+.btn-manage-class-locations:hover,
+.btn-manage-class-locations:focus{
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.btn-add-class:hover .icon,
+.btn-add-class:focus .icon,
+.btn-manage-class-locations:hover .icon,
+.btn-manage-class-locations:focus .icon{
+  transform: rotate(540deg);
+}
+
+/* ============================
+   TABLE STYLES
+   ============================ */
+.class-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  background-color: #ccdfef;
+  font-size: 15px;
+  margin-top: 0.9rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.class-table thead tr {
+  font-size: 15px;
+}
+
+.class-table thead th {
+  color: white;
+  background-color: #00b0f0;
+  font-weight: 600;
+  padding: 12px 8px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.class-table th,
+.class-table td {
+  border: 1px solid white;
+  padding: 10px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.class-table tbody tr {
+  background-color: #f1f9ff;
+  color: #000;
+  transition: background-color 0.2s ease;
+}
+
+.class-table tbody tr:hover {
+  background-color: #d9f0ff;
+}
+
+/* ============================
+   COLUMN WIDTHS
+   ============================ */
+.col-index { width: 30px; }
+
+.col-building,
+.col-title,
+.col-instructor {
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.col-room { width: 6%; }
+.col-capacity { width: 6%; }
+
+.col-code { width: 6%; }
+
+.col-details { width: 5%; }
+.col-students { width: 5%; }
+
+.col-classid { width: 5%; }
+.col-sectionid { width: 5%; }
+
+.col-actions { width: 6%; }
+
+/* ============================
+   NO-CONTENT STYLE
+   ============================ */
+.no-content {
+  color: #e21212;
+  background-color: #f48181b7;
+  font-weight: 600;
+}
+
+/* ============================
+   TEXT LINK
+   ============================ */
+.text-link {
+  background: none;
+  border: none;
+  color: #0645AD;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px !important;
+  font-weight: 450 !important;
+  transition: color 0.25s ease;
+}
+
+.text-link:hover {
+  color: #ce0e84;
+}
+
+/* ============================
+   VIEW INFO BUTTON
+   ============================ */
+.view-info {
+  font-size: 12pt;
+  font-weight: 450;
+}
+
+/* ============================
+   COPY ID BUTTON
+   ============================ */
+.copy-id-button {
+  font-size: 13px;
+  font-weight: 450;
+}
+
+/* ============================
+   ACTIONS COLUMN
+   ============================ */
+.actions-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin: auto 5px;
+  margin-bottom: -5px;
+  gap: 1vw;
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 19px;
+  padding: 0;
+}
+
+.btn-edit i {
+  color: rgb(255,166,0); /* نارنجی */
+  transition: transform 0.1s, color 0.25s;
+}
+
+.btn-delete i {
+  color: #eb1c31;  /* قرمز */
+  transition: transform 0.1s, color 0.25s;
+}
+
+/* افکت هاور */
+
+.btn-action:hover i {
+  opacity: 0.8;
+  transform: scale(1.2);
+}

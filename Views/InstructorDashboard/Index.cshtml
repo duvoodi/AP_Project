@@ -1,18 +1,15 @@
 @model AP_Project.Models.Users.Instructor
 @{
-    ViewData["Title"] = "داشبورد استاد";
-    Layout = "_LayoutInstructor";
-    ViewData["ActiveTab"] = null;
-    var hasFooter = true;
+  ViewData["Title"] = "داشبورد استاد";
+  Layout = "_LayoutInstructor";
 }
 
-<main class="instructor-main @(hasFooter ? "has-footer" : "has-not-footer")">
-        <!-- محتوای پیش‌فرض -->
+<main class="dashboard-main instructor">
+    <!-- محتوای پیش‌فرض -->
 </main>
 
-@if (hasFooter)
-{
-    <footer class="instructor-footer">
-        <p>لطفا یکی از سربرگ‌ها را انتخاب کنید</p>
-    </footer>
+@section FooterPopup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
+  <div class="footer-popup empty will-show">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>لطفا یکی از سربرگ‌ها را انتخاب کنید</p>
+  </div>
 }

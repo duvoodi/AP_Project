@@ -7,6 +7,6 @@ namespace AP_Project.Models.Users
         public int StudentId { get; set; } 
         public int EnrollmentYear { get; set; }
 
-        public ICollection<Takes> Takes { get; set; }
+        public ICollection<Takes> Takes { get; set; } = new List<Takes>();
     }
 }

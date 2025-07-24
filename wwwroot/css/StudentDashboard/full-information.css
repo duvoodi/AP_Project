@@ -1,0 +1,334 @@
+/* ============================
+   FONT
+   ============================ */
+
+table,
+button,
+td,
+th {
+    font-family: 'Vazirmatn', sans-serif !important;
+}
+
+.student-summary-grid {
+  display: grid;
+  max-width: 1170px;
+  margin: 1rem auto;
+  background: #f5f7fa;
+  border-radius: 8px;
+  border: 1px solid #d7dde4;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+  font-size: 14px;
+  color: #444;
+  padding: 12px 16px;
+  gap: 12px 24px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(30px, auto);
+  
+}
+
+.student-summary-grid > div {
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #555;
+}
+
+.student-summary-grid > div strong {
+  min-width: 120px;
+  font-weight: 600;
+  color: #555;
+}
+
+/* ============================
+   TABLE STYLES
+   ============================ */
+
+.semester-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    background-color: #ccdfef;
+    font-size: 15px;
+    margin-top: 1.6rem;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 95%;
+}
+
+.semester-table thead tr {
+    font-size: 15px;
+}
+
+.semester-table thead th {
+    color: white;
+    background-color: #00b0f0;
+    font-weight: 600;
+    padding: 12px 8px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.semester-table th,
+.semester-table td {
+    border: 1px solid white;
+    padding: 10px 6px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.semester-table tbody tr {
+    background-color: #e2f2ff;
+    color: #000;
+    transition: background-color 0.2s ease;
+}
+
+.semester-table tbody tr:hover {
+    background-color: #a1d9ff;
+}
+
+/* ============================
+   COLUMN WIDTHS (Optional)
+   ============================ */
+
+.col-index {
+    width: 60px;
+}
+
+.col-semester {
+    width: 140px;
+}
+
+.col-units,
+.col-passed-units,
+.col-ungraded-units {
+    width: 110px;
+}
+
+.col-probation {
+    width: 100px;
+}
+
+.col-term-average {
+    width: 100px;
+}
+
+.col-action {
+    width: 100px;
+}
+
+/* ============================
+   LINKS
+   ============================ */
+
+.text-link {
+    background: none;
+    border: none;
+    color: #0645AD;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.25s ease;
+}
+
+.text-link:hover {
+    color: #ce0e84;
+}
+
+/* ============================
+   EMPTY STATE
+   ============================ */
+
+.empty-popup {
+    background-color: #ffe6e6;
+    border: 1px dashed #d9534f;
+    color: #d9534f;
+    text-align: center;
+    padding: 20px;
+    margin: 30px auto;
+    border-radius: 12px;
+    width: 80%;
+    font-size: 16px;
+    font-family: 'Vazirmatn', sans-serif;
+}
+
+.will-show {
+    animation: fadeIn 0.4s ease-in-out forwards;
+}
+
+.form-actions {
+    display: flex;
+    position: sticky;
+    bottom: 0;
+    justify-content: left;
+    margin: 125px 30px auto;
+    gap: 20px;
+    z-index: 1000;
+    padding: 10px 0px;
+    border-radius: 10px;
+}
+
+.btn-submit {
+    width: 150px;
+    height: 48px;
+    padding: 0;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    transition: background 0.25s, color 0.25s;
+
+    background-color: #5c6bc0;
+    color: #ffffff;
+}
+
+.btn-submit:hover,
+.btn-submit:focus {
+    background-color: #3f51b5;
+    color: #ffffff;
+}
+
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .form-actions,
+  .print-button,
+  header,
+  footer,
+  nav,
+  .sidebar {
+    display: none !important;
+  }
+
+  #printable-area,
+  #printable-area * {
+    visibility: visible;
+  }
+
+  #printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0 16px; /* فاصله کمی از چپ و راست برای جلوگیری از چسبیدن به لبه صفحه */
+    box-sizing: border-box;
+    direction: rtl;
+  }
+
+  /* گرید دانشجو: عرض کامل، حاشیه پایین برای فاصله با جدول */
+  .student-summary-grid {
+    width: 100%;
+    margin: 0 0 24px 0; /* 24px فاصله پایین برای جدا شدن از جدول */
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* جدول ترم‌ها: عرض کامل، بدون margin و padding اضافی */
+  .semester-table {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0;
+    padding: 0;
+    border-collapse: collapse !important;
+    box-sizing: border-box;
+    direction: rtl;
+  }
+
+  /* سلول‌های جدول: اندازه استاندارد و پرش متن */
+  .semester-table th,
+  .semester-table td {
+    border: 1px solid #000 !important;
+    padding: 8px 12px !important;
+    text-align: center;
+    word-wrap: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+.semester-table th.col-action,
+.semester-table td.col-action {
+  margin-left: 10px;
+  border: none !important; /* حذف بردر سلول‌ها */
+  color: white !important;          
+  background-color: white !important; 
+}
+
+.semester-table th.col-action a,
+.semester-table td.col-action a {
+  color: white !important;
+  text-decoration: none !important;
+  cursor: default !important;
+  pointer-events: none !important;
+  opacity: 0 !important; /* شفاف کردن */
+  filter: none !important;
+  margin-left: 10px;
+  border: none !important; /* حذف بردر لینک‌ها */
+}
+
+  /* حذف سایه جدول */
+  .semester-table {
+    box-shadow: none !important;
+    border-radius: 0 !important; /* گوشه‌ها تیز */
+    border-collapse: collapse !important; /* برای بهتر شدن بردرهای ضخیم */
+  }
+
+  /* بردرهای ضخیم‌تر و تیز در سلول‌ها */
+  .semester-table th,
+  .semester-table td {
+    border: 2px solid black !important; /* ضخامت بردر بیشتر */
+    border-radius: 0 !important; /* گوشه تیز */
+    padding: 8px 12px !important;
+  }
+  body, 
+  body * {
+    color: black !important;
+  }
+
+  /* رنگ متن سیاه و بردر مشکی برای سگمنت‌ها */
+  .student-summary-grid > div {
+    color: black !important;
+    border: 1px solid black !important;
+    box-shadow: none !important; /* حذف سایه برای چاپ */
+    background: white !important; /* پس‌زمینه سفید برای وضوح بهتر */
+  }
+  .student-summary-grid {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+}
+
+
+/* ============================
+   ANIMATIONS
+   ============================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

@@ -1,19 +1,110 @@
 @model AP_Project.Models.Users.Student
 @{
-    ViewData["Title"] = "داشبورد دانشجو";
-    Layout = "_LayoutStudent";
-    ViewData["ActiveTab"] = "FullInformation";
-    var hasFooter = false;
+  ViewData["ActiveTab"] = "FullInformation";
+  ViewData["Title"] = "داشبورد دانشجو";
+  Layout = "_LayoutStudent";
+
+  var termSummaries = ViewBag.TermSummaries as List<dynamic>;
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].FirstOrDefault() ?? "";
+  var pc = new System.Globalization.PersianCalendar();
 }
 
-<main class="student-main @(hasFooter ? "has-footer" : "has-not-footer")">
-    <h2 class="page-title">اطلاعات جامع</h2>
-    <!-- محتوای اطلاعات جامع -->
+<link rel="stylesheet" href="~/css/StudentDashboard/full-information.css" asp-append-version="true" />
+
+<form id="antiForgeryForm">
+  @Html.AntiForgeryToken()
+</form>
+
+<main id="printable-area" class="dashboard-main student">
+
+  <div class="student-summary-grid">
+
+    <div><strong>نام کامل:</strong> @Model.FirstName @Model.LastName</div>
+    <div><strong>کد دانشجویی:</strong> @Model.StudentId</div>
+    <div><strong>سال ورودی:</strong> @Model.EnrollmentYear</div>
+    <div><strong>آدرس ایمیل:</strong> @Model.Email</div>
+
+
+    <div><strong>معدل کل:</strong> @(ViewBag.CumulativeAverage ?? "-")</div>
+    <div><strong>واحد گذرانده:</strong> @(ViewBag.PassedUnits ?? "-")</div>
+    <div><strong>ترم گذرانده:</strong> @(ViewBag.PassedTerms ?? "-")</div>
+    <div><strong>مشروطی کل:</strong> @(ViewBag.TotalProbations ?? "-")</div>
+
+  </div>
+
+
+  @if (termSummaries != null && termSummaries.Any())
+  {
+    <table class="semester-table">
+      <thead>
+        <tr>
+          <th class="col-index">ردیف</th>
+          <th class="col-semester">نیمسال</th>
+          <th class="col-units">واحد اخذ شده</th>
+          <th class="col-passed-units">واحد گذرانده</th>
+          <th class="col-ungraded-units">واحد اعلام نشده</th>
+          <th class="col-probation">معدل ترم</th>
+          <th class="col-term-average">وضعیت</th>
+          <th class="col-action"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @{
+          int rowIndex = 1;
+          foreach (var term in termSummaries)
+          {
+            bool isProbation = term.TermAverage < 12;
+            var persianYear = term.Year != null ? (term.Year % 1000).ToString() : "-";
+            var semester = term.Semester != null ? term.Semester.ToString() : "-";
+
+            string transcriptUrl = Url.Action("Index", "Transcripts", new
+            {
+              year = term.Year,
+              semester = term.Semester,
+              h = currentHash
+            });
+            <tr>
+              <td class="col-index">@rowIndex</td>
+              <td class="col-semester">@($"{persianYear}-{semester}")</td>
+              <td class="col-units">@term.TotalUnits</td>
+              <td class="col-passed-units">@term.PassedUnits</td>
+              <td class="col-ungraded-units">@term.UnitsWithoutGrade</td>
+              <td>@(term.TermAverage > 0 ? ((double)term.TermAverage).ToString("0.00") : "-")</td>
+              <td>
+                @if (isProbation)
+                {
+                  <span style="color: #d9534f; font-weight: bold;">مشروط</span>
+                }
+                else
+                {
+                  <span>عادی</span>
+                }
+              </td>
+              <td class="col-action">
+                <a href="@transcriptUrl" class="text-link">ریزنمرات</a>
+              </td>
+            </tr>
+            rowIndex++;
+          }
+        }
+      </tbody>
+    </table>
+
+    <div class="form-actions">
+      <button type="button" onclick="window.print()" class="btn-submit">پرینت صفحه</button>
+    </div>
+  }
 </main>
 
-@if (hasFooter)
-{
-    <footer class="student-footer">
-        <p>متن فوتر</p>
-    </footer>
+@section FooterPopup {
+  <div class="footer-popup empty @(termSummaries != null && termSummaries.Any() ? "" : "will-show")">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+  </div>
 }
+
+<script>
+  function printSection() {
+    window.print();
+  }
+</script>

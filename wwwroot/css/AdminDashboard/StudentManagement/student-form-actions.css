@@ -1,0 +1,333 @@
+/* ============================
+   FONT
+   ============================ */
+
+body, html, input, textarea, select, button {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* ============================
+   TITLE BAR
+   ============================ */
+
+.titlebar {
+  position: sticky;
+  top: 100px;
+  margin: 0;
+  padding: 20px 0 0;
+  background-color: white;
+  z-index: 3;
+}
+
+.action-title-tab {
+  display: flex;
+  align-items: center;      
+  justify-content: flex-start; 
+  width: calc(100% - 40px);  
+  height: 54px;              
+  padding: 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: none;
+  border: none;
+  border-radius: 27px; /* نصف ارتفاع برای کپسول */
+  margin: 0 auto 0px; 
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.action-title-tab.add {
+  background-color: #84e291;
+  color: #265C26;
+}
+.action-title-tab.delete {
+  background-color: #ff8a80;
+  color: #a32626;
+}
+.action-title-tab.edit {
+  background-color: #f5dc71;
+  color: #725810;
+}
+
+/* ============================
+   FORM CONTAINER
+   ============================ */
+
+.form-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 50px;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+/* ============================
+   FORM ROWS
+   ============================ */
+
+.form-row {
+  min-height: 110px; /* مین هایت */
+  overflow: visible;
+  display: flex;
+  align-items: flex-start; 
+  flex-wrap: wrap;
+  gap: 2%; /* فاصله بین ستون‌ها */
+  margin: 0;
+  justify-content: center;
+}
+
+/* ============================
+   FORM GROUPS
+   ============================ */
+
+.form-group {
+  padding-bottom: 22px; /* فضای رزرو شده برای خطا */
+  position: relative; /* برای موقعیت دهی مطلق خطاها */
+  height: 100%; /* پر کردن کل ارتفاع row */
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center !important;
+  gap: 0px; /* فاصله بین لیبل و فرم کنترل */
+}
+
+.form-group.narrow {
+  flex: 0 0 30%;
+}
+
+/* ============================
+   LABELS
+   ============================ */
+
+.form-group label {
+  height: 24px; /* ارتفاع ثابت */
+  line-height: 24px;
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #156082;
+  margin-bottom: 6px;
+}
+
+
+
+/* ============================
+   FORM CONTROLS
+   ============================ */
+
+.form-control {
+  width: 100%; /* پر کردن عرض فرم گروپ */
+  height: 45px; /* ارتفاع ثابت */
+  padding: 5px 16px; 
+  border: 1.5px solid #b6d7f7;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #f7fbff;
+  color: #222;
+  box-sizing: border-box;
+  transition: border .2s, background .2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border: 1.5px solid #00b0f0;
+  background: #e6f7ff;
+}
+
+/* ============================
+   READONLY FIELDS
+   ============================ */
+
+.form-control[readonly] {
+  background: #f3f3f3;
+  color: #888;
+  border-color: #ddd;
+  cursor: not-allowed;
+}
+
+/* ============================
+   PASSWORD FIELD WRAPPER
+   ============================ */
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input.form-control {
+  position: static;
+  top: 0;
+  left: 0;
+  padding-left: 50px; /* جا برای آیکون */
+}
+
+.password-wrapper .toggle-password {
+  position: absolute;
+  top: 56%;
+  left: 10px;
+  width: 32px;              
+  text-align: center;       
+  line-height: 32px;        
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #056997; 
+  z-index: 3;
+  padding: 0;
+  transition: color .2s;
+}
+
+.password-wrapper .toggle-password:hover {
+    color: #0099e0;
+}
+
+input.valid-password {
+  transition: letter-spacing 0.3s ease, color 0.3s ease;
+  letter-spacing: 0.15em;
+  color: #222;
+}
+
+input.valid-password[type="password"] {
+  letter-spacing: 0.3em;
+  color: #222;
+}
+
+/* حذف آیکون‌های پیش‌فرض مرورگر */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  pointer-events: none;
+}
+
+/* ============================
+   ERROR MESSAGES
+   ============================ */
+   
+.form-group .error-message {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.error-message {
+  position: absolute; /* موقعیت دهی مطلق خطاها در فضای رزرو شده */
+  top: 75px;
+  left: 0;
+  display: inline-flex;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 18px;
+  color: #e74c3c;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.error-message.visible {
+  opacity: 1;
+}
+
+.error-row {
+  height: auto;
+}
+
+.error-message.general-error {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fceefd;
+  color: #722872;
+  border: 1px solid #e9c7f0;
+  top: 0;
+  margin: 7px auto 28px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.6;
+  width: 80%; /* همیشه ۸۰٪ عرض صفحه */
+  box-sizing: border-box;
+  overflow: hidden;
+
+  max-height: 0;
+  transform: scaleY(0.9);
+  opacity: 0;
+  transition:
+    max-height 0.8s ease-in-out,
+    transform 0.8s ease-in-out,
+    opacity 0.8s ease-in-out;
+}
+
+.general-error.visible {
+  max-height: 160px;
+  transform: scaleY(1);
+  opacity: 1;
+}
+
+/* ============================
+   SUBMIT BUTTON
+   ============================ */
+
+.form-actions {
+  display: flex;
+  justify-content: left;
+  margin: 0 auto 0;
+  gap: 20px;
+  z-index: 1000;
+  padding: 10px 0px;
+  border-radius: 10px;
+}
+
+.btn-submit,
+.btn-cancel {
+  width: 150px;
+  height: 45px;
+  padding: 0 0px;
+  border-radius: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  transition: transform 0.25s, color 0.25s;
+}
+
+.btn-submit {
+  background-color: #84e291;
+  color: #265C26;
+}
+
+.btn-submit:hover,
+.btn-submit:focus {
+  color: #ffffff;
+}
+
+.btn-cancel {
+  background-color: #ff8a80;
+  color: #851b1b;
+}
+
+.btn-submit:hover,
+.btn-submit:focus,
+.btn-cancel:hover,
+.btn-cancel:focus {
+  color: #ffffff;
+}
+
+.btn-submit:hover,
+.btn-cancel:hover{
+  opacity: 0.9;
+  transform: scale(1.05);
+}

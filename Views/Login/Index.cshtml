@@ -1,90 +1,142 @@
 @{
-    ViewData["Title"] = "صفحه ورود";
-    Layout = "_LayoutLogin";
+  ViewData["Title"] = "صفحه ورود";
+  Layout = "_LayoutLogin";
 }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<link rel="stylesheet" href="~/css/login.css" />
+<!-- مجموعه فونت آوسوم -->
+<link rel="stylesheet" href="~/lib/fontawesome/6.7.2/css/all.min.css" asp-append-version="true" />
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/Login/login.css" asp-append-version="true" />
 
 <div class="login-container">
-    <h2>صفحه ورود</h2>
-    <form method="post" asp-controller="Login" asp-action="Index">
-        <label for="userId">نام کاربری</label>
-        <input type="number" id="userId" name="userId" required />
+  <h2>صفحه ورود</h2>
+  <form asp-controller="Login" asp-action="Index" method="post" id="login-form">
+    @Html.AntiForgeryToken()
 
-        <label for="password">رمز عبور</label>
-        <div class="password-wrapper">
-            <input type="password" id="password" name="password" required />
-            <input type="text" id="passwordText" required />
-            <button type="button" id="togglePassword" class="toggle-password" aria-label="نمایش/پنهان رمز">
-                <i class="fa fa-eye"></i>
-            </button>
-        </div>
-        <button type="submit" title="برای ورود، نام کاربری و رمز عبور خود را وارد کرده و کلیک کنید.">
-            ورود
+    <div class="form-group">
+      <label>نام کاربری</label>
+      <div>
+        <input class="form-control valid-username" id="Username" name="Username" data-maxlength="32" />
+      </div>
+      <span class="error-message">@Html.ValidationMessage("Username")</span>
+    </div>
+    <div class="form-group">
+      <label>رمز عبور</label>
+      <div class="password-wrapper">
+        <input type="password" class="form-control valid-password" id="Password" name="Password" data-maxlength="32" />
+        <button type="button" class="toggle-password">
+          <i class="fa fa-eye"></i>
         </button>
-    </form>
+      </div>
+      <span class="error-message">@Html.ValidationMessage("Password")</span>
+    </div>
 
-    @if (!ViewData.ModelState.IsValid)
-    {
-        foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <p class="error-message">@error.ErrorMessage</p>
-        }
-    }
+    <button type="submit" class="btn-submit blur-on-leave">
+      ورود
+    </button>
 
-    <footer>
-        <p>پروژه AP | کوشا مجلسی | امیر محمد داودی</p>
-        <p><a href="https://github.com/duvoodi/AP_Project/" target="_blank">لینک ریپازیتوری گیت هاب پروژه</a></p>
-    </footer>
+      <div class="error-row">
+        <div class="error-group" >
+          <span class="error-message general-error" id="GeneralError" >@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+  </form>
+
+  <footer>
+    <p>پروژه AP | کوشا مجلسی | امیر محمد داودی</p>
+    <p><a href="https://github.com/duvoodi/AP_Project/" target="_blank">لینک ریپازیتوری گیت هاب پروژه</a></p>
+  </footer>
 </div>
 
-<script>
-    const userId = document.getElementById("userId");
-    const password = document.getElementById("password");
-    const passwordText = document.getElementById("passwordText");
-    const togglePassword = document.getElementById("togglePassword");
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+  <!-- اسکریپت های کمکی مورد نیاز این فرم -->
+  <script src="~/js/Shared/blur-on-leave.js"></script>
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-username-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-password-inputs.js"></script>
+  <!-- تابع ولیدیت فیلد اختصاصی فیلد های این صفحه -->
+  <!-- آخر همه اضافه شده چون از توابع اسکریپت های بالا استفاده میکند -->
+  <script src="~/js/FormUtils/LoginForm/validateField.js"></script>
+  <script>
+    // ولیدیت فیلد ها هنگام خروج از فیلد با نمایش ارور ترو
+    // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+    document.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+      input.addEventListener('blur', function () {
+        validateField(this.id, true) // نتیجه تابع رو در دکمه سابمیت بررسی میکنیم اینجا تابع صرفا برای نمایش ارور فراخوانی میشود
+      });
+    });
 
-    // اعتبارسنجی فیلدها
-    userId.addEventListener("invalid", function () {
-        if (!userId.value) {
-            userId.setCustomValidity("لطفاً نام کاربری را وارد کنید.");
+    // فلگ برای جلوگیری از اجرای همزمان سابمیت با دکمه ورود و اینتر
+    let formSubmitting = false;
+
+    function FormSubmission(form) {
+      if (formSubmitting) return; // اگر فلگ سابمیت قبلاً فعال شده، دیگر ادامه نده
+      formSubmitting = true; // فعال کردن فلگ تا سابمیت دیگری فعال نشود همزمانش
+
+      const submitBtn = form.querySelector('.btn-submit');
+      if (submitBtn) submitBtn.blur(); // خارج شدن سابمیت از حالت فشرده‌شده
+
+      // حذف ارور های قبلی برای انیمیشن رفتن ارور ها قبلی و آماده شدن برای آمدن ارور های جدید ادامه
+      const errorMessages = document.querySelectorAll('.error-message');
+      errorMessages.forEach(errorSpan => {
+        const parentGroup = errorSpan.closest('.form-group, .error-group');
+        if (parentGroup) {
+          const firstWithId = parentGroup.querySelector('[id]');
+          if (firstWithId) {
+            replaceError(firstWithId.id, '');
+          }
         }
-    });
+      });
 
-    userId.addEventListener("input", function () {
-        userId.setCustomValidity("");
-    });
+      // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا خالی کردن ارور ها رندر گرفته بشه
+      setTimeout(() => {
+        let hasError = false;
 
-    password.addEventListener("invalid", function () {
-        if (!password.value) {
-            password.setCustomValidity("لطفاً رمز عبور را وارد کنید.");
-        }
-    });
+        // ولیدیت تمام فیلدهای فرم با نمایش ارور ترو
+        // فیلد های ما حتما آی دی دارند آی دی نداشت نباید سلکت شود
+        form.querySelectorAll('input[id], textarea[id], select[id]').forEach(input => {
+          if (!validateField(input.id, true)) {
+            hasError = true;
+          }
+        });
 
-    password.addEventListener("input", function () {
-        password.setCustomValidity("");
-    });
-
-    // نمایش/مخفی کردن رمز عبور
-    togglePassword.addEventListener("click", function () {
-        const isHidden = password.style.opacity !== "0";
-        if (isHidden) {
-            password.style.opacity = "0";
-            passwordText.style.opacity = "1";
-            passwordText.value = password.value;
-            passwordText.focus();
-            this.querySelector("i").classList.replace("fa-eye", "fa-eye-slash");
+        // اگر خطایی نبود فرم ارسال شود
+        if (!hasError) {
+          // جنرال ارور قبل ارسال بسته تا در سرور اگر ارور گرفت و برگشت با ارور بروز باز شود
+          replaceError("GeneralError", '');
+          setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+            form.removeEventListener('submit', formSubmitHandler); // جلوگیری از حلقه بی‌پایان
+            form.requestSubmit ? form.requestSubmit() : form.submit();
+          }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
         } else {
-            password.style.opacity = "1";
-            passwordText.style.opacity = "0";
-            password.value = passwordText.value;
-            password.focus();
-            this.querySelector("i").classList.replace("fa-eye-slash", "fa-eye");
+          formSubmitting = false; // اگر خطا داشت فلگ بسته تا بتوان سابمیت جدید زد
         }
+      }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+    }
+
+    // برای اینکه بتونیم بعداً حذفش کنیم
+    function formSubmitHandler(e) {
+      e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
+      FormSubmission(this);
+    }
+
+
+    // ارسال فرم اگر داخل اینپوت بودیم و اینتر زدیم
+    // بخاطر اینکه اینتر کاراکتر مجاز ولد یوزرنیم و پسورد نیست اجازه زدنش را نمیدهد و باید اسکریپت جداگانه بزنیم
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        const active = document.activeElement;
+        if (active && ['input', 'textarea', 'select'].includes(active.tagName.toLowerCase())) {
+          const form = document.getElementById('login-form');
+          if (!form) return;
+          e.preventDefault(); // جلوی ارسال فرم را بگیر تا زمانی که اعتبارسنجی کامل شود
+          FormSubmission(form);
+        }
+      }
     });
 
-    // همگام‌سازی مقادیر
-    password.addEventListener("input", () => passwordText.value = password.value);
-    passwordText.addEventListener("input", () => password.value = passwordText.value);
-</script>
+    // چک و ارسال بعد زدن کلید تایید
+    document.getElementById('login-form').addEventListener('submit', formSubmitHandler);
+  </script>
+}

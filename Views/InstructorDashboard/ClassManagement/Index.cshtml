@@ -1,0 +1,218 @@
+@model AP_Project.Models.Users.Instructor
+@{
+    ViewData["ActiveTab"] = "Instructor";
+    ViewData["Title"] = "داشبورد استاد";
+    Layout = "_LayoutInstructor";
+    var classrooms = ViewBag.Classrooms as List<AP_Project.Models.Classrooms.Classroom>;
+    var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+}
+
+<link rel="stylesheet" href="~/css/InstructorDashboard/ClassManagement/class-management.css"
+    asp-append-version="true" />
+
+<main class="dashboard-main instructor">
+    <table class="class-table">
+        <thead>
+            <tr>
+                <th class="col-index">ردیف</th>
+                <th class="col-building">ساختمان</th>
+                <th class="col-roomnumber">شماره کلاس</th>
+                <th class="col-capacity">ظرفیت</th>
+                <th class="col-title">عنوان درس</th>
+                <th class="col-schedule">زمان برگزاری</th>
+                <th class="col-details">مشخصات درس</th>
+                <th class="col-students">لیست دانشجویان</th>
+                <th class="col-classid">آی دی کلاس</th>
+                <th class="col-courseid">آی‌دی درس</th>
+                @if (classrooms != null && classrooms.Any())
+                {<th class="col-actions"></th>}
+            </tr>
+        </thead>
+
+        @if (classrooms != null && classrooms.Any())
+        {
+            <tbody>
+                @for (int i = 0; i < classrooms.Count; i++)
+                {
+                    var classroom = classrooms[i];
+                    var section = classroom.Sections?.FirstOrDefault();
+                    var course = section?.Course;
+                    var timeSlot = section?.TimeSlot;
+                    var classIdStr = classroom.Id.ToString();
+                    var courseIdStr = course.Id.ToString();
+
+
+                    <tr>
+                        <td class="col-index">@((i + 1))</td>
+                        @if (section?.ClassroomId == null)
+                        {
+                            <td class="col-building" colspan="3">
+                                مکان کلاس به‌زودی مشخص می‌شود
+                            </td>
+                        }
+                        else if (string.IsNullOrWhiteSpace(classroom.Building) &&
+                        classroom.RoomNumber == 0 &&
+                        classroom.Capacity == 0)
+                        {
+                            <td class="col-building" colspan="3">
+                                کلاس این درس به زودی مشخص می‌شود
+                            </td>
+                        }
+                        else
+                        {
+                            <td class="col-building">@classroom.Building</td>
+                            <td class="col-roomnumber">@classroom.RoomNumber</td>
+                            <td class="col-capacity">@classroom.Capacity</td>
+                        }
+
+
+                        <td class="col-title">@(course?.CourseCode?.Title ?? "-")</td>
+                        <td class="col-schedule">
+                            @if (timeSlot != null)
+                            {
+                                <span>@timeSlot.Day</span>
+                    
+                                <br />
+                                <span>@timeSlot.StartTime.ToString(@"hh\:mm") - @timeSlot.EndTime.ToString(@"hh\:mm")</span>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                        <td class="col-details">
+                            <button class="text-link view-course-btn" data-course-id="@(section.CourseId)" data-tooltip="مشاهده"
+                                data-tooltip-align="center">
+                                مشاهده
+                            </button>
+                        </td>
+                        <td class="col-students">
+                            <button class="text-link view-students-btn" data-section-id="@(section.Id)" data-tooltip="مشاهده"
+                                data-tooltip-align="center">
+                                مشاهده
+                            </button>
+                        </td>
+                        <td class="col-classid">
+                            <button class="text-link copy-id-button" data-id="@classIdStr" data-tooltip="@classIdStr"
+                                data-tooltip-align="center">
+                                کپی
+                            </button>
+                        </td>
+                        <td class="col-courseid">
+                            <button class="text-link copy-id-button" data-id="@courseIdStr" data-tooltip="@courseIdStr"
+                                data-tooltip-align="center">
+                                کپی
+                            </button>
+                        </td>
+
+                        <td class="col-actions">
+                            <div class="actions-wrapper">
+                                <a asp-controller="InstructorClassManagement" asp-action="EditGrades" asp-route-h="@currentHash" asp-route-id="@(section.Id)"
+                                    class="btn-action btn-edit" data-tooltip="ویرایش نمرات">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-controller="InstructorClassManagement" asp-action="DeleteStudents" asp-route-h="@currentHash"
+                                    asp-route-sectionId="@(section.Id)" class="btn-action btn-delete" data-tooltip="حذف دانشجو"
+                                    data-tooltip-align="center">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+
+    <!-- کانتینر پاپ‌آپ‌ها -->
+<div id="course-popup-container"></div>
+<div id="student-popup-container"></div>
+
+
+</main>
+
+@section FooterPopup {
+  <div class="footer-popup empty @(classrooms == null || !classrooms.Any() ? "will-show" : "")">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+  </div>
+}
+
+@section Scripts {
+    <script src="~/js/Shared/tooltip.js" asp-append-version="true"></script>
+
+    <script>
+        // هندل کردن دکمه‌های کپی
+        document.querySelectorAll('.copy-id-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                navigator.clipboard.writeText(id).then(() => {
+                    tooltip.textContent = 'کپی شد';
+                    tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
+                    tooltip.classList.add('align-center', 'show');
+
+                    const r = btn.getBoundingClientRect();
+                    tooltip.style.top = (r.bottom + 6) + 'px';
+                    tooltip.style.left = (r.left + r.width / 2) + 'px';
+                });
+            });
+        });
+
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('view-course-btn')) {
+                const courseId = e.target.getAttribute('data-course-id');
+                openCoursePopup(courseId);
+            }
+        });
+
+
+        function openCoursePopup(courseId) {
+            fetch(`/InstructorClassManagement/GetCourseInfo?courseId=${courseId}`)
+                .then(res => res.text())
+                .then(html => {
+                    const container = document.getElementById("course-popup-container");
+                    container.innerHTML = html;
+
+                    // بعد از اینکه html لود شد، دکمه btn-popup که داخلش هست رو پیدا کن
+                    const popupBtn = container.querySelector(".btn-popup");
+                    if (popupBtn) {
+                        popupBtn.click(); // تریگر کردن پاپ‌آپ!
+                        popupBtn.remove();
+                    } else {
+                        console.warn("btn-popup not found in loaded content");
+                    }
+                })
+                .catch(err => {
+                    console.error("خطا در دریافت مشخصات درس:", err);
+                });
+        }
+
+        document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('view-students-btn')) {
+        const sectionId = e.target.getAttribute('data-section-id');
+        openStudentsPopup(sectionId);
+    }
+});
+
+function openStudentsPopup(sectionId) {
+    fetch(`/InstructorClassManagement/GetStudentList?sectionId=${sectionId}`)
+        .then(res => res.text())
+        .then(html => {
+            const container = document.getElementById("student-popup-container");
+            container.innerHTML = html;
+
+            const popupBtn = container.querySelector(".btn-popup");
+            if (popupBtn) {
+                popupBtn.click(); // باز کردن پاپ‌آپ
+                popupBtn.remove();
+            } else {
+                console.warn("btn-popup برای لیست دانشجویان پیدا نشد");
+            }
+        })
+        .catch(err => {
+            console.error("خطا در دریافت لیست دانشجویان:", err);
+        });
+}
+
+
+    </script>
+}

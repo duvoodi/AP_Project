@@ -9,7 +9,7 @@ DELETE FROM Prerequisites;
 DELETE FROM Sections;
 DELETE FROM Courses;
 DELETE FROM CourseCodes;
-DELETE FROM Classrooms
+DELETE FROM Classrooms;
 DELETE FROM Admins;
 DELETE FROM Students;
 DELETE FROM Instructors;
@@ -28,8 +28,7 @@ using (var scope = app.Services.CreateScope())
             instructorCount : 10,
             studentCount : 100,
             classroomCount : 20,
-            courseCodeCount : 10,
-            sectionCount : 30);
+            courseCodeCount : 10);
 }
 */
 
@@ -49,17 +48,43 @@ using Microsoft.EntityFrameworkCore;
 namespace AP_Project.Data
 {
 
-public static class SeedDataForFirstTime
-{
+    public static class SeedDataForFirstTime
+    {
+        private static DateTime GenerateRandomExamDate(Random rand)
+        {
+            // بازه تاریخ امتحان برای نیم‌سال 14041
+            DateTime examStart1 = new DateTime(2026, 1, 21);
+            DateTime examEnd1 = new DateTime(2026, 2, 19);
+            
+            // بازه تاریخ امتحان برای نیم‌سال 14042
+            DateTime examStart2 = new DateTime(2026, 6, 5);
+            DateTime examEnd2 = new DateTime(2026, 7, 6);
+
+            // انتخاب تصادفی یکی از دو نیم‌سال
+            if (rand.Next(2) == 0)
+            {
+                int examDaysRange1 = (examEnd1 - examStart1).Days;
+                return examStart1.AddDays(rand.Next(examDaysRange1));
+            }
+            else
+            {
+                int examDaysRange2 = (examEnd2 - examStart2).Days;
+                return examStart2.AddDays(rand.Next(examDaysRange2));
+            }
+        }
+
         public static void Generate(
             AppDbContext context,
             int adminCount = 1,
             int instructorCount = 10,
             int studentCount = 100,
             int classroomCount = 20,
-            int courseCodeCount = 10,
-            int sectionCount = 30)
+            int courseCodeCount = 10)
         {
+            // محاسبه تعداد سکشن مناسب
+            // برای هر ده دانشجو یک سکشن و حداقل به تعداد دروس و حداکثر به تعداد سه برابر آن
+            int sectionCount = Math.Clamp(studentCount / 10, courseCodeCount, courseCodeCount * 3); 
+
             // اگر یوزر در جدول هست کاربر متوقف میشود
             // فقط در صورتی که جدول را با کد اول فایل خالی کرده باشیم داده ساختگی اضافه میشود
             if (context.Users.Any())
@@ -89,8 +114,8 @@ public static class SeedDataForFirstTime
                 admins.Add(new Admin
                 {
                     AdminId = adminId,
-                    FirstName = $"Admin{i}",
-                    LastName = "Seed",
+                    FirstName = $"ادمین ساختگی",
+                    LastName = $"شماره {NumberToPersianWords.ConvertToWords(i)}",
                     Email = $"admin{i}@school.local",
                     HashedPassword = defaultHash,
                     CreatedAt = DateTime.UtcNow
@@ -114,8 +139,8 @@ public static class SeedDataForFirstTime
                 instructors.Add(new Instructor
                 {
                     InstructorId = instructorId,
-                    FirstName = $"Instructor{i}",
-                    LastName = "Seed",
+                    FirstName = $"استاد ساختگی",
+                    LastName = $"شماره {NumberToPersianWords.ConvertToWords(i)}",
                     Email = $"instr{i}@school.com",
                     HashedPassword = defaultHash,
                     CreatedAt = DateTime.UtcNow,
@@ -141,8 +166,8 @@ public static class SeedDataForFirstTime
                 students.Add(new Student
                 {
                     StudentId = studentId,
-                    FirstName = $"Student{i}",
-                    LastName = "Seed",
+                    FirstName = $"دانشجوی ساختگی",
+                    LastName = $"شماره {NumberToPersianWords.ConvertToWords(i)}",
                     Email = $"student{i}@school.com",
                     HashedPassword = defaultHash,
                     CreatedAt = DateTime.UtcNow,
@@ -166,7 +191,7 @@ public static class SeedDataForFirstTime
             // 5. Classrooms
             var classrooms = Enumerable.Range(1, classroomCount).Select(i => new Classroom
             {
-                Building = $"B{i}",
+                Building = $"ساختمان {i}",
                 RoomNumber = rand.Next(100, 500),
                 Capacity = rand.Next(20, 100)
             }).ToList();
@@ -178,38 +203,62 @@ public static class SeedDataForFirstTime
             var codes = Enumerable.Range(1, courseCodeCount).Select(i => new CourseCode
             {
                 Code = 800 + i,
-                Title = $"Course{800 + i}"
+                Title = $"درس {NumberToPersianWords.ConvertToWords(800 + i)}"
             }).ToList();
             context.CourseCodes.AddRange(codes);
             context.SaveChanges();
 
             // 8. Courses
-            DateTime examstart = new DateTime(2026, 1, 21); // we create all the courses wtih 4041 exam time for 4041 section (later we will transfer some of them to the 4042 exam time and section)
-            DateTime examend = new DateTime(2026, 2, 19);
-            int range = (examend - examstart).Days;
             var courses = codes.Select(cc => new Course
             {
                 CodeId = cc.Id,
                 Unit = rand.Next(1, 4),
-                Description = $"Description for {cc.Title}",
-                FinalExamDate = examstart.AddDays(rand.Next(range + 1))
+                Description = rand.Next(0, 2) == 0 ? $"توضیحات {cc.Title}": "",
+                FinalExamDate = GenerateRandomExamDate(rand) // تابع جدید برای تولید تاریخ تصادفی
             }).ToList();
+
             context.Courses.AddRange(courses);
             context.SaveChanges();
 
-            // 9. Prerequisites (random subset)
+            // 9. Prerequisites (random subset) — اصلاح شده برای خطی بودن و عدم حلقه
+            // این کد مطمئن می‌شود پیش‌نیازهای هر درس فقط از دروس با شماره کوچکتر باشند و بنابراین چرخه پیش‌نیاز ایجاد نمی‌شود.
             var prereqs = new List<Prerequisite>();
-            foreach (var course in courses)
+            double prerequisiteProbability = 0.6; // حدود 60 درصد درس‌ها پیش‌نیاز دارند
+            int maxPrereqsPerCourse = 3;
+
+            for (int i = 0; i < courses.Count; i++)
             {
-                if (rand.NextDouble() < 0.4)
+                var course = courses[i];
+                if (i == 0)
                 {
-                    var pc = codes[rand.Next(codes.Count)];
-                    if (pc.Id != course.CodeId)
+                    // اولین درس نمی‌تواند پیش‌نیاز داشته باشد چون هیچ درسی قبلش نیست
+                    continue;
+                }
+
+                if (rand.NextDouble() < prerequisiteProbability)
+                {
+                    // تعداد پیش‌نیاز بین 1 تا maxPrereqsPerCourse (مثلاً 3)
+                    int prereqCount = rand.Next(1, Math.Min(maxPrereqsPerCourse, i) + 1);
+
+                    // لیست ایندکس‌های دروس قبلی
+                    var possiblePrereqsIndexes = Enumerable.Range(0, i).ToList();
+
+                    // انتخاب رندوم پیش‌نیازها بدون تکرار
+                    for (int p = 0; p < prereqCount; p++)
+                    {
+                        if (possiblePrereqsIndexes.Count == 0)
+                            break;
+
+                        int selectedIndexInList = rand.Next(possiblePrereqsIndexes.Count);
+                        int prereqIndex = possiblePrereqsIndexes[selectedIndexInList];
+                        possiblePrereqsIndexes.RemoveAt(selectedIndexInList);
+
                         prereqs.Add(new Prerequisite
                         {
                             CourseId = course.Id,
-                            PrerequisiteCourseCodeId = pc.Id
+                            PrerequisiteCourseCodeId = courses[prereqIndex].CodeId
                         });
+                    }
                 }
             }
             context.Prerequisites.AddRange(prereqs);
@@ -219,74 +268,80 @@ public static class SeedDataForFirstTime
             var allSlots = context.TimeSlots.ToList();
             var sections = new List<Section>();
 
-            // بازه تاریخ امتحان برای نیم‌سال 1
-            DateTime examStart1 = new DateTime(2026, 1, 21);
-            DateTime examEnd1 = new DateTime(2026, 2, 19);
-
-            // بازه تاریخ امتحان برای نیم‌سال 2
-            DateTime examStart2 = new DateTime(2026, 6, 5);
-            DateTime examEnd2 = new DateTime(2026, 7, 6);
-            int examRange2 = (examEnd2 - examStart2).Days;
-
-            foreach (var course in courses)
+            // تابع کمکی برای تعیین نیم‌سال از تاریخ امتحان
+            int GetSemesterFromDate(DateTime date)
             {
-                // سکشن‌های نیم‌سال 2
-                int sectionCountSemester2 = sectionCount / 2;
-                for (int j = 0; j < sectionCountSemester2; j++)
-                {
-                    course.FinalExamDate = examStart2.AddDays(rand.Next(examRange2 + 1));
-                    sections.Add(new Section
-                    {
-                        CourseId = course.Id,
-                        Year = 1404,
-                        Semester = 2,
-                        ClassroomId = classrooms[rand.Next(classrooms.Count)].Id,
-                        TimeSlotId = allSlots[rand.Next(allSlots.Count)].Id
-                    });
-                }
-
-                // سکشن‌های نیم‌سال 1
-                int sectionCountSemester1 = sectionCount - sectionCount / 2;
-                for (int j = 0; j < sectionCountSemester1; j++)
-                {
-                    // حلقه while تا کورسی با تاریخ مناسب پیدا شود
-                    Course courseForSemester1 = null;
-                    int attempts = 0;
-                    const int maxAttempts = 100; // برای جلوگیری از حلقه بی‌نهایت
-
-                    while (courseForSemester1 == null && attempts < maxAttempts)
-                    {
-                        var candidate = courses[rand.Next(courses.Count)];
-                        if (candidate.FinalExamDate >= examStart1 && candidate.FinalExamDate <= examEnd1)
-                        {
-                            courseForSemester1 = candidate;
-                            break;
-                        }
-                        attempts++;
-                    }
-
-                    if (courseForSemester1 != null)
-                    {
-                        sections.Add(new Section
-                        {
-                            CourseId = courseForSemester1.Id,
-                            Year = 1404,
-                            Semester = 1,
-                            ClassroomId = classrooms[rand.Next(classrooms.Count)].Id,
-                            TimeSlotId = allSlots[rand.Next(allSlots.Count)].Id
-                        });
-                    }
-                }
+                if (date >= new DateTime(2026, 1, 21) && date <= new DateTime(2026, 2, 19))
+                    return 1;
+                else if (date >= new DateTime(2026, 6, 5) && date <= new DateTime(2026, 7, 6))
+                    return 2;
+                else
+                    return 0; // تاریخ نامعتبر
             }
 
-            // حذف سکشن‌های تکراری بر اساس Year, Semester, ClassroomId و TimeSlotId یکسان
+            // ابتدا برای هر درس یک سکشن بساز (حداقل یکی برای هر درس)
+            foreach (var course in courses)
+            {
+                int semester = GetSemesterFromDate(course.FinalExamDate);
+                if (semester == 0) continue; // از کورس‌هایی که تاریخ امتحان معتبر ندارند صرف‌نظر کن
+
+                sections.Add(new Section
+                {
+                    CourseId = course.Id,
+                    Year = 1404,
+                    Semester = semester,
+                    ClassroomId = classrooms[rand.Next(classrooms.Count)].Id,
+                    TimeSlotId = allSlots[rand.Next(allSlots.Count)].Id
+                });
+            }
+
+            // جلوگیری از سکشن‌های تکراری با کلاس و زمان تکراری در همان ترم و سال
             sections = sections
                 .GroupBy(s => new { s.Year, s.Semester, s.ClassroomId, s.TimeSlotId })
                 .Select(g => g.First())
                 .ToList();
+
+            // سپس با حلقه while ادامه بده تا به تعداد کلی sectionCount برسیم
+            int attempts = 0; 
+            int failedAttempts = 0; // بیشتر از ماکسیمم تعداد سکشن یکتا نمیتونه تولبد کند و حلقه بی پایان برای همین اتمپت گذاشتیم بعد 100 تلاش ناموفق حلقه متوقف بشه
+            while (sections.Count < sectionCount && failedAttempts < 100)
+            {
+                var course = courses[rand.Next(courses.Count)];
+                int semester = GetSemesterFromDate(course.FinalExamDate);
+                if (semester == 0)
+                {
+                    failedAttempts++;
+                    continue;
+                }
+
+                var newSection = new Section
+                {
+                    CourseId = course.Id,
+                    Year = 1404,
+                    Semester = semester,
+                    ClassroomId = classrooms[rand.Next(classrooms.Count)].Id,
+                    TimeSlotId = allSlots[rand.Next(allSlots.Count)].Id
+                };
+
+                // بررسی جلوگیری از تکرار با کلاس، زمان، ترم و سال مشابه
+                bool isDuplicate = sections.Any(s =>
+                    s.Year == newSection.Year &&
+                    s.Semester == newSection.Semester &&
+                    s.ClassroomId == newSection.ClassroomId &&
+                    s.TimeSlotId == newSection.TimeSlotId);
+
+                if (isDuplicate)
+                {
+                    failedAttempts++;
+                    continue;
+                }
+
+                sections.Add(newSection);
+                failedAttempts = 0; // موفق بودیم، تلاش‌های ناموفق ریست می‌شود
+            }
+
             context.Sections.AddRange(sections);
             context.SaveChanges();
-
 
             // 11. Teaches
             var teaches = sections.Select(s => new Teaches
@@ -320,5 +375,95 @@ public static class SeedDataForFirstTime
             context.Takes.AddRange(takes);
             context.SaveChanges();
         }
+    }
+}
+
+public static class NumberToPersianWords
+{
+    private static readonly string[] Units = 
+    { 
+        "", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت", "نه", 
+        "ده", "یازده", "دوازده", "سیزده", "چهارده", "پانزده", "شانزده", "هفده", "هجده", "نوزده" 
+    };
+
+    private static readonly string[] Tens = 
+    {
+        "", "", "بیست", "سی", "چهل", "پنجاه", "شصت", "هفتاد", "هشتاد", "نود"
+    };
+
+    private static readonly string[] Hundreds = 
+    {
+        "", "صد", "دویست", "سیصد", "چهارصد", "پانصد", "ششصد", "هفتصد", "هشتصد", "نهصد"
+    };
+
+    private static string ConvertThreeDigits(int number)
+    {
+        string result = "";
+
+        int hundred = number / 100;
+        int remainder = number % 100;
+
+        if (hundred > 0)
+        {
+            result += Hundreds[hundred];
+        }
+
+        if (remainder > 0)
+        {
+            if (hundred > 0)
+                result += " و ";
+
+            if (remainder < 20)
+            {
+                result += Units[remainder];
+            }
+            else
+            {
+                int ten = remainder / 10;
+                int unit = remainder % 10;
+
+                result += Tens[ten];
+
+                if (unit > 0)
+                    result += " و " + Units[unit];
+            }
+        }
+
+        return result;
+    }
+
+    public static string ConvertToWords(int number)
+    {
+        if (number == 0)
+            return "صفر";
+
+        if (number < 0)
+            return "منفی " + ConvertToWords(Math.Abs(number));
+
+        string[] sections = { "", "هزار", "میلیون", "میلیارد" };
+        int sectionCount = 0;
+        string words = "";
+
+        while (number > 0)
+        {
+            int sectionNumber = number % 1000;
+
+            if (sectionNumber != 0)
+            {
+                string sectionWords = ConvertThreeDigits(sectionNumber);
+                if (sectionCount > 0)
+                    sectionWords += " " + sections[sectionCount];
+
+                if (words != "")
+                    words = sectionWords + " و " + words;
+                else
+                    words = sectionWords;
+            }
+
+            number /= 1000;
+            sectionCount++;
+        }
+
+        return words;
     }
 }

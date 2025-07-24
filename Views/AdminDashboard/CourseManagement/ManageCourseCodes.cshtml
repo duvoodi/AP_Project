@@ -1,0 +1,343 @@
+@using AP_Project.FormViewModels
+@using AP_Project.Models.Courses
+@model AP_Project.Models.Users.Admin
+@{
+  ViewData["ActiveTab"] = "Course";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var courseCodes = ViewData["CourseCodes"] as List<CourseCode>;
+  var addform = ViewData["AddForm"] as AddCourseCodeFormViewModel;
+  var editForm = ViewData["EditForm"] as EditCourseCodeFormViewModel;
+  var deleteSelect = ViewData["DeleteSelect"] as Guid?;
+}
+
+<!-- سلکت دو برای دراپ دون -->
+<link href="~/lib/select2/css/select2.min.css" rel="stylesheet" />
+<!-- استایل مشترک -->
+<link rel="stylesheet" href="~/css/AdminDashboard/CourseManagement/course-form-actions.css" asp-append-version="true" />
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/CourseManagement/manage-course-codes.css" asp-append-version="true" />
+
+<main class="dashboard-main admin">
+  <div class="titlebar">
+    <div class="action-title-tab manage">
+      مدیریت کد درس
+    </div>
+  </div>
+
+  <!-- ارور گروپ در بالا -->
+  <!-- تا در فرم های طولانی ظاهر شدنش معلوم شود -->
+    <div class="error-row">
+    <div class="error-group">
+      <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
+    </div>
+    </div>
+
+  <!-- فرم افزودن کد درس جدید -->
+  <div class="form-container">
+    <form asp-controller="CourseCodesManagement" asp-action="AddCourseCode" asp-route-h="@currentHash" method="post" class="course-code-form add-form">
+      @Html.AntiForgeryToken()
+      <div class="form-row">
+        <div class="form-group">
+          <label>عنوان درس</label>
+          <input class="form-control valid-name" id="AddTitle" name="AddTitle" data-maxlength="64" />
+          <span class="error-message">@Html.ValidationMessage("AddTitle")</span>
+        </div>
+        <div class="form-group">
+          <label>کد درس</label>
+          <input class="form-control valid-numeric" id="AddCode" name="AddCode" data-maxlength="8" />
+          <span class="error-message">@Html.ValidationMessage("AddCode")</span>
+        </div>
+        <div class="button-group">
+          <button type="submit" class="btn-submit add blur-on-leave">افزودن درس</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="separator"></div>
+
+  <!-- فرم ویرایش کد درس -->
+  <div class="form-container">
+    <form asp-controller="CourseCodesManagement" asp-action="EditCourseCode" asp-route-h="@currentHash" method="post" class="course-code-form edit-form">
+      @Html.AntiForgeryToken()
+      <div class="form-row">
+        <div class="form-group Edit">
+          <label>انتخاب درس</label>
+          <select class="form-control" name="EditId" id="EditId">
+            <option value="">-- انتخاب کنید --</option>
+            @foreach (var code in courseCodes)
+            {
+              <option value="@code.Id" data-title="@code.Title" data-code="@code.Code">
+                @code.Code - @code.Title
+              </option>
+            }
+          </select>
+          <span class="error-message">@Html.ValidationMessage("EditId")</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>عنوان درس</label>
+          <input class="form-control valid-name" id="EditTitle" name="EditTitle" data-maxlength="64" value="@(editForm?.EditTitle ?? "")" />
+          <span class="error-message">@Html.ValidationMessage("EditTitle")</span>
+        </div>
+        <div class="form-group">
+          <label>کد درس</label>
+          <input class="form-control valid-numeric" id="EditCode" name="EditCode" data-maxlength="8" value="@(editForm?.EditCode ?? "")" />
+          <span class="error-message">@Html.ValidationMessage("EditCode")</span>
+        </div>
+        <div class="button-group">
+          <button type="submit" class="btn-submit edit blur-on-leave">ویرایش درس</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="separator"></div>
+
+<!-- فرم حذف کد درس -->
+<div class="form-container">
+  <form asp-controller="CourseCodesManagement" asp-action="DeleteCourseCode" asp-route-h="@currentHash"
+        method="post" class="course-code-form" id="delete-course-form">
+    @Html.AntiForgeryToken()
+    <div class="form-row">
+      <div class="form-group">
+        <label>انتخاب درس</label>
+        <select class="form-control" name="DeleteId" id="DeleteId">
+          <option value="">-- انتخاب کنید --</option>
+          @foreach (var code in courseCodes)
+          {
+            <option value="@code.Id" data-title="@code.Title" data-code="@code.Code">
+              @code.Code - @code.Title
+            </option>
+          }
+        </select>
+        <span class="error-message">@Html.ValidationMessage("DeleteId")</span>
+      </div>
+      <div class="button-group">
+        <button type="button" class="btn-submit delete blur-on-leave" id="delete-course-btn">حذف درس</button>
+      </div>
+    </div>
+    <div class="error-row">
+      <div class="error-group">
+        <span class="error-message general-error" id="GeneralError">@Html.ValidationMessage("GeneralError")</span>
+      </div>
+    </div>
+  </form>
+</div>
+</main>
+
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+  <!-- دریافت متغیر های ارسال شده از کنترلر -->
+  <script>
+    const selectedEditId= '@(editForm?.EditId.ToString()   ?? "")';
+    const selectedDeleteId = '@(deleteSelect?.ToString()  ?? "")';
+  </script>
+  <script src="~/js/Shared/blur-on-leave.js"></script>
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-numeric-inputs.js"></script>
+  <script src="~/js/FormUtils/Shared/valid-name-inputs.js"></script>
+  <!-- سلکت دو برای دراپ دون -->
+  <script src="~/lib/select2/js/select2.full.js"></script>
+  <script src="~/lib/select2/js/i18n/fa.js"></script>
+  <!-- تابع ولیدیت فیلد اختصاصی فیلد های این صفحه -->
+  <script src="~/js/FormUtils/CourseCodeForm/validateField.js"></script>
+  <script>
+    // ولیدیت فیلد ها هنگام خروج از فیلد با نمایش ارور ترو
+    document.querySelectorAll('input[id], textarea[id]').forEach(el => {
+      el.addEventListener('blur', () => {
+        validateField(el.id, true);
+      });
+    });
+    $(document).ready(function () { // سلکت ها با جی کوئری سلکت2
+      $('select[id]').each(function () {
+        const id = $(this).attr('id');
+        $(this).on('select2:close', function () {
+          validateField(id, true);
+        });
+      });
+    });
+
+    // راه‌اندازی Select2
+    $(document).ready(function () {
+      // تنظیم Select2 روی سلکت‌هایی که در Razor رندر شدند
+      $('#EditId').select2({
+        dropdownAutoWidth: true,
+        width: '100%',
+        dropdownCssClass: 'custom-select2-dropdown',
+        dropdownParent: $('#EditId').closest('.form-group')
+      });
+
+      $('#DeleteId').select2({
+        dropdownAutoWidth: true,
+        width: '100%',
+        dropdownCssClass: 'custom-select2-dropdown',
+        dropdownParent: $('#DeleteId').closest('.form-group')
+      });
+
+      // اگر قبلاً انتخابی داشتیم، ستش می‌کنیم
+      if (selectedEditId) {
+        $('#EditId').val(selectedEditId).trigger('change');
+      }
+      if (selectedDeleteId) {
+        $('#DeleteId').val(selectedDeleteId).trigger('change'); 
+      }
+
+      function populateEditFields() {
+        const opt = $('#EditId').find('option:selected');
+        if (!opt.val()) {
+          $('#EditTitle, #EditCode').val('');
+          return;
+        }
+        $('#EditTitle').val(opt.data('title'));
+        $('#EditCode').val(opt.data('code'));
+      }
+
+      // پر کردن اولیه فیلدها با توجه به انتخاب در بارگذاری صفحه
+      populateEditFields();
+
+      // هر بار که یک آیتم Select2 انتخاب می‌شود
+      $('#EditId').on('select2:select', function () {
+        populateEditFields();
+      });
+      // همچنین برای حذف انتخاب (AllowClear)
+      $('#EditId').on('select2:unselect', function () {
+        populateEditFields();
+      });
+    });
+
+
+    // انتخاب و مقداردهی فیلدهای فرم ویرایش
+    document.getElementById('EditId')?.addEventListener('change', function () {
+      const selectedOption = this.options[this.selectedIndex];
+      if (selectedOption?.value) {
+        document.getElementById('EditId').value = selectedOption.value;
+        document.getElementById('EditTitle').value = selectedOption.dataset.title;
+        document.getElementById('EditCode').value = selectedOption.dataset.code;
+      }
+    });
+
+    // انتخاب و مقداردهی فیلد حذف
+    document.getElementById('DeleteId')?.addEventListener('change', function () {
+      document.getElementById('DeleteId').value = this.value;
+    });
+
+    // اعتبارسنجی فرم‌ها
+    document.querySelectorAll('.course-code-form').forEach(form => {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const isAddForm = this.querySelector('#AddTitle');
+        const isEditForm = this.querySelector('#EditTitle');
+        const isDeleteForm = this.querySelector('#DeleteId');
+
+
+        // حذف ارورهای فقط فرم جاری
+        this.querySelectorAll('.error-message').forEach(errorSpan => {
+          const parentGroup = errorSpan.closest('.form-group, .error-group');
+          if (parentGroup) {
+            const firstWithId = parentGroup.querySelector('[id]');
+            if (firstWithId) {
+              replaceError(firstWithId.id, '');
+            }
+          }
+        });
+        setTimeout(() => { // این بخش کد 300 میلی ثانیه باید دیرتر بالا اجرا تا خالی کردن ارور ها رندر گرفته بشه
+          let isValid = true;
+          if (isAddForm) {
+            const v1 = validateField('AddTitle', true);
+            const v2 = validateField('AddCode', true);
+            isValid = v1 && v2; // تک تک ولیدیت با شو ارور ترو بعد اند میگیریم
+          } else if (isEditForm) {
+            const v1 = validateField('EditId', true);
+            const v2 = validateField('EditTitle', true);
+            const v3 = validateField('EditCode', true);
+            isValid = v1 && v2 && v3; // تک تک ولیدیت با شو ارور ترو بعد اند میگیریم
+          } else if (isDeleteForm) {
+            isValid = validateField('DeleteId', true);
+          }
+
+          if (isValid) {
+            replaceError("GeneralError", '');
+            setTimeout(() => { // این بخش کد 850 میلی ثانیه باید دیرتر اجرا شود تا بسته شدن جنرال ارور رندر گرفته بشه
+              this.submit();
+            }, 850); // کمی بیشتر از مدت انیمیشن یعنی 800 میلی ثانیه
+          }
+        }, 300); // کمی بیشتر از مدت انیمیشن یعنی 250 میلی ثانیه
+      });
+    });
+  </script>
+
+  <script>
+  const currentHash = '@currentHash';
+
+  document.getElementById('delete-course-btn').addEventListener('click', function () {
+    const selected = document.getElementById('DeleteId').value;
+    if (!selected) {
+      replaceError("DeleteId", "لطفاً یک مورد را انتخاب کنید");
+      return;
+    }
+
+    GlobalPopup.show({
+      PopupTitle: "تأیید حذف کد درس",
+      SimpleMessage: "آیا از حذف این کد درس مطمئن هستید؟",
+      CanCloseManually: false,
+      CloseOnBackdropClick: false,
+      BlockScroll: true,
+      ShowActionButtons: true,
+      GreenButtonText: "انصراف",
+      OnGreenClickJs: "GlobalPopup.hide()",
+      RedButtonText: "حذف",
+      OnRedClickJs: "submitDeleteCourseCode()",
+      iconType: "warning"
+    });
+  });
+
+  function submitDeleteCourseCode() {
+    GlobalPopup.hide();
+    const form = document.getElementById('delete-course-form');
+    replaceError("GeneralError", "");
+    replaceError("DeleteId", "");
+
+    setTimeout(() => {
+      const formData = new FormData(form);
+      fetch(form.action, {
+        method: 'POST',
+        body: formData
+      }).then(response => {
+        return response.text().then(html => ({ ok: response.ok, html }));
+      }).then(({ ok, html }) => {
+        // پارس کردن ویو برگشتی
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const generalError = doc.querySelector('#GeneralError')?.textContent.trim();
+        const deleteError = doc.querySelector('[name="DeleteId"] + .error-message')?.textContent.trim();
+
+        if (generalError || deleteError) {
+          if (generalError) replaceError("GeneralError", generalError);
+          if (deleteError) replaceError("DeleteId", deleteError);
+        } else {
+          GlobalPopup.show({
+            PopupTitle: "حذف موفق",
+            SimpleMessage: "کد درس با موفقیت حذف شد.",
+            CanCloseManually: false,
+            CloseOnBackdropClick: false,
+            BlockScroll: true,
+            iconType: "success"
+          });
+          setTimeout(() => {
+            window.location.href = '@Url.Action("ManageCourseCodesIndex", "CourseCodesManagement")' + '?h=' + encodeURIComponent(currentHash);
+          }, 2500);
+        }
+      }).catch(() => {
+        replaceError("GeneralError", "خطا در حذف کد درس. لطفاً دوباره تلاش کنید.");
+      });
+    }, 850);
+  }
+</script>
+
+}

@@ -1,18 +1,15 @@
 @model AP_Project.Models.Users.Student
 @{
-    ViewData["Title"] = "داشبورد دانشجو";
-    Layout = "_LayoutStudent";
-    ViewData["ActiveTab"] = null;
-    var hasFooter = true;
+  ViewData["Title"] = "داشبورد دانشجو";
+  Layout = "_LayoutStudent";
 }
 
-<main class="student-main @(hasFooter ? "has-footer" : "has-not-footer")">
-        <!-- محتوای پیش‌فرض -->
+<main class="dashboard-main student">
+    <!-- محتوای پیش‌فرض -->
 </main>
 
-@if (hasFooter)
-{
-    <footer class="student-footer">
-        <p>لطفا یکی از سربرگ‌ها را انتخاب کنید</p>
-    </footer>
+@section FooterPopup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
+  <div class="footer-popup empty will-show">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>لطفا یکی از سربرگ‌ها را انتخاب کنید</p>
+  </div>
 }

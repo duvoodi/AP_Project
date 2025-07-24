@@ -1,0 +1,245 @@
+/* ============================
+   FONT
+   ============================ */
+
+table, button, td, th {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* ============================
+   ADD INSTRUCTOR BUTTON
+   ============================ */
+
+.toolbar {
+  position: sticky;
+  top: 100px;
+  margin: 0 -20px; /* از طرفین 20 پیکسل بزنه بیرون تا سایه رو بپوشونه */
+  padding: 15px 20px; /* پدینگ طرفین 20 تا مارجین منفی که دادیم را جبران کند */
+  background: white;
+  z-index: 3;
+}
+
+.btn-add-instructor {
+  background-color: #84e291;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  position: relative;
+  transition: transform 0.25s, color 0.25s;
+}
+
+.btn-add-instructor .icon {
+  color: #22a74a;
+  font-size: 30px;
+  font-weight: 600;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  margin-top: -8px;
+  margin-bottom: -8px;
+  margin-left: 8px;
+  display: inline-block;
+}
+
+.btn-add-instructor .text {
+  color: #265C26;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btn-add-instructor .icon,
+.btn-add-instructor .text {
+  transition: transform 0.25s, color 0.25s;
+}
+
+.btn-add-instructor:hover .icon,
+.btn-add-instructor:focus .icon,
+.btn-add-instructor:hover .text,
+.btn-add-instructor:focus .text {
+  color: #ffffff;
+}
+
+.btn-add-instructor:hover,
+.btn-add-instructor:focus{
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.btn-add-instructor:hover .icon,
+.btn-add-instructor:focus .icon{
+  transform: rotate(270deg);
+}
+
+/* ============================
+   TABLE STYLES
+   ============================ */
+
+.instructor-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: #ffffff;
+  font-size: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.instructor-table thead tr {
+  font-size: 15px;
+}
+
+/* گرد کردن گوشه‌های بالا */
+.instructor-table thead th:first-child {
+  border-top-right-radius: 10px;
+}
+
+.instructor-table thead th:last-child {
+  border-top-left-radius: 10px;
+}
+
+/* گرد کردن گوشه‌های پایین */
+.instructor-table tbody tr:last-child td:first-child {
+  border-bottom-right-radius: 10px;
+}
+
+.instructor-table tbody tr:last-child td:last-child {
+  border-bottom-left-radius: 10px;
+}
+
+.instructor-table thead th {
+  color: white;
+  background-color: #00b0f0;
+  font-weight: 600;
+  position: sticky;
+  top: 181px; /* ارتفاع تول بار */
+  border-top: 5px solid white;
+  background-clip: padding-box;
+  border-top: none; /* تا کامل بچسبد به تول بار */
+  z-index: 2;
+}
+
+.instructor-table th,
+.instructor-table td {
+  border: 1px solid white;
+  padding: 10px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.instructor-table tbody tr {
+  background-color: #e2f2ff;
+  color: #000;
+  transition: background-color 0.2s ease;
+}
+
+.instructor-table tbody tr:hover {
+  background-color: #a1d9ff;
+}
+/* ============================
+   COLUMN WIDTHS
+   ============================ */
+
+.col-index {
+  width: 30px;
+}
+
+.col-hyear {
+  width: 7%;
+}
+
+.col-salary,
+.col-instid {
+  width: 10%;
+}
+
+.col-fname,
+.col-lname,
+.col-email {
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.col-email {
+  width: 20%;
+}
+
+.col-userid {
+  width: 5%;
+}
+
+.col-actions {
+  width: 6%;
+}
+
+/* ============================
+   TEXT LINK
+   ============================ */
+
+.text-link {
+  background: none;
+  border: none;
+  color: #0645AD;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px !important;
+  font-weight: 450 !important;
+  transition: color 0.25s ease;
+}
+
+.text-link:hover {
+  color: #ce0e84;
+}
+/* ============================
+COPY ID BUTTOON
+============================ */
+
+.copy-id-button {
+  font-size: 13px;
+  font-weight: 450;
+}
+
+/* ============================
+   ACTION COLUMN
+   ============================ */
+
+.col-actions {
+  margin: 0px;
+}
+
+.actions-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin: auto 5px;
+  margin-bottom: -5px;
+  gap: 1vw;
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 19px;
+  padding: 0px;
+}
+
+.btn-edit i {
+  color: rgb(255, 166, 0); /* نارنجی */
+  transition: transform 0.1s, color 0.25s;
+}
+
+.btn-delete i {
+  color: #eb1c31; /* قرمز */
+  transition: transform 0.1s, color 0.25s;
+}
+
+/* افکت هاور */
+.btn-action:hover i {
+  transform: scale(1.2);
+}

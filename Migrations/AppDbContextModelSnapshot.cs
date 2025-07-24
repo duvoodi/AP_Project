@@ -282,13 +282,13 @@ namespace AP_Project.Migrations
                     b.Property<Guid?>("CourseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Semester")
+                    b.Property<int?>("Semester")
                         .HasColumnType("int");
 
-                    b.Property<int>("TimeSlotId")
+                    b.Property<int?>("TimeSlotId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Year")
+                    b.Property<int?>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -323,15 +323,15 @@ namespace AP_Project.Migrations
 
             modelBuilder.Entity("AP_Project.Models.Courses.Teaches", b =>
                 {
-                    b.Property<Guid>("InstructorUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("SectionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("InstructorUserId", "SectionId");
+                    b.Property<Guid?>("InstructorUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("SectionId");
+                    b.HasKey("SectionId");
+
+                    b.HasIndex("InstructorUserId");
 
                     b.ToTable("Teaches");
                 });
@@ -439,8 +439,8 @@ namespace AP_Project.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Salary")
-                        .HasPrecision(12, 2)
-                        .HasColumnType("decimal(12,2)");
+                        .HasPrecision(9)
+                        .HasColumnType("decimal(9,0)");
 
                     b.ToTable("Instructors", (string)null);
                 });
@@ -497,13 +497,13 @@ namespace AP_Project.Migrations
 
                     b.HasOne("AP_Project.Models.Courses.Course", "Course")
                         .WithMany("Sections")
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AP_Project.Models.Classrooms.TimeSlot", "TimeSlot")
                         .WithMany("Sections")
                         .HasForeignKey("TimeSlotId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Classroom");
 
@@ -536,12 +536,11 @@ namespace AP_Project.Migrations
                     b.HasOne("AP_Project.Models.Users.Instructor", "Instructor")
                         .WithMany("Teaches")
                         .HasForeignKey("InstructorUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AP_Project.Models.Courses.Section", "Section")
-                        .WithMany("Teaches")
-                        .HasForeignKey("SectionId")
+                        .WithOne("Teaches")
+                        .HasForeignKey("AP_Project.Models.Courses.Teaches", "SectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

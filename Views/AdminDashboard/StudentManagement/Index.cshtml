@@ -1,0 +1,99 @@
+@model AP_Project.Models.Users.Admin
+@{
+  ViewData["ActiveTab"] = "Student";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+  var students = ViewBag.Students as List<AP_Project.Models.Users.Student>;
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+}
+
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/StudentManagement/student-management.css" asp-append-version="true" />
+
+<main class="dashboard-main admin">
+  <div class="toolbar">
+    <a asp-controller="StudentManagement" asp-action="AddStudentIndex" asp-route-h="@currentHash"
+      class="btn-add-student">
+      <span class="icon">&#43;</span>
+      <span class="text">افزودن دانشجو</span>
+    </a>
+  </div>
+
+  <table class="student-table">
+    <thead>
+      <tr>
+        <th class="col-index">ردیف</th>
+        <th class="col-fname">نام</th>
+        <th class="col-lname">نام خانوادگی</th>
+        <th class="col-email">ایمیل</th>
+        <th class="col-eyear">سال ورودی</th>
+        <th class="col-stdid">کد دانشجویی</th>
+        <th class="col-userid">آی‌دی کاربری</th>
+        @if (students != null && students.Any())
+        {<th class="col-actions"></th>}
+      </tr>
+    </thead>
+    @if (students != null && students.Any())
+    {
+      <tbody>
+        @for (int i = 0; i < students.Count; i++)
+        {
+          var std = students[i];
+          var EmailWithBreaks = std.Email.Replace(".", "\u200B" + ".").Replace("@", "\u200B" + "@");
+          var userId = std.Id.ToString();
+          <tr>
+            <td class="col-index">@((i + 1))</td>
+            <td class="col-fname">@std.FirstName</td>
+            <td class="col-lname">@std.LastName</td>
+            <td class="col-email">@Html.Raw(EmailWithBreaks)</td>
+            <td class="col-fixed">@std.EnrollmentYear</td>
+            <td class="col-fixed">@std.StudentId</td>
+            <td class="col-userid">
+              <button class="text-link copy-id-button" data-id="@userId" data-tooltip="@userId"
+                data-tooltip-align="center">کپی</button>
+            </td>
+            <td class="col-actions">
+              <div class="actions-wrapper">
+                <a asp-controller="StudentManagement" asp-action="EditStudent" asp-route-id="@std.Id" asp-route-h="@currentHash"
+                  class="btn-action btn-edit" data-tooltip="ویرایش" data-tooltip-align="center">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a asp-controller="StudentManagement" asp-action="DeleteStudent" asp-route-id="@std.Id" asp-route-h="@currentHash"
+                  class="btn-action btn-delete" data-tooltip="حذف" data-tooltip-align="center">
+                  <i class="fas fa-trash-alt"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    }
+  </table>
+</main>
+
+@section FooterPopup { <!-- برای بردن پاپ آپ به خارج مین لی اوت داشبورد -->
+  <div class="footer-popup empty @(students == null || !students.Any() ? "will-show" : "")">
+    <p><i class="fa-solid fa-info-circle" style="margin-left: 8px;"></i>موردی جهت نمایش وجود ندارد</p>
+  </div>
+}
+
+@section Scripts {
+  <script src="~/js/Shared/tooltip.js"></script>
+  <script>
+    // دکمه‌های کپی
+    document.querySelectorAll('.copy-id-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        navigator.clipboard.writeText(id).then(() => {
+          tooltip.textContent = 'کپی شد';
+          tooltip.classList.remove('align-left', 'align-center', 'align-right', 'show');
+          tooltip.classList.add('align-center', 'show');
+
+          const r = btn.getBoundingClientRect();
+          tooltip.style.top = (r.bottom + 6) + 'px';
+          tooltip.style.left = (r.left + r.width / 2) + 'px';
+        });
+      });
+    });
+  </script>
+}

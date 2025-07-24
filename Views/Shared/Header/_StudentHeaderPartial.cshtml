@@ -1,22 +1,30 @@
 @model AP_Project.Models.Users.Student
-@using AP_Project.Data
+@{
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var activeTab = ViewData["ActiveTab"]?.ToString();
+}
 
-<header class="student-header">
+<header class="dashboard-header student">
   <div class="header-title">
     <h1>داشبورد دانشجو</h1>
   </div>
   <div class="header-actions">
-    <span class="student-name">@Model.FirstName @Model.LastName</span>
-    <div class="nav-links">
-      @{
-        var hashedId = ComputeHash.Sha1(Model.StudentId.ToString());
-        var activeTab = ViewData["ActiveTab"]?.ToString();
-      }
-
-      <a asp-controller="StudentCoursesList" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString()=="CoursesList"?"active":"")">لیست دروس</a>
-      <a asp-controller="Transcripts" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString()=="Transcripts"?"active":"")">مشاهده ریز نمرات</a>
-      <a asp-controller="FullInformation" asp-action="Index" asp-route-h="@hashedId" class="@(ViewData["ActiveTab"]?.ToString()=="FullInformation"?"active":"")">اطلاعات جامع دانشجو</a>
-      <a asp-controller="Login" asp-action="Logout">خروج</a>
-    </div>
+    @if (Model != null)
+    {
+      <span class="user-name student">@Model.FirstName @Model.LastName</span>
+      <div class="nav-links">
+        <a asp-controller="StudentCoursesList" asp-action="Index" asp-route-h="@currentHash" class="@(activeTab =="CoursesList"?"active":"")">لیست دروس</a>
+        <a asp-controller="Transcripts" asp-action="Index" asp-route-h="@currentHash" class="@(activeTab =="Transcripts"?"active":"")">مشاهده ریز نمرات</a>
+        <a asp-controller="FullInformation" asp-action="Index" asp-route-h="@currentHash" class="@(activeTab =="FullInformation"?"active":"")">اطلاعات جامع دانشجو</a>
+        <a asp-controller="Login" asp-action="Logout">خروج</a>
+      </div>
+    }
+    else
+    {
+      <span class="user-name student">دانشجوی نامشخص</span>
+      <div class="nav-links">
+        <a asp-controller="Login" asp-action="Logout">خروج</a>
+      </div>
+    }
   </div>
 </header>

@@ -1,0 +1,123 @@
+@model AP_Project.Models.Users.Admin
+@{
+  ViewData["ActiveTab"] = "Student";
+  ViewData["Title"] = "داشبورد ادمین";
+  Layout = "_LayoutAdmin";
+  var currentHash = ViewContext.HttpContext.Request.Query["h"].ToString();
+  var form = (AP_Project.FormViewModels.StudentForm.StudentFormViewModel)ViewData["Form"];
+}
+
+<!-- استایل اختصاصی -->
+<link rel="stylesheet" href="~/css/AdminDashboard/StudentManagement/student-form-actions.css" asp-append-version="true" />
+
+<main class="dashboard-main admin">
+  <div class="titlebar">
+    <div class="action-title-tab delete">
+      حذف دانشجو
+    </div>
+  </div>
+  <div class="form-container">
+    <form asp-controller="StudentManagement" asp-action="DeleteStudent" asp-route-h="@currentHash" method="post" id="delete-student-form">
+      @Html.AntiForgeryToken()
+
+      <div class="error-row">
+        <div class="error-group" >
+          <span class="error-message general-error" id="GeneralError" >@Html.ValidationMessage("GeneralError")</span>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>نام</label>
+          <input class="form-control" id="FirstName" name="FirstName" value="@form?.FirstName" readonly />
+        </div>
+        <div class="form-group">
+          <label>نام خانوادگی</label>
+          <input class="form-control" id="LastName" name="LastName" value="@form?.LastName" readonly />
+        </div>
+        <div class="form-group">
+          <label>ایمیل</label>
+          <input class="form-control" id="Email" name="Email" value="@form?.Email" readonly />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group narrow">
+          <label>کد دانشجویی</label>
+          <input class="form-control" id="StudentId" name="StudentId" value="@form?.StudentId" readonly />
+        </div>
+        <div class="form-group narrow">
+          <label>سال ورودی</label>
+          <input class="form-control" id="EnrollmentYear" name="EnrollmentYear" value="@form?.EnrollmentYear" readonly />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a type="button" asp-controller="StudentManagement" asp-action="Index" asp-route-h="@currentHash"
+          class="btn-cancel blur-on-leave">انصراف</a>
+        <button type="button" class="btn-submit blur-on-leave" id="delete-confirm-btn">تایید</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+
+@section Scripts {
+  <script src="~/js/Shared/blur-on-leave.js"></script>
+  <script src="~/js/FormUtils/Shared/form-error-utils.js"></script>
+
+  <script>
+    const currentHash = '@currentHash';
+
+    document.getElementById('delete-confirm-btn').addEventListener('click', function () {
+      GlobalPopup.show({
+        PopupTitle: "تأیید حذف دانشجو",
+        SimpleMessage: "آیا از حذف این دانشجو مطمئن هستید؟",
+        CanCloseManually: false,
+        CloseOnBackdropClick: false,
+        BlockScroll: true,
+        ShowActionButtons: true,
+        GreenButtonText: "انصراف",
+        OnGreenClickJs: "GlobalPopup.hide()",
+        RedButtonText: "حذف",
+        OnRedClickJs: "submitDeleteStudent()",
+        iconType: "warning"
+      });
+    });
+
+    function submitDeleteStudent() {
+      GlobalPopup.hide();
+
+      const form = document.getElementById('delete-student-form');
+      replaceError("GeneralError", '');
+
+      setTimeout(() => {
+        const formData = new FormData(form);
+        fetch(form.action, {
+          method: 'POST',
+          body: formData
+        }).then(response => {
+          if (response.ok) {
+            GlobalPopup.show({
+              PopupTitle: "حذف موفق",
+              SimpleMessage: "دانشجو با موفقیت حذف شد.",
+              CanCloseManually: false,
+              CloseOnBackdropClick: false,
+              BlockScroll: true,
+              iconType: "success"
+            });
+
+            setTimeout(() => {
+              const redirectUrl = '@Url.Action("Index", "StudentManagement")' + '?h=' + encodeURIComponent(currentHash);
+              window.location.href = redirectUrl;
+            }, 2500);
+          } else {
+            throw new Error();
+          }
+        }).catch(() => {
+          replaceError("GeneralError", "خطا در حذف دانشجو. لطفاً دوباره تلاش کنید.");
+        });
+      }, 850);
+    }
+  </script>
+}
